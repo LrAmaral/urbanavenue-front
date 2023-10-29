@@ -1,35 +1,21 @@
-import Image from 'next/image'
-
-import { images } from '@/app/utils/images'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Metadata } from 'next'
+import Gallery from './components/Gallery'
 
 export const metadata: Metadata = {
-  title: 'takeatrip | UrbanAvenue',
-  description: 'lookbook page',
+  title: 'takeatrip | UrbanAvenue®',
+  description: 'Lookbook Page',
 }
 
 const Lookbook = () => {
   return (
-    <div className="w-full h-screen items-center flex flex-row justify-center">
-      <div className="max-w-[76.875rem] xs:px-6 px-0 mx-auto">
-        <div className="space-y-4">
-          <p className="font-semibold text-lg">Where style meets comfort.</p>
-          <ScrollArea className="border p-4 rounded-xl bg-neutral-800">
-            <div className="flex gap-2">
-              {images.map(({ id, src }) => (
-                <Image
-                  key={id}
-                  src={src}
-                  width={350}
-                  height={400}
-                  alt="image"
-                  className="rounded-xl"
-                />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+    <div className="w-full flex-col items-center flex justify-center">
+      <div className="max-w-[76.875rem] xs:px-6 px-8 mx-auto">
+        <div className="flex flex-col justify-center items-center py-32">
+          <div className="w-full text-center space-y-4">
+            <p className="text-2xl font-semibold">Inspire Your Look</p>
+            <br />
+            <Gallery />
+          </div>
         </div>
       </div>
     </div>

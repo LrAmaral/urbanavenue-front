@@ -63,6 +63,9 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        sans: 'var(--font-kumbh)',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: 0 },
@@ -77,7 +80,10 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      backgroundImage: {
+        banner: "url('/public/assets/avenue.jpg')",
+      },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 }

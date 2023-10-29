@@ -1,5 +1,5 @@
-import { Footer } from '@/components/layout/Footer'
-import { MainNav } from '@/components/layout/MainNav'
+import { Footer } from '@/components/Footer'
+import { MainNav } from '@/components/MainNav'
 
 export default function Rootlayout({
   children,
@@ -7,7 +7,7 @@ export default function Rootlayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col w-full overflow-hidden">
       <MainNav />
       {children}
       <Footer />
