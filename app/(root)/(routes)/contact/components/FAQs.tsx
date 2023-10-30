@@ -1,6 +1,6 @@
 const FAQs = () => {
   return (
-    <div className="text-sm gap-4 flex flex-col justify-center text-justify py-40">
+    <div className="text-sm gap-4 flex flex-col justify-center text-justify py-16">
       <p className="text-xl font-bold text-center">Terms & F.A.Q</p>
       <div className="space-y-2">
         <p>What is streetwear fashion?</p>
