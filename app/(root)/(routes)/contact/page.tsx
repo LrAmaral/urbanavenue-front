@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const About = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center gap-16">
-      <div className="max-w-[76.875rem] mx-auto xs:px-6 px-8 flex justify-center items-center flex-col">
+      <div className="max-w-[76.875rem] mx-auto xs:px-6 px-8 flex justify-center h-auto gap-32 py-40 items-center flex-col">
         <FAQs />
         <PrivacyPolicy />
         <ExchangesAndReturns />

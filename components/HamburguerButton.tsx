@@ -2,9 +2,9 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import MobileNavLink from './MobileNavLink'
 import { usePathname } from 'next/navigation'
 
+import MobileNavLink from './MobileNavLink'
 import { containerVars } from '@/app/utils/containerVars'
 import { menuVars } from '@/app/utils/menuVars'
 
@@ -19,8 +19,6 @@ const HamburguerButton = () => {
 
     window.addEventListener('resize', setResize)
   }, [menuOpen])
-
-  const menuClose = () => setMenuOpen(false)
 
   const pathname = usePathname()
 
@@ -91,7 +89,7 @@ const HamburguerButton = () => {
             className="fixed md:hidden left-0 origin-top top-0 bg-white w-full h-screen flex items-center justify-center"
           >
             <motion.div
-              onClick={menuClose}
+              onClick={toggleMenu}
               variants={containerVars}
               initial="initial"
               animate="open"
