@@ -1,5 +1,7 @@
-import axios from 'axios'
+import axios from "axios";
 
-export const api = axios.create({
-  baseURL: 'http://127.0.0.1:3333',
-})
+const api = axios.create({
+  baseURL: process.env.NEXT_PULIC_API_URL,
+});
+
+export default api;

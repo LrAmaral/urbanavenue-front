@@ -7,6 +7,7 @@ const nextConfig = {
       'highcompanybr.com',
       'orangebrand.com.br',
       'www.beyondmedals.com',
+      'res.cloudinary.com',
     ],
   },
 }

@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
-import MobileNavLink from './MobileNavLink'
+import MobileNavLink from './mobile-nav-link'
 import { containerVars } from '@/app/utils/containerVars'
 import { menuVars } from '@/app/utils/menuVars'
 

@@ -1,10 +1,11 @@
 import { User2 } from 'lucide-react'
 import Link from 'next/link'
 
-import CartSheet from './CartSheet'
-import HamburguerButton from './HamburguerButton'
-import WebLinks from './WebLinks'
+import CartSheet from './cart-sheet'
+import HamburguerButton from './hamburguer-button'
+import WebLinks from './web-links'
 import { auth } from '@clerk/nextjs'
+import { Input } from './ui/input'
 
 export const MainNav = () => {
   const { userId } = auth()
@@ -20,6 +21,7 @@ export const MainNav = () => {
             >
               UrbanAvenue
             </Link>
+            <Input />
             <div className="flex gap-4 md:gap-16 items-center">
               <WebLinks />
               <HamburguerButton />

@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import MobileNavLink from './MobileNavLink'
+import MobileNavLink from './mobile-nav-link'
 
 const WebLinks = () => {
   const pathname = usePathname()

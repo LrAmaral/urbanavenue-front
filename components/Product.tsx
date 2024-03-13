@@ -1,37 +1,22 @@
-'use client'
+import { Product } from "@/types/product"
+import Image from "next/image"
+import React from "react"
 
-import { useEffect, useState } from 'react'
-import { api } from '@/lib/axios'
-
-const ProductList = () => {
-  const [products, setProducts] = useState([])
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await api.get('/api/products')
-        const data = response.data
-        setProducts(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    fetchProducts()
-  }, [])
-
-  return (
-    <div>
-      <h1>COMING SOON</h1>
-      <h1>COMING SOON</h1>
-      <h1>COMING SOON</h1>
-      <ul>
-        {products.map((id, title) => (
-          <li key={id}>{title}</li>
-        ))}
-      </ul>
-    </div>
-  )
+interface ProductView {
+  data: Product
 }
 
-export default ProductList
+export function Product({ data }: ProductView) {
+  return (
+    <div key={data.id} className="space-y-4 h-72 w-48 md:h-40 cursor-pointer">
+      <Image
+        src={data?.images?.[0]?.url}
+        alt="product"
+        width={300}
+        height={264}
+      />
+      <p className="font-medium text-sm">{data.title}</p>
+      <p className="font-bold">${data.price}</p>
+    </div>
+  );
+}
