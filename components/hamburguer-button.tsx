@@ -1,52 +1,52 @@
-'use client'
+"use client";
 
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
-import MobileNavLink from './mobile-nav-link'
-import { containerVars } from '@/app/utils/containerVars'
-import { menuVars } from '@/app/utils/menuVars'
+import MobileNavLink from "./mobile-nav-link";
+import { containerVars } from "@/app/utils/containerVars";
+import { menuVars } from "@/app/utils/menuVars";
 
 const HamburguerButton = () => {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen)
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   useEffect(() => {
     const setResize = () =>
-      innerWidth >= 768 && menuOpen ? setMenuOpen(false) : null
+      innerWidth >= 768 && menuOpen ? setMenuOpen(false) : null;
 
-    window.addEventListener('resize', setResize)
-  }, [menuOpen])
+    window.addEventListener("resize", setResize);
+  }, [menuOpen]);
 
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const pages = [
     {
-      id: 'shop',
-      label: 'shop',
-      href: '/shop',
-      active: pathname === `/shop`,
+      id: 1,
+      label: "shop",
+      href: "/shop",
+      active: pathname === "/shop",
     },
     {
-      id: 'contact',
-      label: 'contact',
-      href: '/contact',
-      active: pathname === `/contact`,
+      id: 2,
+      label: "contact",
+      href: "/contact",
+      active: pathname === "/contact",
     },
     {
-      id: 'lookbook',
-      label: 'lookbook',
-      href: '/lookbook',
-      active: pathname === `/lookbook`,
-    },
-  ]
+      id: 3,
+      label: "lookbook",
+      href: "/lookbook",
+      active: pathname === "/lookbook",
+    }
+  ];
 
   return (
     <div className="flex justify-between w-full md:hidden">
       <motion.button
-        animate={menuOpen ? 'open' : 'closed'}
+        animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}
         className="flex flex-col space-y-1 justify-center scale-150 z-10"
       >
@@ -103,8 +103,8 @@ const HamburguerButton = () => {
                   label={label}
                   className={
                     active
-                      ? `text-black font-semibold`
-                      : `text-muted-foreground`
+                      ? "text-black font-semibold"
+                      : "text-muted-foreground"
                   }
                 />
               ))}
@@ -113,7 +113,7 @@ const HamburguerButton = () => {
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default HamburguerButton
+export default HamburguerButton;

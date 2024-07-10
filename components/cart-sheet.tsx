@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetFooter,
   SheetClose,
-  SheetDescription,
+  SheetDescription
 } from './ui/sheet'
 import { Separator } from './ui/separator'
 

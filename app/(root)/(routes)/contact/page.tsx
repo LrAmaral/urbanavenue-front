@@ -6,7 +6,7 @@ import AboutUs from './components/AboutUs'
 
 export const metadata: Metadata = {
   title: 'TERMS & F.A.Q | UrbanAvenue®',
-  description: 'Contact Page',
+  description: 'Contact Page'
 }
 
 const About = () => {

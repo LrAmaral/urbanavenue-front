@@ -1,14 +1,27 @@
-import { Product } from "@/types/product"
-import Image from "next/image"
-import React from "react"
+"use client";
+
+import { Product } from "@/types/product";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 interface ProductView {
-  data: Product
+  data: Product;
 }
 
 export function Product({ data }: ProductView) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/shop/${data?.id}`);
+  };
+
   return (
-    <div key={data.id} className="space-y-4 h-72 w-48 md:h-40 cursor-pointer">
+    <div
+      onClick={handleClick}
+      key={data.id}
+      className="space-y-4 h-72 w-48 md:h-40 cursor-pointer"
+    >
       <Image
         src={data?.images?.[0]?.url}
         alt="product"

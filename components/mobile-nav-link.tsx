@@ -3,9 +3,14 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import { MobileNavLinkProps } from "@/app/types/mobileLink";
 import { mobileLinkVars } from "@/app/utils/mobileLinkVars";
 import { cn } from "@/lib/utils";
+
+interface MobileNavLinkProps {
+  href: string;
+  label: string;
+  className: string;
+}
 
 const MobileNavLink = ({ href, label, className }: MobileNavLinkProps) => {
   return (

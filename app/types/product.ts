@@ -1,8 +1,8 @@
 export type ProductProps = {
-  id: number
-  name: string
-  data: []
-}
+  id: number;
+  name: string;
+  data: [];
+};
 
 export interface Product {
   id: string;

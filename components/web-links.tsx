@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { usePathname } from 'next/navigation'
-import MobileNavLink from './mobile-nav-link'
+import { usePathname } from "next/navigation";
+import MobileNavLink from "./mobile-nav-link";
 
 const WebLinks = () => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const pages = [
     {
-      id: 'shop',
-      label: 'shop',
-      href: '/shop',
-      active: pathname === `/shop`,
+      id: "shop",
+      label: "shop",
+      href: "/shop",
+      active: pathname === "/shop",
     },
     {
-      id: 'contact',
-      label: 'contact',
-      href: '/contact',
-      active: pathname === `/contact`,
+      id: "contact",
+      label: "contact",
+      href: "/contact",
+      active: pathname === "/contact",
     },
     {
-      id: 'lookbook',
-      label: 'lookbook',
-      href: '/lookbook',
-      active: pathname === `/lookbook`,
+      id: "lookbook",
+      label: "lookbook",
+      href: "/lookbook",
+      active: pathname === "/lookbook",
     },
-  ]
+  ];
 
   return (
     <div className="hidden md:flex gap-6">
@@ -35,12 +35,12 @@ const WebLinks = () => {
           href={href}
           label={label}
           className={
-            active ? `text-black font-semibold` : `text-muted-foreground`
+            active ? "text-black font-semibold" : "text-muted-foreground"
           }
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default WebLinks
+export default WebLinks;
