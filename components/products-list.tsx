@@ -1,6 +1,6 @@
 import getProducts from "@/app/api/get-products";
 import { Product } from "./product";
-import { Loader } from "lucide-react";
+import { Loader } from "./ui/loader";
 
 export async function ProductList() {
   const products = await getProducts({ isFeatured: true });
