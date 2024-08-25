@@ -1,16 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
-const AddressForm = () => {
-  const [address, setAddress] = useState({
-    fullName: "",
-    streetAddress: "",
-    city: "",
-    state: "",
-    zipCode: "",
-  });
+interface Address {
+  fullName: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
 
+interface AddressProps {
+  address: Address;
+  setAddress: (address: Address) => void;
+}
+
+const AddressForm = ({ address, setAddress }: AddressProps) => {
+  const [inputValues, setInputValues] = useState<Address>(address);
   const [errors, setErrors] = useState({
     fullName: "",
     streetAddress: "",
@@ -18,14 +25,6 @@ const AddressForm = () => {
     state: "",
     zipCode: "",
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setAddress((prevAddress) => ({
-      ...prevAddress,
-      [name]: value,
-    }));
-  };
 
   const validate = () => {
     let valid = true;
@@ -37,23 +36,23 @@ const AddressForm = () => {
       zipCode: "",
     };
 
-    if (!address.fullName.trim()) {
+    if (!inputValues.fullName.trim()) {
       newErrors.fullName = "Full name is required.";
       valid = false;
     }
-    if (!address.streetAddress.trim()) {
+    if (!inputValues.streetAddress.trim()) {
       newErrors.streetAddress = "Street address is required.";
       valid = false;
     }
-    if (!address.city.trim()) {
+    if (!inputValues.city.trim()) {
       newErrors.city = "City is required.";
       valid = false;
     }
-    if (!address.state.trim()) {
+    if (!inputValues.state.trim()) {
       newErrors.state = "State is required.";
       valid = false;
     }
-    if (!address.zipCode.trim() || !/^\d{5}$/.test(address.zipCode)) {
+    if (!inputValues.zipCode.trim() || !/^\d{8}$/.test(inputValues.zipCode)) {
       newErrors.zipCode = "Valid ZIP code is required.";
       valid = false;
     }
@@ -61,18 +60,29 @@ const AddressForm = () => {
     setErrors(newErrors);
     return valid;
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Address saved:", address);
-      alert("Address saved successfully!");
+      try {
+        setAddress(inputValues);
+        localStorage.setItem("userAddress", JSON.stringify(inputValues));
+        toast.success("Address saved successfully!");
+      } catch (error) {
+        console.error("Error saving address to localStorage:", error);
+        toast.error("Failed to save address.");
+      }
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInputValues({ ...inputValues, [name]: value });
   };
 
   return (
     <div className="max-w-lg w-full md:w-1/2 mx-auto bg-white shadow-md rounded-lg p-8">
-      <h2 className="text-2xl font-semibold mb-6">Shipping Address</h2>
+      <h2 className="text-xl font-semibold mb-6">Shipping Address</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="fullName" className="block text-gray-700">
@@ -82,7 +92,7 @@ const AddressForm = () => {
             type="text"
             name="fullName"
             id="fullName"
-            value={address.fullName}
+            value={inputValues.fullName}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />
@@ -99,7 +109,7 @@ const AddressForm = () => {
             type="text"
             name="streetAddress"
             id="streetAddress"
-            value={address.streetAddress}
+            value={inputValues.streetAddress}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />
@@ -116,7 +126,7 @@ const AddressForm = () => {
             type="text"
             name="city"
             id="city"
-            value={address.city}
+            value={inputValues.city}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />
@@ -131,7 +141,7 @@ const AddressForm = () => {
             type="text"
             name="state"
             id="state"
-            value={address.state}
+            value={inputValues.state}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />
@@ -148,7 +158,7 @@ const AddressForm = () => {
             type="text"
             name="zipCode"
             id="zipCode"
-            value={address.zipCode}
+            value={inputValues.zipCode}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />

@@ -1,4 +1,6 @@
-import { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import OrdersHistory from "./components/OrdersHistory";
 import {
   Breadcrumb,
@@ -7,16 +9,44 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { UserButton, auth } from "@clerk/nextjs";
-import AddressForm from "./components/AdressForm";
-
-export const metadata: Metadata = {
-  title: "user | UrbanAvenue®",
-  description: "User Profile Page",
-};
+import { UserButton, useUser } from "@clerk/nextjs";
+import AddressForm from "./components/AddressForm";
 
 const UserProfile = () => {
-  const { user } = auth();
+  const [address, setAddress] = useState({
+    fullName: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
+
+  const { user } = useUser();
+
+  // Load address from localStorage on component mount
+  useEffect(() => {
+    const savedAddress = localStorage.getItem("userAddress");
+    if (savedAddress) {
+      try {
+        setAddress(JSON.parse(savedAddress));
+      } catch (error) {
+        console.error("Error parsing address from localStorage:", error);
+      }
+    }
+
+    // Also save user information to localStorage
+    const userInfo = {
+      firstName: user?.firstName || "N/A",
+      email: user?.emailAddresses[0]?.emailAddress || "N/A",
+    };
+    localStorage.setItem("userInfo", JSON.stringify(userInfo));
+  }, [user]);
+
+  // This effect can be used if you want to save the address after form submission
+  // Removing this effect to avoid saving on every address change
+  useEffect(() => {
+    // No-op here since saving is handled after form submission in AddressForm
+  }, [address]);
 
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
@@ -24,11 +54,15 @@ const UserProfile = () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              <BreadcrumbLink href="/" className="text-lg">
+                Home
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/user">Profile</BreadcrumbLink>
+              <BreadcrumbLink href="/user" className="text-lg">
+                Profile
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -48,10 +82,21 @@ const UserProfile = () => {
               <strong>Email:</strong>{" "}
               {user?.emailAddresses[0]?.emailAddress || "N/A"}
             </p>
+            {address.fullName && (
+              <p>
+                <strong>Address Info:</strong>
+                <br />
+                {address.fullName}
+                <br />
+                {address.streetAddress}
+                <br />
+                {address.city}, {address.state} {address.zipCode}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex flex-col md:flex-row gap-8">
-          <AddressForm />
+          <AddressForm address={address} setAddress={setAddress} />
           <OrdersHistory />
         </div>
       </div>
