@@ -1,17 +1,40 @@
-import { auth } from "@clerk/nextjs";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import { User2 } from "lucide-react";
 import Link from "next/link";
-
 import CartSheet from "./cart-sheet";
 import HamburguerButton from "./hamburguer-button";
 import WebLinks from "./web-links";
 
 export const MainNav = () => {
-  const { userId } = auth();
+  const { user } = useUser();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <nav className="fixed bg-white w-full z-10">
-      <div className="max-w-[76.875rem] mx-auto h-[6rem] flex justify-between items-center xs:px-6 px-8">
+    <nav
+      className={`fixed w-full z-10 transition-all duration-300 ease-in-out ${
+        isScrolled ? "bg-white h-16 py-2" : "bg-white h-24 py-4"
+      }`}
+    >
+      <div className="max-w-[76.875rem] mx-auto h-full flex justify-between items-center xs:px-6 px-8">
         <div className="flex gap-8 items-center justify-between w-full">
           <div className="flex gap-4 flex-row-reverse md:flex-row items-center justify-end md:justify-between w-full">
             <Link
@@ -25,8 +48,8 @@ export const MainNav = () => {
               <HamburguerButton />
             </div>
           </div>
-          <div className={"flex justify-center items-center gap-3 "}>
-            {userId ? (
+          <div className="flex justify-center items-center gap-3">
+            {user ? (
               <Link href={"/user"}>
                 <User2 />
               </Link>

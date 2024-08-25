@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/types/product";
+import { Product } from "@/app/types/product";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -20,16 +20,17 @@ export function Product({ data }: ProductView) {
     <div
       onClick={handleClick}
       key={data.id}
-      className="space-y-4 h-72 w-48 md:h-40 cursor-pointer"
+      className="space-y-4 h-72 w-48 md:h-40 cursor-pointer text-sm"
     >
       <Image
         src={data?.images?.[0]?.url}
         alt="product"
         width={300}
         height={264}
+        className=" hover:scale-105 ease-in-out transition-all"
       />
-      <p className="font-medium text-sm">{data.title}</p>
-      <p className="font-bold">${data.price}</p>
+      <p className="font-medium">{data.title}</p>
+      <p className="font-semibold">${data.price}</p>
     </div>
   );
 }

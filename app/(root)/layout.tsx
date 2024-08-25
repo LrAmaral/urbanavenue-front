@@ -7,7 +7,7 @@ export default function Rootlayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col w-full overflow-hidden">
+    <div className="flex flex-col items-center w-full h-auto overflow-hidden">
       <MainNav />
       {children}
       <Footer />

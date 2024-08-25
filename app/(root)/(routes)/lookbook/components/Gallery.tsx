@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 
-import { images } from '@/app/utils/imagesLink'
+import { images } from "@/app/utils/imagesLink";
 
 const Gallery = () => {
   return (
@@ -27,7 +27,7 @@ const Gallery = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Gallery
+export default Gallery;
