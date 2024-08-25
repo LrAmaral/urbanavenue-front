@@ -1,5 +1,5 @@
 import getProducts from "@/app/api/get-products";
-import { Product } from "@/components/product";
+import { Product } from "@/components/Product";
 import { Loader } from "./ui/loader";
 
 export async function ProductList() {
