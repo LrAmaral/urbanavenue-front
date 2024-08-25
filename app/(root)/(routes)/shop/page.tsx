@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const Shop = async () => {
   return (
-    <div className="w-full flex flex-col h-screen items-center justify-center">
+    <div className="w-full flex flex-col h-auto items-center justify-center">
       <div className="max-w-[76.875rem] mx-auto xs:px-6 px-8">
         <ProductList />
       </div>

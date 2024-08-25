@@ -1,19 +1,14 @@
-import { UserButton, auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
+import { UserButton, auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 const UserSignOut = () => {
-  const { userId } = auth()
+  const { userId } = auth();
 
   if (!userId) {
-    redirect('/')
+    redirect("/");
   }
 
-  return (
-    <div className="w-full border h-16 rounded-xl flex p-4 gap-4 items-center justify-between">
-      <p className="">Your Info</p>
-      <UserButton afterSignOutUrl="/" />
-    </div>
-  )
-}
+  return <UserButton afterSignOutUrl="/" />;
+};
 
-export default UserSignOut
+export default UserSignOut;
