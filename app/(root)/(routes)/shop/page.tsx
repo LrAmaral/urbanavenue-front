@@ -3,10 +3,10 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "shop | UrbanAvenue®",
-  description: "Contact Page",
+  description: "Shop Page",
 };
 
-export async function Shop() {
+const Shop = async () => {
   return (
     <div className="w-full flex flex-col h-screen items-center justify-center">
       <div className="max-w-[76.875rem] mx-auto xs:px-6 px-8">
@@ -14,6 +14,6 @@ export async function Shop() {
       </div>
     </div>
   );
-}
+};
 
 export default Shop;

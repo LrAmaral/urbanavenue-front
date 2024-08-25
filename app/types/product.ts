@@ -4,12 +4,26 @@ export type ProductProps = {
   data: [];
 };
 
+export interface Size {
+  id: string;
+  name: string;
+  value: string;
+}
+
+export interface Image {
+  id: string;
+  productId: string;
+  url: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Product {
   id: string;
   title: string;
   price: string;
   size: Size;
-  images: Image;
+  images: Image[];
   isFeatured: boolean;
 }
 
