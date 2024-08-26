@@ -23,7 +23,6 @@ const UserProfile = () => {
 
   const { user } = useUser();
 
-  // Load address from localStorage on component mount
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
     if (savedAddress) {
@@ -34,7 +33,6 @@ const UserProfile = () => {
       }
     }
 
-    // Also save user information to localStorage
     const userInfo = {
       firstName: user?.firstName || "N/A",
       email: user?.emailAddresses[0]?.emailAddress || "N/A",
@@ -42,11 +40,7 @@ const UserProfile = () => {
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
   }, [user]);
 
-  // This effect can be used if you want to save the address after form submission
-  // Removing this effect to avoid saving on every address change
-  useEffect(() => {
-    // No-op here since saving is handled after form submission in AddressForm
-  }, [address]);
+  useEffect(() => {}, [address]);
 
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
