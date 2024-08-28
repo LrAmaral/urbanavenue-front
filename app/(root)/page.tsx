@@ -1,11 +1,12 @@
-import { ProductList } from "@/components/products-list";
+import { ProductList } from "@/components/Product/products-list";
+import { Wrapper } from "@/components/wrapper";
 
 export default function Home() {
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="max-w-[76.875rem] mt-24 mb-16 space-y-24 xs:px-6 px-8">
+      <Wrapper className="my-24">
         <ProductList />
-      </div>
+      </Wrapper>
     </div>
   );
 }

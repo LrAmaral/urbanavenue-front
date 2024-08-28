@@ -1,7 +1,7 @@
 export const Footer = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
-  
+
   return (
     <>
       <div className="w-full border-t mt-40 bg-neutral-50">

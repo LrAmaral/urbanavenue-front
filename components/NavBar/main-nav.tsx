@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { User2 } from "lucide-react";
 import Link from "next/link";
-import CartSheet from "./cart-sheet";
-import HamburguerButton from "./hamburguer-button";
-import WebLinks from "./web-links";
+import CartSheet from "../Cart/cart-sheet";
+import HamburguerButton from "./components/hamburguer-button";
+import WebLinks from "./components/web-links";
 
 export const MainNav = () => {
   const { user } = useUser();

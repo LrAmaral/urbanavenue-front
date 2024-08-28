@@ -1,4 +1,4 @@
-import { ProductList } from "@/components/products-list";
+import { ProductList } from "@/components/Product/products-list";
 import { Metadata } from "next";
 import {
   Breadcrumb,

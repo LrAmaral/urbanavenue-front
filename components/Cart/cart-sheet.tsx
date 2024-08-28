@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { ShoppingBag } from 'lucide-react'
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
-import { Button } from './ui/button'
+import { Button } from "../ui/button";
 import {
   Sheet,
   SheetTrigger,
@@ -13,14 +13,14 @@ import {
   SheetTitle,
   SheetFooter,
   SheetClose,
-  SheetDescription
-} from './ui/sheet'
-import { Separator } from './ui/separator'
+  SheetDescription,
+} from "../ui/sheet";
+import { Separator } from "../ui/separator";
 
 const CartSheet = () => {
-  const [openCart, setOpenCart] = useState(false)
+  const [openCart, setOpenCart] = useState(false);
 
-  const toggleCart = () => setOpenCart(!openCart)
+  const toggleCart = () => setOpenCart(!openCart);
 
   return (
     <motion.div
@@ -63,7 +63,7 @@ const CartSheet = () => {
         </SheetContent>
       </Sheet>
     </motion.div>
-  )
-}
+  );
+};
 
-export default CartSheet
+export default CartSheet;
