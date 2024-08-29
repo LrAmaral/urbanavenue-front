@@ -1,18 +1,34 @@
+import Link from "next/link";
+import { Wrapper } from "../wrapper";
+
 export const Footer = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
 
   return (
-    <>
-      <div className="w-full border-t mt-40 bg-neutral-50">
-        <div className="flex flex-col max-w-[65.875rem] h-40 xs:px-6 px-8 justify-center items-center mx-auto">
-          <div className="flex justify-center items-center gap-2">
-            <p className="text-neutral-400 text-sm">
-              ©{currentYear} urbanavenue, Inc. All rights reserved.
+    <footer className="w-full mt-40 bg-white text-gray-800">
+      <Wrapper className="py-8 h-60">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
+          <Link href={"/"} className="text-2xl font-bold">
+            UrbanAvenue
+          </Link>
+          <div className="text-sm">
+            <p className="mb-2 text-center md:text-start">
+              <Link href="/contact#about" className="hover:underline">
+                About
+              </Link>{" "}
+              |
+              <Link href="/contact" className="ml-2 hover:underline">
+                Contact
+              </Link>
+            </p>
+            <p className="">
+              <span>©</span> {currentYear} UrbanAvenue, Inc. All rights
+              reserved.
             </p>
           </div>
         </div>
-      </div>
-    </>
+      </Wrapper>
+    </footer>
   );
 };

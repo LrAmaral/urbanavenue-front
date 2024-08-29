@@ -7,6 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Wrapper } from "@/components/wrapper";
 
 export const metadata: Metadata = {
   title: "shop | UrbanAvenue®",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 const Shop = async () => {
   return (
     <div className="w-full flex flex-col gap-4 h-auto items-center justify-center">
-      <div className="w-full max-w-[76.875rem] mx-auto xs:px-4 px-6 py-4 mt-20">
+      <Wrapper className="mt-24">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -32,32 +33,32 @@ const Shop = async () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-      </div>
-      <div className="max-w-[76.875rem] mx-auto xs:px-4 px-6 flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-1/4">
-          <h2 className="text-xl font-bold mb-4">Categorias</h2>
-          <ul className="space-y-2">
-            <li>
-              <a href="#" className="text-lg text-gray-600 hover:text-black">
-                T-shirts
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-lg text-gray-600 hover:text-black">
-                Pants
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-lg text-gray-600 hover:text-black">
-                Hoodies
-              </a>
-            </li>
-          </ul>
+        <div className="flex flex-col lg:flex-row gap-8 mt-6">
+          <div className="w-full lg:w-1/4">
+            <h2 className="text-xl font-bold mb-4">Categorias</h2>
+            <ul className="space-y-2">
+              <li>
+                <a href="#" className="text-lg text-gray-600 hover:text-black">
+                  T-shirts
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-lg text-gray-600 hover:text-black">
+                  Pants
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-lg text-gray-600 hover:text-black">
+                  Hoodies
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="w-full lg:w-3/4">
+            <ProductList />
+          </div>
         </div>
-        <div className="w-full lg:w-3/4">
-          <ProductList />
-        </div>
-      </div>
+      </Wrapper>
     </div>
   );
 };

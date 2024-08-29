@@ -7,7 +7,7 @@ export async function ProductList() {
 
   return (
     <div className="flex flex-col justify-center items-center h-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 items-center md:grid-cols-3 lg:grid-cols-4 gap-44">
+      <div className="grid grid-cols-1 sm:grid-cols-2 justify-center items-center lg:grid-cols-3 sm:gap-36 md:gap-60">
         {products.map((item) =>
           products.length === 0 ? (
             <Loader key={item.id} />

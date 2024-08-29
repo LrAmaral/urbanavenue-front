@@ -7,6 +7,7 @@ import Link from "next/link";
 import CartSheet from "../Cart/cart-sheet";
 import HamburguerButton from "./components/hamburguer-button";
 import WebLinks from "./components/web-links";
+import { Wrapper } from "../wrapper";
 
 export const MainNav = () => {
   const { user } = useUser();
@@ -34,7 +35,7 @@ export const MainNav = () => {
         isScrolled ? "bg-white h-16 py-2" : "bg-white h-24 py-4"
       }`}
     >
-      <div className="max-w-[76.875rem] mx-auto h-full flex justify-between items-center xs:px-6 px-8">
+      <Wrapper className="h-full flex justify-between items-center">
         <div className="flex gap-8 items-center justify-between w-full">
           <div className="flex gap-4 flex-row-reverse md:flex-row items-center justify-end md:justify-between w-full">
             <Link
@@ -61,7 +62,7 @@ export const MainNav = () => {
             <CartSheet />
           </div>
         </div>
-      </div>
+      </Wrapper>
     </nav>
   );
 };
