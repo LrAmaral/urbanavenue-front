@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { UserButton, useUser } from "@clerk/nextjs";
 import AddressForm from "./components/AddressForm";
+import { Wrapper } from "@/components/Custom/wrapper";
 
 const UserProfile = () => {
   const [address, setAddress] = useState({
@@ -44,7 +45,7 @@ const UserProfile = () => {
 
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
-      <div className="w-full max-w-[76.875rem] mx-auto xs:px-6 px-8 py-4">
+      <Wrapper>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -60,40 +61,40 @@ const UserProfile = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-      </div>
 
-      <div className="w-full max-w-[76.875rem] mx-auto xs:px-6 px-8 flex flex-col space-y-6">
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">My account</h2>
-            <UserButton afterSignOutUrl="/" />
-          </div>
-          <div className="mt-4">
-            <p>
-              <strong>Name:</strong> {user?.firstName || "N/A"}
-            </p>
-            <p>
-              <strong>Email:</strong>{" "}
-              {user?.emailAddresses[0]?.emailAddress || "N/A"}
-            </p>
-            {address.fullName && (
+        <div className="w-full max-w-[76.875rem] mx-auto xs:px-6 px-8 flex flex-col space-y-6">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">My account</h2>
+              <UserButton afterSignOutUrl="/" />
+            </div>
+            <div className="mt-4">
               <p>
-                <strong>Address Info:</strong>
-                <br />
-                {address.fullName}
-                <br />
-                {address.streetAddress}
-                <br />
-                {address.city}, {address.state} {address.zipCode}
+                <strong>Name:</strong> {user?.firstName || "N/A"}
               </p>
-            )}
+              <p>
+                <strong>Email:</strong>{" "}
+                {user?.emailAddresses[0]?.emailAddress || "N/A"}
+              </p>
+              {address.fullName && (
+                <p>
+                  <strong>Address Info:</strong>
+                  <br />
+                  {address.fullName}
+                  <br />
+                  {address.streetAddress}
+                  <br />
+                  {address.city}, {address.state} {address.zipCode}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row gap-8">
+            <AddressForm address={address} setAddress={setAddress} />
+            <OrdersHistory />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          <AddressForm address={address} setAddress={setAddress} />
-          <OrdersHistory />
-        </div>
-      </div>
+      </Wrapper>
     </div>
   );
 };

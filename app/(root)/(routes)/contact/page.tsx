@@ -10,7 +10,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Wrapper } from "@/components/wrapper";
+import { Wrapper } from "@/components/Custom/wrapper";
 
 export const metadata: Metadata = {
   title: "TERMS & F.A.Q | UrbanAvenue®",

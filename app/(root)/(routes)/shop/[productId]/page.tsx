@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ClientModal } from "./components/client-modal";
-import { Wrapper } from "@/components/wrapper";
+import { Wrapper } from "@/components/Custom/wrapper";
 
 interface ProductPageProps {
   params: {
@@ -60,14 +60,7 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
         </div>
         <div className="flex flex-col md:flex-row h-full w-full items-center justify-center p-8 space-y-6 md:space-y-0 md:space-x-8">
           <div className="w-full md:w-1/2 h-full flex items-center justify-center">
-            <Image
-              src={product.images[0]?.url || "/placeholder-image.png"}
-              alt={`Image of ${product.title}`}
-              width={600}
-              height={600}
-              objectFit="cover"
-              className="rounded-lg hover:scale-105 transition-all ease-in-out cursor-pointer"
-            />
+            <ClientModal imageUrl={product.images[0]?.url} />
           </div>
           <div className="flex flex-col w-full md:w-1/2 items-center md:items-start text-center md:text-left space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
@@ -82,7 +75,7 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
             <button className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out">
               Add to Cart
             </button>
-            <div className="flex justify-between w-full gap-10 items-center">
+            <div className="flex flex-col md:flex-row justify-between w-full gap-10 items-center">
               <div className="">
                 <p className="text-start">Location and prize</p>
                 <input
@@ -98,7 +91,6 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
           </div>
         </div>
       </Wrapper>
-      <ClientModal imageUrl={product.images[0]?.url} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import Link from "next/link";
 import CartSheet from "../Cart/cart-sheet";
 import HamburguerButton from "./components/hamburguer-button";
 import WebLinks from "./components/web-links";
-import { Wrapper } from "../wrapper";
+import { Wrapper } from "../Custom/wrapper";
 
 export const MainNav = () => {
   const { user } = useUser();

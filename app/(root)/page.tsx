@@ -1,5 +1,5 @@
 import { ProductList } from "@/components/Product/products-list";
-import { Wrapper } from "@/components/wrapper";
+import { Wrapper } from "@/components/Custom/wrapper";
 
 export default function Home() {
   return (

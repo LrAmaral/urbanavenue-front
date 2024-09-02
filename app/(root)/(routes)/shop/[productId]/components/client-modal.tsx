@@ -18,7 +18,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({ imageUrl }) => {
     <>
       <button
         onClick={openModal}
-        className="w-full md:w-1/2 h-full flex items-center justify-center"
+        className="w-full h-full flex items-center justify-center"
       >
         <Image
           src={imageUrl}

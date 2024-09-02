@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Wrapper } from "../wrapper";
+import { Wrapper } from "../Custom/wrapper";
 
 export const Footer = () => {
   const now = new Date();
