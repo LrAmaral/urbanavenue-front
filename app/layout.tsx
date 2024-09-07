@@ -1,7 +1,7 @@
 import { Kumbh_Sans as Kumbh } from "next/font/google";
 
 import type { Metadata } from "next";
-import "./styles/globals.css";
+import "./globals.css";
 import ToastProvider from "@/providers/toast-providers";
 import { ClerkProvider } from "@clerk/nextjs";
 

@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 
-import { images } from "@/app/utils/imagesLink";
+import { images } from "../../../../../lib/images";
 
 const Gallery = () => {
   return (
     <>
-      <div className="flex w-full justify-center items-center flex-col">
+      <div className="flex w-full mt-4 justify-center items-center flex-col">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-12 justify-items-center items-center rounded-2xl">
           {images.map(({ id, src }) => (
             <div

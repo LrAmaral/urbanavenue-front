@@ -2,46 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
-import MobileNavLink from "./mobile-nav-link";
-
-const containerVars = {
-  initial: {
-    transition: {
-      staggerChildren: 0.09,
-      staggerDirection: -1,
-    },
-  },
-  open: {
-    transition: {
-      delayChildren: 0.3,
-      staggerChildren: 0.09,
-      staggerDirection: 1,
-    },
-  },
-};
-
-const menuVars = {
-  initial: {
-    scaleY: 0,
-  },
-  animate: {
-    scaleY: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.12, 0, 0.39, 0],
-    },
-  },
-  exit: {
-    scaleY: 0,
-    transition: {
-      delay: 0.6,
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
+import { pages } from "@/lib/pages";
+import Link from "next/link";
+import {
+  mobileLinkVars,
+  containerVars,
+  menuVars,
+} from "../../../lib/mobile-vars";
 
 const HamburguerButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -54,29 +22,6 @@ const HamburguerButton = () => {
 
     window.addEventListener("resize", setResize);
   }, [menuOpen]);
-
-  const pathname = usePathname();
-
-  const pages = [
-    {
-      id: 1,
-      label: "shop",
-      href: "/shop",
-      active: pathname === "/shop",
-    },
-    {
-      id: 2,
-      label: "contact",
-      href: "/contact",
-      active: pathname === "/contact",
-    },
-    {
-      id: 3,
-      label: "lookbook",
-      href: "/lookbook",
-      active: pathname === "/lookbook",
-    },
-  ];
 
   return (
     <div className="flex justify-between w-full md:hidden">
@@ -131,17 +76,15 @@ const HamburguerButton = () => {
               exit="initial"
               className="gap-20 flex flex-col justify-center items-center text-lg"
             >
-              {pages.map(({ id, label, href, active }) => (
-                <MobileNavLink
-                  key={id}
-                  href={href}
-                  label={label}
-                  className={
-                    active
-                      ? "text-black font-semibold"
-                      : "text-muted-foreground"
-                  }
-                />
+              {pages.map(({ id, label, href }) => (
+                <motion.div key={id} variants={mobileLinkVars}>
+                  <Link
+                    href={href}
+                    className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out  text-black font-semibold"
+                  >
+                    {label}
+                  </Link>
+                </motion.div>
               ))}
             </motion.div>
           </motion.div>

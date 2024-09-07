@@ -7,7 +7,7 @@ export const Footer = () => {
 
   return (
     <footer className="w-full mt-40 bg-white text-gray-800">
-      <Wrapper className="py-8 h-60">
+      <Wrapper className="py-8 h-60 md:h-40">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
           <Link href={"/"} className="text-2xl font-bold">
             UrbanAvenue

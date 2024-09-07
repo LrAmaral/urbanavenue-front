@@ -1,12 +1,4 @@
 import getProduct from "@/app/api/get-product";
-import Image from "next/image";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { ClientModal } from "./components/client-modal";
 import { Wrapper } from "@/components/Custom/wrapper";
 
@@ -32,33 +24,7 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
   return (
     <div className="w-full mt-20 h-full flex flex-col items-center justify-start py-8 px-4 md:px-0">
       <Wrapper>
-        <div className="text-lg py-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-lg">
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/shop" className="text-lg">
-                  Shop
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  href={`/products/${params.productId}`}
-                  className="text-lg"
-                >
-                  {product.title}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="flex flex-col md:flex-row h-full w-full items-center justify-center p-8 space-y-6 md:space-y-0 md:space-x-8">
+        <div className="flex flex-col md:flex-row h-full w-full items-center justify-center  space-y-6 md:space-y-0 md:space-x-8">
           <div className="w-full md:w-1/2 h-full flex items-center justify-center">
             <ClientModal imageUrl={product.images[0]?.url} />
           </div>

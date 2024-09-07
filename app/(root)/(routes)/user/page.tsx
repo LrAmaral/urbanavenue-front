@@ -2,13 +2,6 @@
 
 import { useEffect, useState } from "react";
 import OrdersHistory from "./components/OrdersHistory";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { UserButton, useUser } from "@clerk/nextjs";
 import AddressForm from "./components/AddressForm";
 import { Wrapper } from "@/components/Custom/wrapper";
@@ -46,22 +39,6 @@ const UserProfile = () => {
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
       <Wrapper>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/" className="text-lg">
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/user" className="text-lg">
-                Profile
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
         <div className="w-full max-w-[76.875rem] mx-auto xs:px-6 px-8 flex flex-col space-y-6">
           <div className="bg-white shadow-md rounded-lg p-6">
             <div className="flex justify-between items-center">

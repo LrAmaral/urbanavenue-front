@@ -1,52 +1,18 @@
-import { Metadata } from "next";
-import FAQs from "./components/FAQs";
-import PrivacyPolicy from "./components/PrivacyPolicy";
-import ExchangesAndReturns from "./components/ExchangesAndReturns";
-import AboutUs from "./components/AboutUs";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Wrapper } from "@/components/Custom/wrapper";
-
-export const metadata: Metadata = {
-  title: "TERMS & F.A.Q | UrbanAvenue®",
-  description: "Contact Page",
-};
+import Link from "next/link";
 
 const About = () => {
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-16">
-      <Wrapper className="mt-24">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/" className="text-lg">
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/contact" className="text-lg">
-                Contact
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/about" className="text-lg">
-                Terms & F.A.Q
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <div className="flex justify-center h-auto gap-16 items-center flex-col">
-          <FAQs />
-          <PrivacyPolicy />
-          <ExchangesAndReturns />
-          <AboutUs />
+    <div className="w-full h-80 flex flex-col items-center justify-center px-4 py-6">
+      <Wrapper className="w-full max-w-4xl rounded-lg">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-4 text-zinc-800">Contact</h2>
+          <Link
+            href={"mailto:contact@urbanavenuebr.com"}
+            className="text-xl text-zinc-600 hover:underline hover:underline-offset-2"
+          >
+            contact@urbanavenuebr.com
+          </Link>
         </div>
       </Wrapper>
     </div>
