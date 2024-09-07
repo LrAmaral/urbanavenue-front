@@ -20,18 +20,18 @@ export function Product({ data }: ProductView) {
     <div
       onClick={handleClick}
       key={data.id}
-      className="space-y-4 md:space-y-1  text-center h-80 w-64 md:h-48 cursor-pointer text-sm"
+      className="flex flex-col items-center justify-center text-center cursor-pointer space-y-4 md:space-y-2 h-[500px] w-96 md:w-64 md:h-48"
     >
       <Image
         src={data?.images?.[0]?.url}
-        alt="product"
-        width={360}
-        height={360}
+        alt={data.title}
+        width={340}
+        height={340}
         loading="lazy"
-        className=" hover:scale-105 ease-in-out transition-all"
+        className="object-cover hover:scale-105 transition-transform duration-300 ease-in-out"
       />
-      <p className="font-semibold">{data.title}</p>
-      <p className="text-lg">R${data.price}</p>
+      <p className="font-semibold text-lg">{data.title}</p>
+      <p className="text-xl text-zinc-700">R${data.price}</p>
     </div>
   );
 }
