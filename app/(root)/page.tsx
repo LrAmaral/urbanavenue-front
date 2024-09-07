@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <Wrapper className="my-24">
+      <Wrapper className="mt-24 md:mt-40">
         <div className="grid grid-cols-1 sm:grid-cols-2 justify-items-center items-center lg:grid-cols-3 gap-0 md:gap-40">
           {products.length === 0 ? (
             <Loader key="loading" />
