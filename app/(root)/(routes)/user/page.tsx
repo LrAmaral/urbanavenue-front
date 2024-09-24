@@ -5,6 +5,7 @@ import OrdersHistory from "./components/OrdersHistory";
 import { UserButton, useUser } from "@clerk/nextjs";
 import AddressForm from "./components/AddressForm";
 import { Wrapper } from "@/components/Custom/wrapper";
+import createUser from "@/app/api/user";
 
 const UserProfile = () => {
   const [address, setAddress] = useState({
@@ -17,6 +18,8 @@ const UserProfile = () => {
 
   const { user } = useUser();
 
+  console.log(address);
+
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
     if (savedAddress) {
@@ -28,13 +31,39 @@ const UserProfile = () => {
     }
 
     const userInfo = {
-      firstName: user?.firstName || "N/A",
+      id: user?.id || "",
+      name: user?.firstName || "N/A",
       email: user?.emailAddresses[0]?.emailAddress || "N/A",
+      role: "Cliente",
     };
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
   }, [user]);
 
-  useEffect(() => {}, [address]);
+  const handleAddressChange = () => {
+    if (user && address.fullName) {
+      const fullAddress = `${address.fullName}, ${address.streetAddress}, ${address.city}, ${address.state} ${address.zipCode}`;
+
+      const userInfo = {
+        id: user.id,
+        name: user.firstName || "N/A",
+        email: user.emailAddresses[0]?.emailAddress || "N/A",
+        role: "CLIENT",
+        address: fullAddress,
+      };
+
+      createUser(userInfo)
+        .then((savedUser) => {
+          console.log("Usuário salvo:", savedUser);
+        })
+        .catch((error) => {
+          console.error("Erro ao salvar usuário:", error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    handleAddressChange();
+  }, [address]);
 
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
