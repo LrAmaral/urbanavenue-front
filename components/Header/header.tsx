@@ -42,6 +42,7 @@ export const MainNav = () => {
           <div className="flex gap-4 flex-row-reverse md:flex-row items-center justify-end md:justify-between w-full">
             <Link
               href={"/"}
+              aria-label="Página principal"
               className="font-extrabold text-2xl md:text-3xl font-sans"
             >
               UrbanAvenue
@@ -52,6 +53,7 @@ export const MainNav = () => {
                   <motion.div key={id} variants={mobileLinkVars}>
                     <Link
                       href={href}
+                      aria-label={`Página ${label}`}
                       className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out  text-black font-semibold"
                     >
                       {label}
@@ -64,11 +66,11 @@ export const MainNav = () => {
           </div>
           <div className="flex justify-center items-center gap-3">
             {user ? (
-              <Link href={"/user"}>
+              <Link href={"/user"} aria-label="Página do cliente">
                 <User2 />
               </Link>
             ) : (
-              <Link href={"/sign-in"}>
+              <Link href={"/sign-in"} aria-label="Página para criar perfil">
                 <User2 />
               </Link>
             )}

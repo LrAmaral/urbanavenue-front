@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import { pages } from "@/lib/pages";
@@ -25,19 +25,20 @@ const HamburguerButton = () => {
 
   return (
     <div className="flex justify-between w-full md:hidden">
-      <motion.button
+      <m.button
         animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}
+        aria-label="Botão Hamburguer"
         className="flex flex-col space-y-1 justify-center scale-150 z-10"
       >
-        <motion.span
+        <m.span
           variants={{
             closed: { width: 16, rotate: 0, y: 0 },
             open: { width: 20, rotate: 45, y: 5 },
           }}
           className="w-5 h-px bg-black block"
         />
-        <motion.span
+        <m.span
           variants={{
             closed: {
               x: 0,
@@ -51,24 +52,24 @@ const HamburguerButton = () => {
           }}
           className="w-5 h-px bg-black block"
         />
-        <motion.span
+        <m.span
           variants={{
             closed: { width: 8, rotate: 0, y: 0 },
             open: { width: 20, rotate: -45, y: -5 },
           }}
           className="h-px bg-black block"
         />
-      </motion.button>
+      </m.button>
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
+          <m.div
             variants={menuVars}
             initial="initial"
             animate="animate"
             exit="exit"
             className="fixed md:hidden left-0 origin-top top-0 bg-white w-full h-screen flex items-center justify-center"
           >
-            <motion.div
+            <m.div
               onClick={toggleMenu}
               variants={containerVars}
               initial="initial"
@@ -77,17 +78,17 @@ const HamburguerButton = () => {
               className="gap-20 flex flex-col justify-center items-center text-lg"
             >
               {pages.map(({ id, label, href }) => (
-                <motion.div key={id} variants={mobileLinkVars}>
+                <m.div key={id} variants={mobileLinkVars}>
                   <Link
                     href={href}
                     className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out  text-black font-semibold"
                   >
                     {label}
                   </Link>
-                </motion.div>
+                </m.div>
               ))}
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

@@ -6,7 +6,7 @@ export const pages = [
   },
   {
     id: "info",
-    label: "info",
+    label: "Info",
     href: "/info",
   },
   {

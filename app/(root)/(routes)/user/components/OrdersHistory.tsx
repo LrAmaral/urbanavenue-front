@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"; // Certifique-se de que o caminho esteja correto
+} from "@/components/ui/table"; 
 
 const orders = [
   {
@@ -31,7 +31,7 @@ const orders = [
 
 const OrdersHistory = () => {
   return (
-    <div className="w-full border rounded-xl p-6 bg-white shadow-md">
+    <div className="w-full px-6">
       <h2 className="text-xl font-semibold mb-4">My Orders</h2>
       <div className="overflow-x-auto">
         <Table>

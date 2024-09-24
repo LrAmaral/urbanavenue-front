@@ -25,7 +25,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
     zipCode: "",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Partial<Record<keyof Address, string>>>({
     fullName: "",
     street: "",
     city: "",
@@ -35,13 +35,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
 
   const validate = () => {
     let valid = true;
-    const newErrors = {
-      fullName: "",
-      street: "",
-      city: "",
-      state: "",
-      zipCode: "",
-    };
+    const newErrors: Partial<Record<keyof Address, string>> = {};
 
     if (!inputValues.fullName.trim()) {
       newErrors.fullName = "Full name is required.";
@@ -60,7 +54,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
       valid = false;
     }
     if (!inputValues.zipCode.trim() || !/^\d{8}$/.test(inputValues.zipCode)) {
-      newErrors.zipCode = "Valid ZIP code is required.";
+      newErrors.zipCode = "A valid ZIP code is required.";
       valid = false;
     }
 
@@ -96,99 +90,42 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setInputValues({ ...inputValues, [name]: value });
+    setInputValues({ ...inputValues, [name as keyof Address]: value });
   };
 
   return (
-    <div className="max-w-lg w-full md:w-1/2 mx-auto bg-white shadow-md rounded-lg p-8">
+    <div className="max-w-lg w-full mx-auto p-8">
       <h2 className="text-xl font-semibold mb-6">Shipping Address</h2>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="fullName" className="block text-gray-700">
-            Full Name
-          </label>
-          <input
-            type="text"
-            name="fullName"
-            id="fullName"
-            value={inputValues.fullName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-          {errors.fullName && (
-            <p className="text-red-600 text-sm">{errors.fullName}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="street" className="block text-gray-700">
-            Street Address
-          </label>
-          <input
-            type="text"
-            name="street"
-            id="street"
-            value={inputValues.street}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-          {errors.street && (
-            <p className="text-red-600 text-sm">{errors.street}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="city" className="block text-gray-700">
-            City
-          </label>
-          <input
-            type="text"
-            name="city"
-            id="city"
-            value={inputValues.city}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-          {errors.city && <p className="text-red-600 text-sm">{errors.city}</p>}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="state" className="block text-gray-700">
-            State
-          </label>
-          <input
-            type="text"
-            name="state"
-            id="state"
-            value={inputValues.state}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-          {errors.state && (
-            <p className="text-red-600 text-sm">{errors.state}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="zipCode" className="block text-gray-700">
-            ZIP Code
-          </label>
-          <input
-            type="text"
-            name="zipCode"
-            id="zipCode"
-            value={inputValues.zipCode}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-          {errors.zipCode && (
-            <p className="text-red-600 text-sm">{errors.zipCode}</p>
-          )}
-        </div>
-
+        {[
+          { label: "Full Name", name: "fullName" },
+          { label: "Street Address", name: "street" },
+          { label: "City", name: "city" },
+          { label: "State", name: "state" },
+          { label: "ZIP Code", name: "zipCode" },
+        ].map(({ label, name }) => (
+          <div className="mb-4" key={name}>
+            <label htmlFor={name} className="block text-gray-700">
+              {label}
+            </label>
+            <input
+              type="text"
+              name={name}
+              id={name}
+              value={inputValues[name as keyof Address]}
+              onChange={handleChange}
+              className="w-full p-2 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 transition"
+            />
+            {errors[name as keyof Address] && (
+              <p className="text-red-600 text-sm">
+                {errors[name as keyof Address]}
+              </p>
+            )}
+          </div>
+        ))}
         <button
           type="submit"
-          className="w-full bg-zinc-800 text-white p-2 rounded-lg hover:bg-zinc-900"
+          className="w-full bg-zinc-800 text-white p-2 rounded-lg hover:bg-zinc-900 transition"
         >
           Save Address
         </button>
