@@ -5,22 +5,29 @@ import toast from "react-hot-toast";
 
 interface Address {
   fullName: string;
-  streetAddress: string;
+  street: string;
   city: string;
   state: string;
   zipCode: string;
 }
 
-interface AddressProps {
-  address: Address;
-  setAddress: (address: Address) => void;
+interface AddressFormProps {
+  addresses: Address[];
+  setAddresses: (addresses: Address[]) => void;
 }
 
-const AddressForm = ({ address, setAddress }: AddressProps) => {
-  const [inputValues, setInputValues] = useState<Address>(address);
+const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
+  const [inputValues, setInputValues] = useState<Address>({
+    fullName: "",
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
+
   const [errors, setErrors] = useState({
     fullName: "",
-    streetAddress: "",
+    street: "",
     city: "",
     state: "",
     zipCode: "",
@@ -30,7 +37,7 @@ const AddressForm = ({ address, setAddress }: AddressProps) => {
     let valid = true;
     const newErrors = {
       fullName: "",
-      streetAddress: "",
+      street: "",
       city: "",
       state: "",
       zipCode: "",
@@ -40,8 +47,8 @@ const AddressForm = ({ address, setAddress }: AddressProps) => {
       newErrors.fullName = "Full name is required.";
       valid = false;
     }
-    if (!inputValues.streetAddress.trim()) {
-      newErrors.streetAddress = "Street address is required.";
+    if (!inputValues.street.trim()) {
+      newErrors.street = "Street address is required.";
       valid = false;
     }
     if (!inputValues.city.trim()) {
@@ -60,18 +67,30 @@ const AddressForm = ({ address, setAddress }: AddressProps) => {
     setErrors(newErrors);
     return valid;
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      try {
-        setAddress(inputValues);
-        localStorage.setItem("userAddress", JSON.stringify(inputValues));
-        toast.success("Address saved successfully!");
-      } catch (error) {
-        console.error("Error saving address to localStorage:", error);
-        toast.error("Failed to save address.");
+      const updatedAddresses = addresses.map((address) =>
+        address.fullName === inputValues.fullName ? inputValues : address
+      );
+
+      if (
+        !addresses.some((address) => address.fullName === inputValues.fullName)
+      ) {
+        updatedAddresses.push(inputValues);
       }
+
+      setAddresses(updatedAddresses);
+      toast.success("Address saved successfully!");
+
+      setInputValues({
+        fullName: "",
+        street: "",
+        city: "",
+        state: "",
+        zipCode: "",
+      });
     }
   };
 
@@ -102,19 +121,19 @@ const AddressForm = ({ address, setAddress }: AddressProps) => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="streetAddress" className="block text-gray-700">
+          <label htmlFor="street" className="block text-gray-700">
             Street Address
           </label>
           <input
             type="text"
-            name="streetAddress"
-            id="streetAddress"
-            value={inputValues.streetAddress}
+            name="street"
+            id="street"
+            value={inputValues.street}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
           />
-          {errors.streetAddress && (
-            <p className="text-red-600 text-sm">{errors.streetAddress}</p>
+          {errors.street && (
+            <p className="text-red-600 text-sm">{errors.street}</p>
           )}
         </div>
 

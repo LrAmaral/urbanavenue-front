@@ -5,65 +5,31 @@ import OrdersHistory from "./components/OrdersHistory";
 import { UserButton, useUser } from "@clerk/nextjs";
 import AddressForm from "./components/AddressForm";
 import { Wrapper } from "@/components/Custom/wrapper";
-import createUser from "@/app/api/user";
 
 const UserProfile = () => {
-  const [address, setAddress] = useState({
-    fullName: "",
-    streetAddress: "",
-    city: "",
-    state: "",
-    zipCode: "",
-  });
-
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const { user } = useUser();
 
-  console.log(address);
-
   useEffect(() => {
-    const savedAddress = localStorage.getItem("userAddress");
-    if (savedAddress) {
+    const savedAddresses = localStorage.getItem("userAddresses");
+    if (savedAddresses) {
       try {
-        setAddress(JSON.parse(savedAddress));
+        setAddresses(JSON.parse(savedAddresses));
       } catch (error) {
-        console.error("Error parsing address from localStorage:", error);
+        console.error("Error parsing addresses from localStorage:", error);
       }
     }
+  }, []);
 
-    const userInfo = {
-      id: user?.id || "",
-      name: user?.firstName || "N/A",
-      email: user?.emailAddresses[0]?.emailAddress || "N/A",
-      role: "Cliente",
-    };
-    localStorage.setItem("userInfo", JSON.stringify(userInfo));
-  }, [user]);
-
-  const handleAddressChange = () => {
-    if (user && address.fullName) {
-      const fullAddress = `${address.fullName}, ${address.streetAddress}, ${address.city}, ${address.state} ${address.zipCode}`;
-
-      const userInfo = {
-        id: user.id,
-        name: user.firstName || "N/A",
-        email: user.emailAddresses[0]?.emailAddress || "N/A",
-        role: "CLIENT",
-        address: fullAddress,
-      };
-
-      createUser(userInfo)
-        .then((savedUser) => {
-          console.log("Usuário salvo:", savedUser);
-        })
-        .catch((error) => {
-          console.error("Erro ao salvar usuário:", error);
-        });
-    }
+  const handleAddressChange = (newAddresses: Address[]) => {
+    setAddresses(newAddresses);
+    localStorage.setItem("userAddresses", JSON.stringify(newAddresses));
   };
 
-  useEffect(() => {
-    handleAddressChange();
-  }, [address]);
+  const handleSelectAddress = (address: Address) => {
+    setSelectedAddress(address);
+  };
 
   return (
     <div className="w-full h-auto md:h-screen mt-24 flex flex-col items-center justify-start">
@@ -82,21 +48,31 @@ const UserProfile = () => {
                 <strong>Email:</strong>{" "}
                 {user?.emailAddresses[0]?.emailAddress || "N/A"}
               </p>
-              {address.fullName && (
-                <p>
+              {addresses.length > 0 && (
+                <div>
                   <strong>Address Info:</strong>
-                  <br />
-                  {address.fullName}
-                  <br />
-                  {address.streetAddress}
-                  <br />
-                  {address.city}, {address.state} {address.zipCode}
-                </p>
+                  {addresses.map((addr, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSelectAddress(addr)}
+                      className={`cursor-pointer p-2 ${selectedAddress === addr ? "bg-gray-200" : ""}`}
+                    >
+                      <p>{addr.fullName}</p>
+                      <p>{addr.street}</p>
+                      <p>
+                        {addr.city}, {addr.state} {addr.zipCode}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
           <div className="flex flex-col md:flex-row gap-8">
-            <AddressForm address={address} setAddress={setAddress} />
+            <AddressForm
+              addresses={addresses}
+              setAddresses={handleAddressChange}
+            />
             <OrdersHistory />
           </div>
         </div>

@@ -1,11 +1,11 @@
+
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 
 const createUser = async (userData: {
-  id: string;
   name: string;
   email: string;
   role: string;
-  address: string;
+  addresses: Address[];
 }): Promise<User> => {
   const res = await fetch(URL, {
     method: "POST",
@@ -15,6 +15,7 @@ const createUser = async (userData: {
     body: JSON.stringify(userData),
   });
 
+  
   if (!res.ok) {
     throw new Error("Erro ao salvar usuário");
   }
