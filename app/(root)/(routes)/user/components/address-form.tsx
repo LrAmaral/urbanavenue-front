@@ -1,19 +1,12 @@
 "use client";
 
+import { Address } from "@/lib/address";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-interface Address {
-  fullName: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
-
 interface AddressFormProps {
   addresses: Address[];
-  setAddresses: (address: Address) => void;
+  setAddresses: (address: Address) => Promise<void>;
   editAddress?: Address | null;
 }
 
@@ -73,10 +66,14 @@ const AddressForm = ({
     return valid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      setAddresses(inputValues);
+      const addressToSave = editAddress
+        ? { ...inputValues, id: editAddress.id }
+        : { ...inputValues, id: new Date().toISOString() };
+
+      await setAddresses(addressToSave);
       toast.success("Address saved successfully!");
 
       setInputValues({
@@ -127,7 +124,7 @@ const AddressForm = ({
           type="submit"
           className="w-full bg-zinc-800 text-white p-2 rounded-lg hover:bg-zinc-900 transition"
         >
-          {editAddress ? "Update Address" : "Save Address"}{" "}
+          {editAddress ? "Update Address" : "Save Address"}
         </button>
       </form>
     </div>
