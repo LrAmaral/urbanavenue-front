@@ -1,4 +1,3 @@
-
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 
 const createUser = async (userData: {
@@ -15,7 +14,6 @@ const createUser = async (userData: {
     body: JSON.stringify(userData),
   });
 
-  
   if (!res.ok) {
     throw new Error("Erro ao salvar usuário");
   }

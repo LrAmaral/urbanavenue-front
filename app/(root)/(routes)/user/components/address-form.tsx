@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 interface Address {
@@ -13,10 +13,15 @@ interface Address {
 
 interface AddressFormProps {
   addresses: Address[];
-  setAddresses: (addresses: Address[]) => void;
+  setAddresses: (address: Address) => void;
+  editAddress?: Address | null;
 }
 
-const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
+const AddressForm = ({
+  addresses,
+  setAddresses,
+  editAddress,
+}: AddressFormProps) => {
   const [inputValues, setInputValues] = useState<Address>({
     fullName: "",
     street: "",
@@ -24,6 +29,12 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
     state: "",
     zipCode: "",
   });
+
+  useEffect(() => {
+    if (editAddress) {
+      setInputValues(editAddress);
+    }
+  }, [editAddress]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof Address, string>>>({
     fullName: "",
@@ -65,17 +76,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      const updatedAddresses = addresses.map((address) =>
-        address.fullName === inputValues.fullName ? inputValues : address
-      );
-
-      if (
-        !addresses.some((address) => address.fullName === inputValues.fullName)
-      ) {
-        updatedAddresses.push(inputValues);
-      }
-
-      setAddresses(updatedAddresses);
+      setAddresses(inputValues);
       toast.success("Address saved successfully!");
 
       setInputValues({
@@ -126,7 +127,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
           type="submit"
           className="w-full bg-zinc-800 text-white p-2 rounded-lg hover:bg-zinc-900 transition"
         >
-          Save Address
+          {editAddress ? "Update Address" : "Save Address"}{" "}
         </button>
       </form>
     </div>
