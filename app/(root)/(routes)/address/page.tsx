@@ -34,12 +34,12 @@ const AddressPage = () => {
         <div className="bg-white w-full md:w-2/3 rounded-lg p-4">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Address</h2>
-            {!isEditing && (
+            {addresses.length > 0 && !isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
                 className="text-blue-500 hover:text-blue-700 font-semibold"
               >
-                {addresses.length > 0 ? "Edit address" : "Add address"}
+                Add address
               </button>
             )}
           </div>

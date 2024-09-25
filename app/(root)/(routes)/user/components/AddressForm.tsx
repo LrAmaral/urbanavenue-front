@@ -94,8 +94,7 @@ const AddressForm = ({ addresses, setAddresses }: AddressFormProps) => {
   };
 
   return (
-    <div className="max-w-lg w-full mx-auto p-8">
-      <h2 className="text-xl font-semibold mb-6">Shipping Address</h2>
+    <div className="w-full">
       <form onSubmit={handleSubmit}>
         {[
           { label: "Full Name", name: "fullName" },
