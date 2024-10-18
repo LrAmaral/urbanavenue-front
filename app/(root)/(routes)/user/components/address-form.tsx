@@ -16,7 +16,7 @@ const AddressForm = ({
   editAddress,
 }: AddressFormProps) => {
   const [inputValues, setInputValues] = useState<Address>({
-    fullName: "",
+    neighborhood: "",
     street: "",
     city: "",
     state: "",
@@ -30,7 +30,7 @@ const AddressForm = ({
   }, [editAddress]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof Address, string>>>({
-    fullName: "",
+    neighborhood: "",
     street: "",
     city: "",
     state: "",
@@ -41,8 +41,8 @@ const AddressForm = ({
     let valid = true;
     const newErrors: Partial<Record<keyof Address, string>> = {};
 
-    if (!inputValues.fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
+    if (!inputValues.neighborhood.trim()) {
+      newErrors.neighborhood = "Full name is required.";
       valid = false;
     }
     if (!inputValues.street.trim()) {
@@ -71,13 +71,12 @@ const AddressForm = ({
     if (validate()) {
       const addressToSave = editAddress
         ? { ...inputValues, id: editAddress.id }
-        : { ...inputValues, id: new Date().toISOString() };
+        : { ...inputValues };
 
       await setAddresses(addressToSave);
-      toast.success("Address saved successfully!");
-
+      
       setInputValues({
-        fullName: "",
+        neighborhood: "",
         street: "",
         city: "",
         state: "",
@@ -95,8 +94,8 @@ const AddressForm = ({
     <div className="w-full">
       <form onSubmit={handleSubmit}>
         {[
-          { label: "Full Name", name: "fullName" },
-          { label: "Street Address", name: "street" },
+          { label: "Neighborhood", name: "neighborhood" },
+          { label: "Street", name: "street" },
           { label: "City", name: "city" },
           { label: "State", name: "state" },
           { label: "ZIP Code", name: "zipCode" },

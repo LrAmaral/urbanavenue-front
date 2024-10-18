@@ -1,9 +1,10 @@
+import { useAuth } from "@clerk/nextjs";
 import { Address } from "@/lib/address";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 
 export interface User {
-  id: string;
+  userId?: string;
   name: string;
   email: string;
   role: string;
@@ -11,19 +12,19 @@ export interface User {
 }
 
 const getUser = async (userId: string): Promise<User | null> => {
-  const res = await fetch(URL, {
+  const res = await fetch(`${URL}/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    body: userId,
   });
 
   if (!res.ok) {
-    throw new Error("Erro ao salvar usuário");
+    throw new Error("Erro ao buscar usuário");
   }
 
-  return res.json();
+  const data = await res.json();
+  return data;
 };
 
 const createUser = async (userData: User): Promise<User> => {
@@ -36,15 +37,17 @@ const createUser = async (userData: User): Promise<User> => {
   });
 
   if (!res.ok) {
-    throw new Error("Erro ao salvar usuário");
+    const errorDetails = await res.text();
+    throw new Error(`Erro ao salvar usuário: ${errorDetails}`);
   }
 
-  return res.json();
+  const data = await res.json();
+  return data;
 };
 
 const updateAddress = async (
-  userId: string,
-  addresses: Address
+  userId?: string,
+  addresses?: Address
 ): Promise<void> => {
   const res = await fetch(`${URL}/${userId}`, {
     method: "PATCH",
@@ -54,7 +57,6 @@ const updateAddress = async (
     body: JSON.stringify({ addresses }),
   });
 
-  console.log(res);
   if (!res.ok) {
     throw new Error("Erro ao atualizar endereços");
   }
@@ -64,27 +66,16 @@ const deleteAddress = async (
   userId: string,
   addressId: string
 ): Promise<void> => {
-  const resAddress = await fetch(`${URL}/${userId}/addresses/${addressId}`);
-
-  if (!resAddress.ok) {
-    throw new Error("Erro ao buscar endereço");
-  }
-
-  const address: Address = await resAddress.json();
-
-  if (address.userId !== userId) {
-    throw new Error("Endereço não pertence ao usuário");
-  }
-
-  const resDelete = await fetch(`${URL}/${userId}/addresses/${addressId}`, {
+  const res = await fetch(`${URL}/${userId}/addresses/${addressId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  if (!resDelete.ok) {
-    throw new Error("Erro ao excluir endereço");
+  if (!res.ok) {
+    const errorDetails = await res.text();
+    throw new Error(`Erro ao excluir endereço: ${errorDetails}`);
   }
 };
 
