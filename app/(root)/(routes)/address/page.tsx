@@ -8,6 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
 import { createUser, deleteAddress, updateAddress } from "@/app/api/user";
 import { Address } from "@/lib/address";
+import axios from "axios";
 
 const AddressPage = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -39,7 +40,9 @@ const AddressPage = () => {
 
       const createdUser = await createUser(userData);
       const userId = createdUser.addresses[0].userId;
-      console.log(addresses);
+      const addressId =
+        createdUser.addresses[createdUser.addresses.length - 1].id;
+
       const addressWithId: Address = {
         ...newAddress,
         id: createdUser.addresses[createdUser.addresses.length - 1]?.id,
@@ -47,12 +50,23 @@ const AddressPage = () => {
       };
 
       const updatedAddresses = [...addresses, addressWithId];
+
       setAddresses(updatedAddresses);
       localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
       toast.success("Address created successfully!");
     } catch (error) {
-      console.error("Error creating address:", error);
-      toast.error("Error creating address. Please try again.");
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error creating address:",
+          error.response?.data || error.message
+        );
+        toast.error(
+          `Error creating address: ${error.response?.data?.message || error.message}`
+        );
+      } else {
+        console.error("Error creating address:", error);
+        toast.error("Error creating address.");
+      }
     }
   };
 
@@ -70,8 +84,18 @@ const AddressPage = () => {
       localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
       toast.success("Address updated successfully!");
     } catch (error) {
-      console.error("Error updating address:", error);
-      toast.error("Error updating address. Please try again.");
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error updating address:",
+          error.response?.data || error.message
+        );
+        toast.error(
+          `Error updating address: ${error.response?.data?.message || error.message}`
+        );
+      } else {
+        console.error("Error updating address:", error);
+        toast.error("Error updating address.");
+      }
     }
   };
 
@@ -91,29 +115,36 @@ const AddressPage = () => {
   };
 
   const handleDeleteAddress = async (id: string) => {
-    console.log(addresses.find((addr) => addr.id === id));
     const addressToDelete = addresses.find((addr) => addr.id === id);
-    if (!addressToDelete) return;
-
-    console.log(addressToDelete);
-    
-    const updatedAddresses = addresses.filter(
-      (addr) => addr.id !== addressToDelete.id
-    );
-
-    console.log(updatedAddresses);
-    setAddresses(updatedAddresses);
-    localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
-    toast.success("Address deleted successfully!");
+    if (!addressToDelete) {
+      console.error("Address not found.");
+      return;
+    }
 
     const userId = addressToDelete.userId;
-
     if (userId && addressToDelete.id) {
       try {
         await deleteAddress(userId, addressToDelete.id);
+
+        const updatedAddresses = addresses.filter((addr) => addr.id !== id);
+        setAddresses(updatedAddresses);
+
+        localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+
+        toast.success("Address deleted successfully!");
       } catch (error) {
-        console.error("Error deleting address:", error);
-        toast.error("Error deleting address.");
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Error deleting address:",
+            error.response?.data || error.message
+          );
+          toast.error(
+            `Error deleting address: ${error.response?.data?.message || error.message}`
+          );
+        } else {
+          console.error("Error deleting address:", error);
+          toast.error("Error deleting address.");
+        }
       }
     } else {
       console.error("User ID or Address ID is undefined.");

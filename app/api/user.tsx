@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
 import { Address } from "@/lib/address";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
@@ -12,53 +12,59 @@ export interface User {
 }
 
 const getUser = async (userId: string): Promise<User | null> => {
-  const res = await fetch(`${URL}/${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("Erro ao buscar usuário");
+  try {
+    const { data } = await axios.get<User>(`${URL}/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (error: any) {
+    console.error(
+      "Error deleting address:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Error fetching user");
   }
-
-  const data = await res.json();
-  return data;
 };
 
 const createUser = async (userData: User): Promise<User> => {
-  const res = await fetch(URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
-
-  if (!res.ok) {
-    const errorDetails = await res.text();
-    throw new Error(`Erro ao salvar usuário: ${errorDetails}`);
+  try {
+    const { data } = await axios.post<User>(URL, userData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (error: any) {
+    console.error(
+      "Error deleting address:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error(`Error saving user: ${error}`);
   }
-
-  const data = await res.json();
-  return data;
 };
 
 const updateAddress = async (
   userId?: string,
   addresses?: Address
 ): Promise<void> => {
-  const res = await fetch(`${URL}/${userId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ addresses }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Erro ao atualizar endereços");
+  try {
+    await axios.patch(
+      `${URL}/${userId}`,
+      { addresses },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error: any) {
+    console.error(
+      "Error deleting address:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Error updating addresses");
   }
 };
 
@@ -66,16 +72,19 @@ const deleteAddress = async (
   userId: string,
   addressId: string
 ): Promise<void> => {
-  const res = await fetch(`${URL}/${userId}/addresses/${addressId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    const errorDetails = await res.text();
-    throw new Error(`Erro ao excluir endereço: ${errorDetails}`);
+  try {
+    await axios.delete(`${URL}/${userId}/addresses/${addressId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error: any) {
+    console.error(
+      "Error deleting address:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error(`Error deleting address: ${error}`);
   }
 };
 
