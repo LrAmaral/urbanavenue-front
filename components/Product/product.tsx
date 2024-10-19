@@ -27,7 +27,8 @@ export function Product({ data }: ProductView) {
         alt={data.title}
         width={340}
         height={340}
-        loading="lazy"
+        // loading="lazy"
+        priority={true}
         className="object-cover hover:scale-105 transition-transform duration-300 ease-in-out"
       />
       <p className="font-semibold text-lg">{data.title}</p>
