@@ -8,6 +8,7 @@ export interface Size {
   id: string;
   name: string;
   value: string;
+  stock: number;
 }
 
 export interface Image {
@@ -22,10 +23,13 @@ export interface Product {
   id: string;
   title: string;
   price: string;
-  size: Size;
+  size: Size[];
   images: Image[];
   isFeatured: boolean;
 }
+
+export type SizeOption = "small" | "medium" | "large" | "xlarge";
+
 
 // export interface Product = {
 //   id: string;

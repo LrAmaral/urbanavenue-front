@@ -10,6 +10,7 @@ import { Wrapper } from "../Custom/wrapper";
 import { pages } from "@/lib/pages";
 import { motion } from "framer-motion";
 import { mobileLinkVars } from "@/lib/mobile-vars";
+import SearchBar from "../search-bar";
 
 export const MainNav = () => {
   const { user } = useUser();
@@ -47,6 +48,7 @@ export const MainNav = () => {
             >
               UrbanAvenue
             </Link>
+            <SearchBar />
             <div className="flex gap-4 md:gap-16 items-center">
               <div className="hidden md:flex gap-6">
                 {pages.map(({ id, label, href }) => (
