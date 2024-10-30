@@ -29,33 +29,20 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
             <ClientModal imageUrl={product.images[0]?.url} />
           </div>
           <div className="flex flex-col w-full md:w-1/2 md:text-left space-y-4">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <h2 className="text-xl md:text-3xl font-bold text-gray-800">
                 {product.title}
               </h2>
               <p className="text-lg md:text-2xl font-semibold text-zinc-900">
-                ${product.price}
+                R$ {product.price}
               </p>
             </div>
             <p className="text-sm md:text-md text-gray-500">
               Size: {product.size?.name || "N/A"}
             </p>
-            <button className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out">
-              Add to Cart
+            <button className="button-animated">
+              <span>Add to Cart</span>
             </button>
-            <div className="flex flex-col md:flex-row justify-between w-full gap-10 items-center">
-              <div className="">
-                <p className="text-start">Location and prize</p>
-                <input
-                  type="text"
-                  className="px-0.5 py-1"
-                  placeholder="Write your ZIP Code"
-                />
-              </div>
-              <button className="px-6 py-3 bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out">
-                Calculate
-              </button>
-            </div>
           </div>
         </div>
       </Wrapper>

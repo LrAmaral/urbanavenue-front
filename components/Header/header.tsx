@@ -33,12 +33,12 @@ export const MainNav = () => {
 
   return (
     <nav
-      className={`fixed w-full z-10 transition-all duration-300 ease-in-out ${
+      className={`fixed w-full z-10 pl-1.5 md:px-0 transition-all duration-300 ease-in-out ${
         isScrolled ? "bg-white h-20 py-2 shadow-lg" : "bg-white h-24 py-4"
       }`}
     >
       <Wrapper className="h-full flex justify-between items-center">
-        <div className="flex gap-8 items-center justify-between w-full mx-4">
+        <div className="flex gap-8 items-center justify-between w-full">
           <div className="flex gap-4 flex-row-reverse md:flex-row items-center justify-end md:justify-between w-full">
             <Link
               href={"/"}

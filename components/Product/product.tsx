@@ -31,8 +31,8 @@ export function Product({ data }: ProductView) {
         priority={true}
         className="object-cover hover:scale-105 transition-transform duration-300 ease-in-out"
       />
-      <p className="font-semibold text-lg">{data.title}</p>
-      <p className="text-xl text-zinc-700">R${data.price}</p>
+      <p className="font-semibold text-md">{data.title}</p>
+      <p className="text-lg">R$ {data.price}</p>
     </div>
   );
 }

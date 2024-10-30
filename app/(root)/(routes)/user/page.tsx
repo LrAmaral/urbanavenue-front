@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Wrapper } from "@/components/Custom/wrapper";
-import { Mail, User as UserIcon } from "lucide-react";
+import { Mail, MapPin, User as UserIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
@@ -50,7 +50,7 @@ const UserProfile = () => {
             </div>
             <Separator />
             <div className="space-y-4">
-              <div className="flex justify-between">
+              <div className="flex justify-between border-b pb-2">
                 <p className="text-xl font-semibold text-gray-800">
                   My address
                 </p>
@@ -62,16 +62,24 @@ const UserProfile = () => {
                 </button>
               </div>
               {selectedAddress ? (
-                <div className="bg-white p-4 rounded-lg border">
-                  <h2 className="font-medium">{selectedAddress.fullName}</h2>
-                  <p>{selectedAddress.street}</p>
-                  <p>
+                <div className="bg-white">
+                  <div className="flex items-center gap-2 mb-4">
+                    <MapPin className="text-zinc-500" />
+                    <p className="font-semibold text-lg">Main</p>
+                  </div>
+                  <h2 className="text-xl font-bold mb-2">
+                    {selectedAddress.fullName}
+                  </h2>
+                  <p className="mb-1 text-gray-700">{selectedAddress.street}</p>
+                  <p className="text-gray-600">
                     {selectedAddress.city}, {selectedAddress.state}{" "}
                     {selectedAddress.zipCode}
                   </p>
                 </div>
               ) : (
-                <p>No address selected.</p>
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <p className="text-gray-500">No address selected.</p>
+                </div>
               )}
             </div>
           </div>
