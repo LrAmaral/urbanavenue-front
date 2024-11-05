@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Address } from "@/lib/address";
+import { Address } from "@/lib/types";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 

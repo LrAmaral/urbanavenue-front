@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
 import { createUser, deleteAddress, updateAddress } from "@/app/api/user";
-import { Address } from "@/lib/address";
+import { Address } from "@/lib/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Check, Edit, Trash2 } from "lucide-react";

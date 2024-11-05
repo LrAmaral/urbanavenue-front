@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "@/lib/address";
+import { Address } from "@/lib/types";
 import { useState, useEffect } from "react";
 
 interface AddressFormProps {
