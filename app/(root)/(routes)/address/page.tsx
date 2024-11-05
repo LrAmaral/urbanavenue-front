@@ -2,15 +2,18 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Wrapper } from "@/components/Custom/wrapper";
-import AddressForm from "../user/components/address-form";
+import AddressForm from "./components/address-form";
 import { ArrowLeft } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
 import { createUser, deleteAddress, updateAddress } from "@/app/api/user";
-import { Address } from "@/lib/address";
+import { Address } from "@/lib/types";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Check, Edit, Trash2 } from "lucide-react";
 
 const AddressPage = () => {
+  const router = useRouter();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -26,6 +29,12 @@ const AddressPage = () => {
   useEffect(() => {
     loadAddresses();
   }, [loadAddresses]);
+
+  const saveSelectedAddress = (address: Address) => {
+    localStorage.setItem("selectedAddress", JSON.stringify(address));
+    toast.success("Address selected successfully!");
+    router.push("/user");
+  };
 
   const createAddress = async (newAddress: Address) => {
     try {
@@ -154,7 +163,7 @@ const AddressPage = () => {
   return (
     <div className="w-full h-auto md:h-1/2 mt-24 flex flex-col items-center justify-start">
       <Wrapper className="w-full flex flex-col space-y-6">
-        <div className="bg-white w-full rounded-lg p-4">
+        <div className="bg-white w-full rounded-lg">
           <div className="flex justify-between items-center mb-6">
             <button
               onClick={() => window.history.back()}
@@ -168,7 +177,7 @@ const AddressPage = () => {
                 onClick={() => setIsEditing(true)}
                 className="text-zinc-500 hover:text-zinc-700 font-semibold"
               >
-                Add Address
+                {!isEditing ? "Add Address" : ""}
               </button>
             )}
           </div>
@@ -186,12 +195,18 @@ const AddressPage = () => {
                     <p>{addr.state}</p>
                     <p>{addr.zipCode}</p>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col wmd:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
+                    <button
+                      onClick={() => saveSelectedAddress(addr)}
+                      className="flex items-center font-semibold rounded transition duration-150 ease-in-out"
+                    >
+                      <Check size={24} />
+                    </button>
                     <button
                       onClick={() => handleEditAddress(index)}
-                      className="text-zinc-500 hover:underline"
+                      className="flex items-center font-semibold rounded transition duration-150 ease-in-out"
                     >
-                      Edit
+                      <Edit size={24} />
                     </button>
                     <button
                       onClick={() => {
@@ -201,9 +216,9 @@ const AddressPage = () => {
                           console.error("Address ID is undefined");
                         }
                       }}
-                      className="text-zinc-500 hover:underline"
+                      className="flex items-center text-red-500 font-semibold rounded transition duration-150 ease-in-out"
                     >
-                      Delete
+                      <Trash2 size={24} />
                     </button>
                   </div>
                 </div>

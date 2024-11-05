@@ -1,6 +1,6 @@
 "use client";
 
-import type { Product } from "@/lib/product";
+import type { Product } from "@/lib/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -27,11 +27,12 @@ export function Product({ data }: ProductView) {
         alt={data.title}
         width={340}
         height={340}
-        loading="lazy"
+        // loading="lazy"
+        priority={true}
         className="object-cover hover:scale-105 transition-transform duration-300 ease-in-out"
       />
-      <p className="font-semibold text-lg">{data.title}</p>
-      <p className="text-xl text-zinc-700">R${data.price}</p>
+      <p className="font-semibold text-md">{data.title}</p>
+      <p className="text-lg">R$ {data.price.toFixed(2).replace(".", ",")}</p>
     </div>
   );
 }

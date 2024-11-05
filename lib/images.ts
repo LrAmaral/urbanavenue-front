@@ -35,16 +35,4 @@ export const images = [
     id: 9,
     src: "https://www.beyondmedals.com/_next/image?url=https%3A%2F%2Fbeyondmedals.centracdn.net%2Fclient%2Fdynamic%2Fimages%2F437_d4543ee107-aw23-skate-web-fortunato-jeans-back-2400.jpg&w=640&q=75",
   },
-  {
-    id: 10,
-    src: "https://www.beyondmedals.com/_next/image?url=https%3A%2F%2Fbeyondmedals.centracdn.net%2Fclient%2Fdynamic%2Fimages%2F438_6bacdb7cb7-aw23-skate-web-baekkeltee-kevin-front-2400.jpg&w=640&q=75",
-  },
-  {
-    id: 11,
-    src: "https://www.beyondmedals.com/_next/image?url=https%3A%2F%2Fbeyondmedals.centracdn.net%2Fclient%2Fdynamic%2Fimages%2F438_6cb9cf9bd3-aw23-skate-web-baekkeltee-kevin-frontprint-2400.jpg&w=640&q=75",
-  },
-  {
-    id: 12,
-    src: "https://www.beyondmedals.com/_next/image?url=https%3A%2F%2Fbeyondmedals.centracdn.net%2Fclient%2Fdynamic%2Fimages%2F438_b3698725e9-aw23-skate-web-baekkeltee-kevin-back-2400.jpg&w=640&q=75",
-  },
 ];

@@ -1,8 +1,7 @@
 "use client";
 
-import { Address } from "@/lib/address";
+import { Address } from "@/lib/types";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 
 interface AddressFormProps {
   addresses: Address[];
@@ -42,7 +41,7 @@ const AddressForm = ({
     const newErrors: Partial<Record<keyof Address, string>> = {};
 
     if (!inputValues.neighborhood.trim()) {
-      newErrors.neighborhood = "Full name is required.";
+      newErrors.neighborhood = "Neighborhood is required.";
       valid = false;
     }
     if (!inputValues.street.trim()) {
@@ -89,15 +88,50 @@ const AddressForm = ({
     setInputValues({ ...inputValues, [name as keyof Address]: value });
   };
 
+  const SearchZip = async (value: string) => {
+    const validSearchZip = value.replace(/\D/g, "");
+
+    if (validSearchZip && /^[0-9]{8}$/.test(validSearchZip)) {
+      try {
+        const response = await fetch(
+          `https://viacep.com.br/ws/${validSearchZip}/json/`
+        );
+        const data = await response.json();
+
+        if (!data.erro) {
+          setInputValues((prevValues) => ({
+            ...prevValues,
+            street: data.logradouro,
+            neighborhood: data.bairro,
+            city: data.localidade,
+            state: data.uf,
+          }));
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            zipCode: "CEP não encontrado.",
+          }));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar o endereço:", error);
+      }
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        zipCode: "CEP inválido.",
+      }));
+    }
+  };
+
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit}>
         {[
+          { label: "ZIP Code", name: "zipCode" },
           { label: "Neighborhood", name: "neighborhood" },
           { label: "Street", name: "street" },
           { label: "City", name: "city" },
           { label: "State", name: "state" },
-          { label: "ZIP Code", name: "zipCode" },
         ].map(({ label, name }) => (
           <div className="mb-4" key={name}>
             <label htmlFor={name} className="block text-gray-700">
@@ -109,7 +143,12 @@ const AddressForm = ({
               id={name}
               value={inputValues[name as keyof Address]}
               onChange={handleChange}
-              className="w-full p-2 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 transition"
+              onBlur={
+                name === "zipCode"
+                  ? () => SearchZip(inputValues.zipCode)
+                  : undefined
+              }
+              className="w-full p-2 border-2 rounded-lg border-gray-300 focus:outline-none focus:border-blue-500 transition"
             />
             {errors[name as keyof Address] && (
               <p className="text-red-600 text-sm">
