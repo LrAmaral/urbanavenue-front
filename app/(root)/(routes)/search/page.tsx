@@ -35,9 +35,9 @@ export default function SearchPage() {
 
   return (
     <div className="text-gray-800">
-      <Wrapper className="mt-10 flex min-h-screen flex-col gap-6 text-center">
+      <Wrapper className="mt-24 md:mt-40 flex min-h-screen flex-col gap-6 text-center">
         {loading ? (
-          <p>Carregando resultados...</p>
+          <p>Loading results...</p>
         ) : results.length > 0 ? (
           <>
             <h1 className="text-base font-semibold sm:mt-0 sm:text-xl">
