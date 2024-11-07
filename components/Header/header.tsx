@@ -48,7 +48,7 @@ export const MainNav = () => {
             >
               UrbanAvenue
             </Link>
-            {/* <SearchBar /> */}
+            <SearchBar />
             <div className="flex gap-4 md:gap-16 items-center">
               <div className="hidden md:flex gap-6">
                 {pages.map(({ id, label, href }) => (

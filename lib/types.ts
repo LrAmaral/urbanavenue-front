@@ -34,17 +34,8 @@ export interface Product {
   id: string;
   title: string;
   price: number;
-  images: { url: string }[];
-  sizes: {
-    id: string;
-    sizeId: string;
-    stock: number;
-    size: {
-      id: string;
-      name: string;
-      value: string;
-    };
-  }[];
+  images: Image[];
+  productSizes: { size: { id: string; name: string }; stock: number }[];
   isFeatured: boolean;
 }
 
