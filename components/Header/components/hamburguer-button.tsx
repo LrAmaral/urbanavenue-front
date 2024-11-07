@@ -15,7 +15,6 @@ const HamburguerButton = () => {
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
-    console.log("Menu toggled:", menuOpen);
   };
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const HamburguerButton = () => {
   }, [menuOpen]);
 
   return (
-    <div className="flex justify-between w-full md:hidden">
+    <div className="flex justify-between w-full z-50 md:hidden">
       <motion.button
         animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}

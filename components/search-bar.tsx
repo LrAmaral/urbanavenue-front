@@ -106,7 +106,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
       <Dialog.Trigger asChild>
         <motion.div
           onClick={() => setIsDialogOpen(true)}
-          className={`${classname} relative flex cursor-pointer items-center rounded-full border border-zinc-400 p-2 md:p-3`}
+          className={`${classname} relative flex cursor-pointer z-0 items-center rounded-full border border-zinc-400 p-2 md:p-3`}
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
         >
@@ -115,7 +115,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-out data-[state=open]:opacity-100" />
+        <Dialog.Overlay className="fixed inset-0 z-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-out data-[state=open]:opacity-100" />
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

@@ -50,17 +50,19 @@ export const MainNav = () => {
               <SearchBar classname="hidden md:block" />
               <div className="flex gap-4 md:gap-16 items-center">
                 <div className="hidden md:flex gap-6">
-                  {pages.map(({ id, label, href }) => (
-                    <motion.div key={id} variants={mobileLinkVars}>
-                      <Link
-                        href={href}
-                        aria-label={`Página ${label}`}
-                        className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out text-black font-semibold"
-                      >
-                        {label}
-                      </Link>
-                    </motion.div>
-                  ))}
+                  {pages
+                    .filter(({ href }) => href !== "/user")
+                    .map(({ id, label, href }) => (
+                      <motion.div key={id} variants={mobileLinkVars}>
+                        <Link
+                          href={href}
+                          aria-label={`Página ${label}`}
+                          className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out text-black font-semibold"
+                        >
+                          {label}
+                        </Link>
+                      </motion.div>
+                    ))}
                 </div>
                 <HamburguerButton />
               </div>
