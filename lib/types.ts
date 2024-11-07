@@ -34,13 +34,18 @@ export interface Product {
   id: string;
   title: string;
   price: number;
-  sizes: SizeWithStock[];
-  images: Image[];
+  images: { url: string }[];
+  sizes: {
+    id: string;
+    sizeId: string;
+    stock: number;
+    size: {
+      id: string;
+      name: string;
+      value: string;
+    };
+  }[];
   isFeatured: boolean;
-  isArchived: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  description?: string;
 }
 
 export type SizeOption = "small" | "medium" | "large" | "xlarge";

@@ -9,25 +9,25 @@ interface ProductDetailsProps {
     title: string;
     price: number;
     images: { url: string }[];
-    sizes: { size: { id: string; name: string }; stock: number }[];
+    productSizes: { size: { id: string; name: string }; stock: number }[];
   };
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
-  console.log(product.productSizes)
   const [selectedSize, setSelectedSize] = useState(
-    product.sizes?.[0]?.size?.id || "" 
+    product.productSizes?.[0]?.size.id || ""
   );
   const [stock, setStock] = useState(
-    product.sizes?.find((size) => size.size.id === selectedSize)?.stock || 0
+    product.productSizes.find((size) => size.size.id === selectedSize)?.stock ||
+      0
   );
 
   const handleSizeChange = (sizeId: string) => {
     setSelectedSize(sizeId);
-    const selectedSizeObj = product.sizes?.find(
+    const selectedSizeObj = product.productSizes.find(
       (size) => size.size.id === sizeId
     );
-    setStock(selectedSizeObj?.stock || 0); 
+    setStock(selectedSizeObj?.stock || 0);
   };
 
   return (
@@ -52,15 +52,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             value={selectedSize}
             onChange={(e) => handleSizeChange(e.target.value)}
           >
-            {product.sizes?.length ? (
-            product.sizes.map((size) => (
-              <option key={size.size.id} value={size.size.id}>
-                {size.size.name}
-              </option>
-            ))
-          ) : (
-            <option disabled>No sizes available</option>
-          )}
+            {product.productSizes?.length ? (
+              product.productSizes.map((size) => (
+                <option key={size.size.id} value={size.size.id}>
+                  {size.size.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No sizes available</option>
+            )}
           </select>
           <p className="text-sm text-gray-500">
             {stock > 0 ? `In Stock: ${stock}` : "Out of Stock"}
