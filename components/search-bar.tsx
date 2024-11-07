@@ -167,7 +167,7 @@ export default function SearchBar() {
               {recentSearches.length > 0 && (
                 <ul className="mt-4 max-h-80 overflow-auto">
                   <div className="flex justify-between">
-                    <span className="font-medium">Pesquisado recentemente</span>
+                    <span className="font-medium">Searched recently</span>
                     <button
                       type="button"
                       onClick={handleRemoveRecentSearches}
