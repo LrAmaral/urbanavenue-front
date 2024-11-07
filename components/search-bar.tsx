@@ -36,6 +36,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
     }
 
     const fetchSuggestions = () => {
+      setLoading(true);
       const availableSuggestions = [
         "T-shirt",
         "Shorts",
@@ -57,6 +58,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
         item.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSuggestions(filteredSuggestions);
+      setLoading(false);
     };
 
     const timeoutId = setTimeout(fetchSuggestions, 500);

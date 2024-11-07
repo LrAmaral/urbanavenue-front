@@ -21,7 +21,7 @@ export default function SearchPage() {
           const products = await searchProducts(query);
           setResults(products);
         } catch (error) {
-          console.error("Erro ao buscar produtos:", error);
+          console.error("Error fetching products:", error);
         } finally {
           setLoading(false);
         }
@@ -34,23 +34,30 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <div className="text-gray-800">
-      <Wrapper className="mt-24 md:mt-40 flex min-h-screen flex-col gap-6 text-center">
+    <div className="text-gray-800 bg-white w-full min-h-screen">
+      <Wrapper className="mt-24 md:mt-40 flex flex-col items-start justify-start w-full">
+        {results.length > 0 && (
+          <p className="flex items-center justify-start mt-6 md:mt-0 mb-2 h-full w-full font-semibold text-lg md:text-xl">
+            {" "}
+            {`Results for "${query}"`}
+          </p>
+        )}
         {loading ? (
-          <p>Loading results...</p>
+          <div className="flex justify-center items-center text-xl font-semibold">
+            Loading results...
+          </div>
         ) : results.length > 0 ? (
-          <>
-            <h1 className="text-base font-semibold sm:mt-0 sm:text-xl">
-              {`Resultados para "${query}"`}
-            </h1>
-            <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-col items-start w-full">
+            <div className="flex flex-wrap gap-6 w-full mt-0 md:mt-20 justify-start">
               {results.map((product) => (
                 <ProductComponent key={product.id} data={product} />
               ))}
             </div>
-          </>
+          </div>
         ) : (
-          <p>Nenhum resultado encontrado para &quot;{query}&quot;</p>
+          <div className="flex justify-center items-center text-lg md:text-xl font-semibold">
+            No results found for &quot;{query}&quot;.
+          </div>
         )}
       </Wrapper>
     </div>
