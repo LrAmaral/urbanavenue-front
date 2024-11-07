@@ -7,7 +7,11 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function SearchBar() {
+interface SearchBarProps {
+  classname?: string;
+}
+
+export default function SearchBar({ classname }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -88,12 +92,11 @@ export default function SearchBar() {
     setRecentSearches([]);
   };
 
-  
   const handleSuggestionClick = (suggestion: string) => {
     setSearchTerm(suggestion);
-    saveRecentSearch(suggestion); 
+    saveRecentSearch(suggestion);
     router.push(`/search?query=${encodeURIComponent(suggestion)}`);
-    setIsDialogOpen(false); 
+    setIsDialogOpen(false);
   };
 
   return (
@@ -101,11 +104,11 @@ export default function SearchBar() {
       <Dialog.Trigger asChild>
         <motion.div
           onClick={() => setIsDialogOpen(true)}
-          className="relative flex cursor-pointer items-center rounded-full border border-zinc-400 p-3"
+          className={`${classname} relative flex cursor-pointer items-center rounded-full border border-zinc-400 p-2 md:p-3`}
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
         >
-          <Search size={20} className="text-zinc-500" />
+          <Search size={18} className="text-zinc-500" />
         </motion.div>
       </Dialog.Trigger>
 
@@ -152,7 +155,7 @@ export default function SearchBar() {
                       <li
                         key={index}
                         className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSuggestionClick(suggestion)} 
+                        onClick={() => handleSuggestionClick(suggestion)}
                       >
                         {suggestion}
                       </li>

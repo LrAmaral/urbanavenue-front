@@ -34,9 +34,7 @@ export const MainNav = () => {
 
   return (
     <nav
-      className={`fixed w-full z-10 pl-1.5 md:px-0 transition-all duration-300 ease-in-out ${
-        isScrolled ? "bg-white h-20 py-2 shadow-lg" : "bg-white h-24 py-4"
-      }`}
+      className={`fixed w-full z-10 px-3 md:px-0 transition-all duration-300 ease-in-out ${isScrolled ? "bg-white h-20 py-2 shadow-lg" : "bg-white h-24 py-4"}`}
     >
       <Wrapper className="h-full flex justify-between items-center">
         <div className="flex gap-8 items-center justify-between w-full">
@@ -48,31 +46,42 @@ export const MainNav = () => {
             >
               UrbanAvenue
             </Link>
-            <SearchBar />
-            <div className="flex gap-4 md:gap-16 items-center">
-              <div className="hidden md:flex gap-6">
-                {pages.map(({ id, label, href }) => (
-                  <motion.div key={id} variants={mobileLinkVars}>
-                    <Link
-                      href={href}
-                      aria-label={`Página ${label}`}
-                      className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out  text-black font-semibold"
-                    >
-                      {label}
-                    </Link>
-                  </motion.div>
-                ))}
+            <div className="flex gap-4">
+              <SearchBar classname="hidden md:block" />
+              <div className="flex gap-4 md:gap-16 items-center">
+                <div className="hidden md:flex gap-6">
+                  {pages.map(({ id, label, href }) => (
+                    <motion.div key={id} variants={mobileLinkVars}>
+                      <Link
+                        href={href}
+                        aria-label={`Página ${label}`}
+                        className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out text-black font-semibold"
+                      >
+                        {label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+                <HamburguerButton />
               </div>
-              <HamburguerButton />
             </div>
           </div>
-          <div className="flex justify-center items-center gap-3">
+          <div className="flex justify-center items-center gap-2">
+            <SearchBar classname="block md:hidden" />
             {user ? (
-              <Link href={"/user"} aria-label="Página do cliente">
+              <Link
+                href={"/user"}
+                aria-label="Página do cliente"
+                className="hidden md:block"
+              >
                 <User2 />
               </Link>
             ) : (
-              <Link href={"/sign-in"} aria-label="Página para criar perfil">
+              <Link
+                href={"/sign-in"}
+                aria-label="Página para criar perfil"
+                className="hidden md:block"
+              >
                 <User2 />
               </Link>
             )}
