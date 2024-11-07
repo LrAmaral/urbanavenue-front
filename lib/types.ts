@@ -8,17 +8,17 @@ export interface Address {
   zipCode: string;
 }
 
-
 export interface ProductProps {
   id: number;
   name: string;
   data: [];
-};
+}
 
-export interface Size {
-  id: string;
-  name: string;
-  value: string;
+export interface SizeWithStock {
+  size: {
+    id: string;
+    name: string;
+  };
   stock: number;
 }
 
@@ -34,22 +34,9 @@ export interface Product {
   id: string;
   title: string;
   price: number;
-  size: Size;
   images: Image[];
+  productSizes: { size: { id: string; name: string }; stock: number }[];
   isFeatured: boolean;
 }
 
 export type SizeOption = "small" | "medium" | "large" | "xlarge";
-
-// export interface Product = {
-//   id: string;
-//   title: string;
-//   price: number;
-//   type: string;
-//   size: string;
-//   desc: string;
-//   stock: number;
-//   createdAt: string;
-//   isFeatured: boolean;
-//   isArchived: boolean;
-// };

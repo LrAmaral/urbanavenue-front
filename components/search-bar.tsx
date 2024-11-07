@@ -1,134 +1,206 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import * as Dialog from '@radix-ui/react-dialog'
+import React, { useState, useEffect, FormEvent } from "react";
+import { Eraser, Search, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as Dialog from "@radix-ui/react-dialog";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
-export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState<any | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [isMobile, setIsMobile] = useState<boolean>(false)
-  const router = useRouter()
+interface SearchBarProps {
+  classname?: string;
+}
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
+export default function SearchBar({ classname }: SearchBarProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
 
-    handleResize()
-    window.addEventListener('resize', handleResize)
-
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  const MAX_RECENT_SEARCHES = 5;
+  const MAX_DISPLAYED_SUGGESTIONS = 5;
 
   useEffect(() => {
-    const handleSearch = async (query: string) => {
-      if (!query) {
-        setData(null)
-        return
-      }
+    const storedSearches = localStorage.getItem("recentSearches");
+    if (storedSearches) {
+      setRecentSearches(JSON.parse(storedSearches));
+    }
+  }, []);
 
-      setLoading(true)
-      setError(null)
-      setData(null)
-
-      try {
-        // const products = await searchProductsAction(query)
-        // setData(products)
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message || 'Error fetching products')
-        } else {
-          setError('Unknown error')
-        }
-      } finally {
-        setLoading(false)
-      }
+  useEffect(() => {
+    if (!searchTerm) {
+      setSuggestions([]);
+      return;
     }
 
-    const timeoutId = setTimeout(() => {
-      handleSearch(searchTerm)
-    }, 1500)
+    const fetchSuggestions = () => {
+      const availableSuggestions = [
+        "T-shirt",
+        "Shorts",
+        "Jacket",
+        "Sneakers",
+        "Socks",
+        "Hoodie",
+        "Jeans",
+        "Backpack",
+        "Cap",
+        "Pants",
+        "Boots",
+        "Watch",
+        "Leggings",
+        "Raincoat",
+        "Pajamas",
+      ];
+      const filteredSuggestions = availableSuggestions.filter((item) =>
+        item.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+    };
 
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm])
+    const timeoutId = setTimeout(fetchSuggestions, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
-  const handleItemClick = (title: string) => {
-    router.push(`/${encodeURIComponent(title)}`)
-    setSearchTerm('')
-  }
+  const saveRecentSearch = (query: string) => {
+    let updatedSearches = [...recentSearches];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    updatedSearches = updatedSearches.filter((search) => search !== query);
+    updatedSearches.unshift(query);
+
+    if (updatedSearches.length > MAX_RECENT_SEARCHES) {
+      updatedSearches = updatedSearches.slice(0, MAX_RECENT_SEARCHES);
+    }
+
+    setRecentSearches(updatedSearches);
+    localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
     if (searchTerm) {
-      router.push(`/${encodeURIComponent(searchTerm)}`)
+      saveRecentSearch(searchTerm);
+      router.push(`/search?query=${encodeURIComponent(searchTerm)}`);
+      setSearchTerm("");
+      setIsDialogOpen(false);
     }
-    setSearchTerm('')
-  }
+  };
+
+  const handleRemoveRecentSearches = () => {
+    localStorage.removeItem("recentSearches");
+    setRecentSearches([]);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchTerm(suggestion);
+    saveRecentSearch(suggestion);
+    router.push(`/search?query=${encodeURIComponent(suggestion)}`);
+    setIsDialogOpen(false);
+  };
 
   return (
-    <>
-      {isMobile ? (
-        <Dialog.Root>
-          <Dialog.Trigger asChild>
-            <div className="relative flex cursor-pointer items-center rounded-full border border-zinc-300 p-3">
-              <Search size={20} className="text-zinc-400" />
-            </div>
-          </Dialog.Trigger>
+    <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog.Trigger asChild>
+        <motion.div
+          onClick={() => setIsDialogOpen(true)}
+          className={`${classname} relative flex cursor-pointer items-center rounded-full border border-zinc-400 p-2 md:p-3`}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1 }}
+        >
+          <Search size={18} className="text-zinc-500" />
+        </motion.div>
+      </Dialog.Trigger>
 
-          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-            <Dialog.Content className="fixed inset-0 flex items-center justify-center bg-white p-4">
-              <Dialog.Title className="sr-only">Search products</Dialog.Title>
-              <form onSubmit={handleSubmit} className="flex h-full w-full flex-col">
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-out data-[state=open]:opacity-100" />
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0, y: -50 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          style={{ transformOrigin: "top" }}
+          className="fixed inset-0 z-50 flex max-h-full items-start justify-center overflow-y-auto bg-white p-4 max-md:p-0"
+        >
+          <Dialog.Content className="flex max-h-full w-1/2 flex-col overflow-y-auto rounded-lg bg-white p-4 max-sm:w-full">
+            <Dialog.Title className="sr-only">Search products</Dialog.Title>
+            <form onSubmit={handleSubmit} className="flex w-full flex-col">
+              <div className="relative flex w-full items-center justify-center border-b border-gray-400 pt-0 max-sm:pt-6">
+                <Search size={24} className="text-zinc-500" />
                 <input
                   type="text"
-                  placeholder="Search by brand, model..."
+                  placeholder="Search for brand, model..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full p-4 text-lg outline-none"
+                  className="w-full py-4 pl-4 pr-10 text-lg outline-none"
                 />
-                {loading && <p className="text-center text-zinc-500">Searching...</p>}
-                {error && <p className="text-center text-red-500">{error}</p>}
-                {data && data.search.edges.length > 0 && (
-                  <ul className="mt-2 max-h-60 overflow-auto">
-                    {data.search.edges.map(({ node }: any) => (
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-2 text-zinc-500 hover:text-zinc-700"
+                  >
+                    <Eraser size={24} className="cursor-pointer" />
+                  </button>
+                )}
+              </div>
+              {loading && (
+                <p className="mt-2 text-center text-zinc-500">Searching...</p>
+              )}
+              {suggestions.length > 0 && (
+                <ul className="mt-4 max-h-40 overflow-auto">
+                  {suggestions
+                    .slice(0, MAX_DISPLAYED_SUGGESTIONS)
+                    .map((suggestion, index) => (
                       <li
-                        key={node.id}
-                        className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                        onClick={() => handleItemClick(node.title)}
+                        key={index}
+                        className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        {node.title}
+                        {suggestion}
                       </li>
                     ))}
-                  </ul>
-                )}
-                {data && data.search.edges.length === 0 && (
-                  <p className="mt-2 text-center text-zinc-500">No products found</p>
-                )}
-              </form>
-              <Dialog.Close className="absolute right-4 top-4">X</Dialog.Close>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
-      ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="relative flex items-center rounded-full border border-zinc-300 bg-white px-4 py-2"
-        >
-          <Search size={20} className="text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Search by brand, model..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent p-1 pl-4 text-sm text-zinc-700 placeholder-zinc-400 outline-none"
-          />
-        </form>
-      )}
-    </>
-  )
+                  {suggestions.length > MAX_DISPLAYED_SUGGESTIONS && (
+                    <li className="py-2 px-4 text-center text-blue-500 cursor-pointer">
+                      Ver todos
+                    </li>
+                  )}
+                </ul>
+              )}
+              {recentSearches.length > 0 && (
+                <ul className="mt-4 max-h-80 overflow-auto">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Searched recently</span>
+                    <button
+                      type="button"
+                      onClick={handleRemoveRecentSearches}
+                      className="border px-6"
+                    >
+                      Clean
+                    </button>
+                  </div>
+                  {recentSearches.map((search, index) => (
+                    <li key={index}>
+                      <Dialog.Close asChild>
+                        <Link
+                          href={`/search?query=${search}`}
+                          className="flex cursor-pointer items-center gap-2.5 py-4 hover:bg-gray-100"
+                        >
+                          <Search size={18} />
+                          {search}
+                        </Link>
+                      </Dialog.Close>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </form>
+            <Dialog.Close className="absolute right-4 top-4 text-zinc-400 hover:text-zinc-600">
+              <X size={28} />
+            </Dialog.Close>
+          </Dialog.Content>
+        </motion.div>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
 }
