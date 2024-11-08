@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import {
@@ -21,7 +21,6 @@ const CartSheet = () => {
   const { cartItems, total } = useCart();
   const hasItems = cartItems.length > 0;
 
-  // Calcula o total de itens no carrinho
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
@@ -29,7 +28,7 @@ const CartSheet = () => {
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" className="p-2 relative">
-            <ShoppingBag size={32} />
+            <ShoppingCart />
             {totalQuantity > 0 && (
               <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {totalQuantity}
@@ -40,7 +39,7 @@ const CartSheet = () => {
         <SheetContent>
           <SheetHeader>
             <SheetTitle className="font-bold flex items-center gap-2">
-              <ShoppingBag size={28} /> Bag
+              <ShoppingCart /> Cart
             </SheetTitle>
             <SheetDescription className="text-start">
               {hasItems ? "Your products:" : "Your bag is empty."}
