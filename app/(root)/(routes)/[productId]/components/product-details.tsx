@@ -1,7 +1,10 @@
+// ProductDetails.tsx
+
 "use client";
 
 import { useState } from "react";
 import { ClientModal } from "./client-modal";
+import { useCart } from "@/providers/cart-context";
 
 interface ProductDetailsProps {
   product: {
@@ -14,6 +17,8 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+  const { addItemToCart } = useCart();
+
   const [selectedSize, setSelectedSize] = useState(
     product.productSizes?.[0]?.size.id || ""
   );
@@ -28,6 +33,19 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
       (size) => size.size.id === sizeId
     );
     setStock(selectedSizeObj?.stock || 0);
+  };
+
+  const handleAddToCart = () => {
+    if (stock > 0) {
+      addItemToCart({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        quantity: 1,
+        imageUrl: product.images[0]?.url || "",
+        size: selectedSize,
+      });
+    }
   };
 
   return (
@@ -68,25 +86,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         </div>
 
         <button
+          onClick={handleAddToCart}
           className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
           disabled={stock === 0}
         >
           Add to Cart
         </button>
-
-        <div className="flex flex-col md:flex-row justify-between w-full gap-10 items-center">
-          <div className="">
-            <p className="text-start">Location and prize</p>
-            <input
-              type="text"
-              className="px-0.5 py-1"
-              placeholder="Write your ZIP Code"
-            />
-          </div>
-          <button className="px-6 py-3 bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out">
-            Calculate
-          </button>
-        </div>
       </div>
     </div>
   );

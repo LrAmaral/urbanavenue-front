@@ -1,9 +1,7 @@
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import { useState } from "react";
 import { motion } from "framer-motion";
-
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -16,48 +14,60 @@ import {
   SheetDescription,
 } from "../ui/sheet";
 import { Separator } from "../ui/separator";
+import { useCart } from "@/providers/cart-context";
+import Image from "next/image";
 
 const CartSheet = () => {
-  const [openCart, setOpenCart] = useState(false);
-
-  const toggleCart = () => setOpenCart(!openCart);
+  const { cartItems, total } = useCart();
 
   return (
-    <motion.div
-      onClick={toggleCart}
-      variants={{
-        open: { width: 120, right: 120 },
-        closed: { width: 0, right: 0 },
-      }}
-    >
+    <motion.div>
       <Sheet>
-        <SheetTrigger asChild className="border-0 p-0 hover:bg-white">
+        <SheetTrigger asChild>
           <Button variant="outline" className="p-0">
             <ShoppingBag size={32} />
           </Button>
         </SheetTrigger>
-        <SheetContent className="">
+        <SheetContent>
           <SheetHeader>
             <SheetTitle className="font-bold flex gap-2">
               <ShoppingBag size={28} /> Bag
             </SheetTitle>
-            <SheetDescription>Your bag is empty.</SheetDescription>
+            <SheetDescription>
+              {cartItems.length > 0 ? "Your products:" : "Your bag is empty."}
+            </SheetDescription>
             <Separator />
           </SheetHeader>
-          <div className="flex flex-col justify-center h-40">
-            <div className="space-y-2">
-              <p className="font-semibold">Your products:</p>
-              <p className="font-bold text-lg">
-                Total: <span>$40.00</span>
-              </p>
-            </div>
+
+          <div className="flex flex-col space-y-4 my-4">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    width={40}
+                    height={40}
+                  />
+                  <p>{item.title}</p>
+                </div>
+                <p>
+                  {item.quantity} x R$ {item.price.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+            ))}
           </div>
+
+          <div className="flex justify-between font-bold text-lg">
+            <p>Total:</p>
+            <p>R$ {total.toFixed(2).replace(".", ",")}</p>
+          </div>
+
           <SheetFooter>
-            <SheetClose
-              asChild
-              className="flex items-center justify-center flex-col w-full"
-            >
-              <Button type="submit">Finish Order</Button>
+            <SheetClose asChild className="flex w-full">
+              <Button type="submit" disabled={cartItems.length === 0}>
+                Finish Order
+              </Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>
