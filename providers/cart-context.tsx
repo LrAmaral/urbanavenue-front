@@ -29,9 +29,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
       const storedCart = localStorage.getItem("cartItems");
       if (storedCart) {
         try {
@@ -41,13 +46,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
     }
-  }, []);
+  }, [isClient]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (isClient && cartItems.length > 0) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
-  }, [cartItems]);
+  }, [cartItems, isClient]);
 
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
