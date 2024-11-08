@@ -37,21 +37,29 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cartItems");
-    if (storedCart) {
-      try {
-        setCartItems(JSON.parse(storedCart));
-      } catch (error) {
-        console.error("Erro ao carregar o carrinho:", error);
+    // Verifica se o código está sendo executado no navegador
+    if (typeof window !== "undefined") {
+      const storedCart = localStorage.getItem("cartItems");
+      if (storedCart) {
+        try {
+          setCartItems(JSON.parse(storedCart));
+        } catch (error) {
+          console.error("Erro ao carregar o carrinho:", error);
+        }
       }
+      setIsInitialized(true); // Marca como inicializado após o carregamento
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    // Verifica se `isInitialized` é verdadeiro antes de atualizar o `localStorage`
+    if (isInitialized) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+  }, [cartItems, isInitialized]);
 
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
