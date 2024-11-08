@@ -21,12 +21,20 @@ const CartSheet = () => {
   const { cartItems, total } = useCart();
   const hasItems = cartItems.length > 0;
 
+  // Calcula o total de itens no carrinho
+  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <motion.div>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" className="p-2">
+          <Button variant="ghost" className="p-2 relative">
             <ShoppingBag size={32} />
+            {totalQuantity > 0 && (
+              <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {totalQuantity}
+              </span>
+            )}
           </Button>
         </SheetTrigger>
         <SheetContent>
@@ -34,7 +42,7 @@ const CartSheet = () => {
             <SheetTitle className="font-bold flex items-center gap-2">
               <ShoppingBag size={28} /> Bag
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-start">
               {hasItems ? "Your products:" : "Your bag is empty."}
             </SheetDescription>
             <Separator />
@@ -45,9 +53,9 @@ const CartSheet = () => {
               cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between items-center p-2 border-b last:border-b-0"
+                  className="flex justify-between items-center border-b last:border-b-0"
                 >
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-1">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
@@ -55,9 +63,11 @@ const CartSheet = () => {
                       height={40}
                       className="rounded-md"
                     />
-                    <p className="text-sm font-medium">{item.title}</p>
+                    <p className="text-xs md:text-sm font-medium">
+                      {item.title}
+                    </p>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-xs md:text-sm">
                     {item.quantity}x R${" "}
                     {item.price.toFixed(2).replace(".", ",")}
                   </p>
@@ -71,7 +81,7 @@ const CartSheet = () => {
           </div>
 
           {hasItems && (
-            <div className="flex justify-between font-semibold text-lg px-2">
+            <div className="flex justify-between font-semibold text-lg">
               <p>Total:</p>
               <p>R$ {total.toFixed(2).replace(".", ",")}</p>
             </div>
