@@ -20,6 +20,8 @@ interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   addItemToCart: (item: CartItem) => void;
+  removeItemFromCart: (id: string, size: string) => void;
+  updateItemQuantity: (id: string, size: string, quantity: number) => void;
   total: number;
 }
 
@@ -31,12 +33,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  
   useEffect(() => {
     if (isClient) {
       const storedCart = localStorage.getItem("cartItems");
@@ -48,16 +48,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
     }
-  }, [isClient]); 
+  }, [isClient]);
 
-  
   useEffect(() => {
     if (isClient && cartItems.length > 0) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
-  }, [cartItems, isClient]); 
+  }, [cartItems, isClient]);
 
-  
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -77,14 +75,37 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  
+  const removeItemFromCart = (id: string, size: string) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => !(item.id === id && item.size === size))
+    );
+  };
+
+  const updateItemQuantity = (id: string, size: string, quantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id && item.size === size
+          ? { ...item, quantity: Math.max(1, quantity) }
+          : item
+      )
+    );
+  };
+
   const total = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
   return (
-    <CartContext.Provider value={{ cartItems, addItemToCart, total }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addItemToCart,
+        removeItemFromCart,
+        updateItemQuantity,
+        total,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

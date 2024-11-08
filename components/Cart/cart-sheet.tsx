@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import {
@@ -16,12 +16,24 @@ import {
 import { Separator } from "../ui/separator";
 import { useCart } from "@/providers/cart-context";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const CartSheet = () => {
-  const { cartItems, total } = useCart();
+  const { cartItems, total, removeItemFromCart } = useCart();
   const hasItems = cartItems.length > 0;
+  const route = useRouter();
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const handleOrder = () => {
+    if (totalQuantity === 0) {
+      toast("You need to add items to your cart to place an order.");
+    }
+
+    toast.success("Order placed successfully!");
+    route.push("/order");
+  };
 
   return (
     <motion.div>
@@ -51,10 +63,10 @@ const CartSheet = () => {
             {hasItems ? (
               cartItems.map((item) => (
                 <div
-                  key={item.id}
-                  className="flex justify-between items-center border-b last:border-b-0"
+                  key={`${item.id}-${item.size}`}
+                  className="flex justify-between items-center border-b last:border-b-0 py-2"
                 >
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-2 w-full">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
@@ -62,14 +74,23 @@ const CartSheet = () => {
                       height={40}
                       className="rounded-md"
                     />
-                    <p className="text-xs md:text-sm font-medium">
+                    <p className="text-sm font-medium truncate w-full">
                       {item.title}
                     </p>
                   </div>
-                  <p className="text-xs md:text-sm">
-                    {item.quantity}x R${" "}
-                    {item.price.toFixed(2).replace(".", ",")}
-                  </p>
+                  <div className="flex items-center">
+                    <p className="text-xs">
+                      {item.quantity}x R${" "}
+                      {item.price.toFixed(2).replace(".", ",")}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      className=""
+                      onClick={() => removeItemFromCart(item.id, item.size)}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </div>
                 </div>
               ))
             ) : (
@@ -88,7 +109,12 @@ const CartSheet = () => {
 
           <SheetFooter>
             <SheetClose asChild className="flex w-full mt-4">
-              <Button type="submit" disabled={!hasItems} className="w-full">
+              <Button
+                type="submit"
+                onClick={handleOrder}
+                disabled={!hasItems}
+                className="w-full"
+              >
                 Finish Order
               </Button>
             </SheetClose>
