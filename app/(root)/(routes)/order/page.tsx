@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { useCart } from "@/providers/cart-context";
 import Image from "next/image";
 import { Trash, Plus, Minus } from "lucide-react";
@@ -35,25 +36,34 @@ export default function OrdersPage() {
                     />
                     <div>
                       <p className="text-lg font-semibold">{item.title}</p>
-                      <p className="text-sm text-gray-500">Size: {item.size}</p>
+                      <p className="text-sm text-gray-500">Size: {item.size.name}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 mt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        updateItemQuantity(
-                          item.id,
-                          item.size,
-                          item.quantity - 1
-                        )
-                      }
-                      disabled={item.quantity <= 1}
-                    >
-                      <Minus size={16} />
-                    </Button>
-                    <span className="text-lg font-medium">{item.quantity}</span>
+                    {item.quantity > 1 ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          updateItemQuantity(
+                            item.id,
+                            item.size,
+                            item.quantity - 1
+                          )
+                        }
+                      >
+                        <Minus size={16} />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeItemFromCart(item.id, item.size)}
+                      >
+                        <Trash size={16} />
+                      </Button>
+                    )}
+                    <span className="text-md font-medium">{item.quantity}</span>
                     <Button
                       variant="outline"
                       size="sm"
@@ -68,6 +78,7 @@ export default function OrdersPage() {
                       <Plus size={16} />
                     </Button>
                   </div>
+
                   <div className="flex items-center space-x-4">
                     <p className="text-lg font-medium">
                       R${" "}
@@ -75,13 +86,6 @@ export default function OrdersPage() {
                         .toFixed(2)
                         .replace(".", ",")}
                     </p>
-                    <Button
-                      variant="ghost"
-                      className="p-2"
-                      onClick={() => removeItemFromCart(item.id, item.size)}
-                    >
-                      <Trash size={20} />
-                    </Button>
                   </div>
                 </div>
               </div>

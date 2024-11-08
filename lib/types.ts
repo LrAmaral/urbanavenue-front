@@ -34,9 +34,8 @@ export interface Product {
   id: string;
   title: string;
   price: number;
-  images: Image[];
-  productSizes: { size: { id: string; name: string }; stock: number }[];
-  isFeatured: boolean;
+  images: { url: string }[];
+  productSizes: { size: { id: string; name: string }; stock: number }[]; 
 }
 
 export type SizeOption = "small" | "medium" | "large" | "xlarge";

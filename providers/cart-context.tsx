@@ -8,20 +8,26 @@ import React, {
   ReactNode,
 } from "react";
 
+interface Size {
+  id: string;
+  name: string;
+  stock: number;
+}
+
 interface CartItem {
   id: string;
   title: string;
   price: number;
   quantity: number;
   imageUrl: string;
-  size: string;
+  size: Size;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
   addItemToCart: (item: CartItem) => void;
-  removeItemFromCart: (id: string, size: string) => void;
-  updateItemQuantity: (id: string, size: string, quantity: number) => void;
+  removeItemFromCart: (id: string, size: Size) => void;
+  updateItemQuantity: (id: string, size: Size, quantity: number) => void;
   total: number;
 }
 
@@ -31,42 +37,36 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    const storedCart = localStorage.getItem("cartItems");
+    if (storedCart) {
+      try {
+        setCartItems(JSON.parse(storedCart));
+      } catch (error) {
+        console.error("Erro ao carregar o carrinho:", error);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    if (isClient) {
-      const storedCart = localStorage.getItem("cartItems");
-      if (storedCart) {
-        try {
-          setCartItems(JSON.parse(storedCart));
-        } catch (error) {
-          console.error("Erro ao carregar o carrinho:", error);
-        }
-      }
-    }
-  }, [isClient]);
-
-  useEffect(() => {
-    if (isClient && cartItems.length > 0) {
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    }
-  }, [cartItems, isClient]);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
-        (item) => item.id === newItem.id && item.size === newItem.size
+        (item) => item.id === newItem.id && item.size.id === newItem.size.id
       );
 
       if (existingItemIndex >= 0) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity,
+          quantity: Math.min(
+            updatedItems[existingItemIndex].quantity + newItem.quantity,
+            newItem.size.stock
+          ),
         };
         return updatedItems;
       }
@@ -75,17 +75,20 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  const removeItemFromCart = (id: string, size: string) => {
+  const removeItemFromCart = (id: string, size: Size) => {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => !(item.id === id && item.size === size))
+      prevItems.filter((item) => !(item.id === id && item.size.id === size.id))
     );
   };
 
-  const updateItemQuantity = (id: string, size: string, quantity: number) => {
+  const updateItemQuantity = (id: string, size: Size, quantity: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id && item.size === size
-          ? { ...item, quantity: Math.max(1, quantity) }
+        item.id === id && item.size.id === size.id
+          ? {
+              ...item,
+              quantity: Math.min(Math.max(1, quantity), item.size.stock),
+            }
           : item
       )
     );
