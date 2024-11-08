@@ -1,5 +1,6 @@
 "use client";
 
+import { CartItem, Size } from "@/lib/types";
 import React, {
   createContext,
   useContext,
@@ -8,26 +9,12 @@ import React, {
   ReactNode,
 } from "react";
 
-interface Size {
-  id: string;
-  name: string;
-  stock: number;
-}
-
-interface CartItem {
-  id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  imageUrl: string;
-  size: Size;
-}
-
 interface CartContextType {
   cartItems: CartItem[];
   addItemToCart: (item: CartItem) => void;
   removeItemFromCart: (id: string, size: Size) => void;
   updateItemQuantity: (id: string, size: Size, quantity: number) => void;
+  clearCart: () => void;
   total: number;
 }
 
@@ -40,7 +27,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Verifica se o código está sendo executado no navegador
     if (typeof window !== "undefined") {
       const storedCart = localStorage.getItem("cartItems");
       if (storedCart) {
@@ -50,12 +36,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
           console.error("Erro ao carregar o carrinho:", error);
         }
       }
-      setIsInitialized(true); // Marca como inicializado após o carregamento
+      setIsInitialized(true);
     }
   }, []);
 
   useEffect(() => {
-    // Verifica se `isInitialized` é verdadeiro antes de atualizar o `localStorage`
     if (isInitialized) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
@@ -102,6 +87,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("cartItems");
+  };
+
   const total = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -114,6 +104,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         addItemToCart,
         removeItemFromCart,
         updateItemQuantity,
+        clearCart,
         total,
       }}
     >

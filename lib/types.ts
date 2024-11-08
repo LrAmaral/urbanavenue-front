@@ -38,4 +38,19 @@ export interface Product {
   productSizes: { size: { id: string; name: string }; stock: number }[]; 
 }
 
+export interface Size {
+  id: string;
+  name: string;
+  stock: number;
+}
+
+export interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+  size: Size;
+}
+
 export type SizeOption = "small" | "medium" | "large" | "xlarge";
