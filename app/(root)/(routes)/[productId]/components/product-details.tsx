@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { ClientModal } from "./client-modal";
 import { useCart } from "@/providers/cart-context";
+import { useRef } from "react";
 
 interface ProductDetailsProps {
   product: {
@@ -36,6 +37,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   };
 
   const handleAddToCart = () => {
+    console.log("handleAddToCart chamado"); // Log para depuração
     if (stock > 0) {
       addItemToCart({
         id: product.id,
@@ -86,7 +88,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         </div>
 
         <button
-          onClick={handleAddToCart}
+          onClick={() => handleAddToCart()}
           className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
           disabled={stock === 0}
         >

@@ -31,10 +31,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isClient, setIsClient] = useState(false);
 
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  
   useEffect(() => {
     if (isClient) {
       const storedCart = localStorage.getItem("cartItems");
@@ -46,14 +48,16 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
     }
-  }, [isClient]);
+  }, [isClient]); 
 
+  
   useEffect(() => {
     if (isClient && cartItems.length > 0) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
-  }, [cartItems, isClient]);
+  }, [cartItems, isClient]); 
 
+  
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -62,14 +66,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
       if (existingItemIndex >= 0) {
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += newItem.quantity;
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity,
+        };
         return updatedItems;
       }
 
-      return [...prevItems, newItem];
+      return [...prevItems, { ...newItem, quantity: newItem.quantity }];
     });
   };
 
+  
   const total = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
