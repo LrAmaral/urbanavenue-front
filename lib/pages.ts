@@ -14,4 +14,9 @@ export const pages = [
     label: "contact",
     href: "/contact",
   },
+  {
+    id: "/user",
+    label: "user profile",
+    href: "/user",
+  }, 
 ];

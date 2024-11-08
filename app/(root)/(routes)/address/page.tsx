@@ -195,7 +195,7 @@ const AddressPage = () => {
                     <p>{addr.state}</p>
                     <p>{addr.zipCode}</p>
                   </div>
-                  <div className="flex flex-col wmd:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
+                  <div className="flex flex-col md:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
                     <button
                       onClick={() => saveSelectedAddress(addr)}
                       className="flex items-center font-semibold rounded transition duration-150 ease-in-out"

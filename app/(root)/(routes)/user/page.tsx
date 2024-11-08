@@ -18,6 +18,7 @@ interface Address {
 
 const UserProfile = () => {
   const { user } = useUser();
+  const { isSignedIn } = useUser();
   const router = useRouter();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
@@ -31,6 +32,12 @@ const UserProfile = () => {
   const handleAddAddress = () => {
     router.push("/address");
   };
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isSignedIn, router]);
 
   return (
     <div className="w-full h-auto md:h-1/2 mt-24 flex flex-col items-center justify-start">

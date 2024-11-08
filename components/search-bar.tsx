@@ -36,6 +36,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
     }
 
     const fetchSuggestions = () => {
+      setLoading(true);
       const availableSuggestions = [
         "T-shirt",
         "Shorts",
@@ -57,6 +58,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
         item.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSuggestions(filteredSuggestions);
+      setLoading(false);
     };
 
     const timeoutId = setTimeout(fetchSuggestions, 500);
@@ -104,16 +106,16 @@ export default function SearchBar({ classname }: SearchBarProps) {
       <Dialog.Trigger asChild>
         <motion.div
           onClick={() => setIsDialogOpen(true)}
-          className={`${classname} relative flex cursor-pointer items-center rounded-full border border-zinc-400 p-2 md:p-3`}
+          className={`${classname} relative flex cursor-pointer z-0 items-center rounded-full border border-zinc-800 p-2 md:p-3`}
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
         >
-          <Search size={18} className="text-zinc-500" />
+          <Search size={18} className="text-zinc-700" />
         </motion.div>
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-out data-[state=open]:opacity-100" />
+        <Dialog.Overlay className="fixed inset-0 z-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-out data-[state=open]:opacity-100" />
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -154,17 +156,12 @@ export default function SearchBar({ classname }: SearchBarProps) {
                     .map((suggestion, index) => (
                       <li
                         key={index}
-                        className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                        className="py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         {suggestion}
                       </li>
                     ))}
-                  {suggestions.length > MAX_DISPLAYED_SUGGESTIONS && (
-                    <li className="py-2 px-4 text-center text-blue-500 cursor-pointer">
-                      Ver todos
-                    </li>
-                  )}
                 </ul>
               )}
               {recentSearches.length > 0 && (

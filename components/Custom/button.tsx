@@ -8,7 +8,7 @@ interface ButtonProps {
 
 export const Button = ({ children, className, onClick }: ButtonProps) => {
   return (
-    <button className={`${className}`} onClick={onClick}>
+    <button className={`${className}`} onClick={onClick} type="button">
       {children}
     </button>
   );
