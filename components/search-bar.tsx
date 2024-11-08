@@ -156,17 +156,12 @@ export default function SearchBar({ classname }: SearchBarProps) {
                     .map((suggestion, index) => (
                       <li
                         key={index}
-                        className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                        className="py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         {suggestion}
                       </li>
                     ))}
-                  {suggestions.length > MAX_DISPLAYED_SUGGESTIONS && (
-                    <li className="py-2 px-4 text-center text-blue-500 cursor-pointer">
-                      Ver todos
-                    </li>
-                  )}
                 </ul>
               )}
               {recentSearches.length > 0 && (

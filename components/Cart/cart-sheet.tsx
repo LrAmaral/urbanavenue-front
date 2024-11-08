@@ -25,7 +25,7 @@ const CartSheet = () => {
     <motion.div>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" className="p-2">
+          <Button variant="ghost" className="p-2">
             <ShoppingBag size={32} />
           </Button>
         </SheetTrigger>
