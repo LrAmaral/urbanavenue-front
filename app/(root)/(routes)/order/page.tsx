@@ -24,12 +24,12 @@ export default function OrdersPage() {
   const handlePlaceOrder = async () => {
     try {
       await createOrder(cartItems, total);
-      toast("Pedido realizado com sucesso!");
+      toast.success("Pedido realizado com sucesso!");
       route.push("/payment");
       clearCart();
     } catch (error) {
       console.error("Erro ao realizar o pedido:", error);
-      alert("Erro ao realizar o pedido. Tente novamente.");
+      toast.error("Erro ao realizar o pedido. Tente novamente.");
     }
   };
 
@@ -46,7 +46,7 @@ export default function OrdersPage() {
                   key={`${item.size}`}
                   className="flex flex-col md:flex-row justify-between items-center p-4 border rounded-md space-y-4 md:space-y-0"
                 >
-                  <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="flex items-center gap-2 w-full">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}

@@ -28,10 +28,9 @@ const CartSheet = () => {
 
   const handleOrder = () => {
     if (totalQuantity === 0) {
-      toast("You need to add items to your cart to place an order.");
+      toast.error("You need to add items to your cart to place an order.");
     }
 
-    toast.success("Order placed successfully!");
     route.push("/order");
   };
 
@@ -59,38 +58,41 @@ const CartSheet = () => {
             <Separator />
           </SheetHeader>
 
-          <div className="flex flex-col space-y-4 my-4">
+          <div className="flex flex-col space-y-2 my-4">
             {hasItems ? (
               cartItems.map((item) => (
                 <div
                   key={`${item.id}-${item.size}`}
-                  className="flex justify-between items-center border-b last:border-b-0 py-2"
+                  className="flex justify-between items-center border-b last:border-b-0 py-3 gap-4"
                 >
-                  <div className="flex items-center space-x-2 w-full">
+                  <div className="flex items-center space-x-3 w-full">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
-                      width={40}
-                      height={40}
-                      className="rounded-md"
+                      width={48}
+                      height={48}
+                      className="rounded-md flex-shrink-0"
                     />
-                    <p className="text-sm font-medium truncate w-full">
-                      {item.title}
-                    </p>
+                    <div className="flex flex-col w-full">
+                      <p className="text-sm font-medium truncate w-[120px] sm:w-[200px]">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {item.quantity}x R$
+                        {item.price.toFixed(2).replace(".", ",")}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <p className="text-xs">
-                      {item.quantity}x R${" "}
-                      {item.price.toFixed(2).replace(".", ",")}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      className=""
-                      onClick={() => removeItemFromCart(item.id, item.size)}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    className="p-2 flex-shrink-0"
+                    onClick={() => removeItemFromCart(item.id, item.size)}
+                  >
+                    <Trash
+                      size={18}
+                      className="text-gray-500"
+                    />
+                  </Button>
                 </div>
               ))
             ) : (
