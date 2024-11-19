@@ -20,7 +20,7 @@ export function Product({ data }: ProductView) {
     <div
       onClick={handleClick}
       key={data.id}
-      className="flex flex-col items-center justify-center text-center cursor-pointer space-y-4 md:space-y-2 h-[500px] w-96 md:w-64 md:h-48"
+      className="flex flex-col items-center justify-center text-center cursor-pointer space-y-4 h-[500px] w-96 md:w-64 md:h-48"
     >
       <Image
         src={data?.images?.[0]?.url}
