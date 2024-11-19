@@ -15,9 +15,9 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const selectedCategory = searchParams.category || "all";
+  const selectedCategory = searchParams.category || "All";
   const selectedSort = searchParams.sort || "default";
-  const selectedSize = searchParams.size || "all";
+  const selectedSize = searchParams.size || "All";
   const minPrice = parseFloat(searchParams.minPrice || "0");
   const maxPrice = parseFloat(searchParams.maxPrice || "Infinity");
 
@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const uniqueCategories = Array.from(
     new Set(products.map((item) => item.category.name))
   );
-  const categories = ["all", ...uniqueCategories];
+  const categories = ["All", ...uniqueCategories];
 
   const uniqueSizes = Array.from(
     new Set(
@@ -35,16 +35,16 @@ export default async function Home({ searchParams }: HomeProps) {
       )
     )
   );
-  const sizes = ["all", ...uniqueSizes];
+  const sizes = ["All", ...uniqueSizes];
 
   const filteredProducts = products
     .filter((product) =>
-      selectedCategory === "all"
+      selectedCategory === "All"
         ? true
         : product.category.name === selectedCategory
     )
     .filter((product) =>
-      selectedSize === "all"
+      selectedSize === "All"
         ? true
         : product.productSizes.some(
             (productSize) => productSize.size.name === selectedSize

@@ -11,6 +11,7 @@ export default function Rootlayout({
   return (
     <div className="flex flex-col items-center w-full h-auto overflow-hidden">
       <MainNav />
+      <div id="modal-root"></div>
       <Suspense fallback={<Loading />}>{children}</Suspense>
       <Footer />
     </div>

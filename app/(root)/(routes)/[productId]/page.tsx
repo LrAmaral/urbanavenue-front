@@ -12,7 +12,7 @@ const PageProduct: React.FC<ProductPageProps> = async ({ params }) => {
   const product = await getProduct(params.productId);
 
   return (
-    <div className="mt-20 flex w-[90%] md:w-full flex-col items-center justify-start py-8 px-4 md:px-0">
+    <div className="mt-20 flex w-[90%]  md:w-full flex-col items-center justify-start py-8 px-4 md:px-0">
       <Wrapper>
         <ProductDetails product={product} />
       </Wrapper>

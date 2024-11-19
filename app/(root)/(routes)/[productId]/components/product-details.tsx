@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ClientModal } from "./client-modal";
 import { useCart } from "@/providers/cart-context";
+import EmblaCarousel from "@/components/ui/embla-carousel";
+import Image from "next/image";
+import { ClientModal } from "./client-modal";
 
 interface ProductDetailsProduct {
   id: string;
   title: string;
   price: number;
   images: { url: string }[];
-  productSizes: { size: { id: string; name: string }; stock: number }[]; 
+  productSizes: { size: { id: string; name: string }; stock: number }[];
 }
 
 interface ProductDetailsProps {
@@ -18,11 +20,11 @@ interface ProductDetailsProps {
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   const { addItemToCart } = useCart();
-
   const [selectedSize, setSelectedSize] = useState(
     product.productSizes[0]?.size || { id: "", name: "" }
   );
   const [stock, setStock] = useState(product.productSizes[0]?.stock || 0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleSizeChange = (sizeId: string) => {
     const selectedSizeObj = product.productSizes.find(
@@ -41,7 +43,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         title: product.title,
         price: product.price,
         quantity: 1,
-        imageUrl: product.images[0]?.url || "",
+        imageUrl: product.images[currentImageIndex]?.url || "",
         size: { ...selectedSize, stock },
       });
     }
@@ -50,7 +52,27 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   return (
     <div className="flex flex-col md:flex-row items-start justify-center space-y-6 md:space-y-0 md:space-x-8">
       <div className="md:w-1/2 flex h-full items-center justify-center">
-        <ClientModal imageUrl={product.images[0]?.url} />
+        <EmblaCarousel
+          options={{ align: "center", loop: true }}
+          onSlideChange={setCurrentImageIndex}
+        >
+          {product.images.map((image, index) => (
+            <div
+              className="embla__slide w-full h-full flex justify-center items-center"
+              key={index}
+            >
+              <ClientModal imageUrl={image.url}>
+                <Image
+                  src={image.url}
+                  alt={`Product Image ${index + 1}`}
+                  width={800}
+                  height={800}
+                  className="w-full h-auto object-cover rounded-lg cursor-pointer"
+                />
+              </ClientModal>
+            </div>
+          ))}
+        </EmblaCarousel>
       </div>
       <div className="flex flex-col w-full md:w-1/2 md:text-left space-y-4">
         <div className="space-y-1">
