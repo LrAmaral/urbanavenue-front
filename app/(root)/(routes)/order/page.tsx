@@ -1,16 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "@/providers/cart-context";
 import Image from "next/image";
 import { Trash, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wrapper } from "@/components/Custom/wrapper";
 import { createOrder } from "@/app/api/order";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import AddressForm from "../address/components/address-form";
+import { Address } from "@/lib/types";
 
-export default function OrdersPage() {
+interface ShippingOption {
+  type: string;
+  value: string;
+  deliveryTime: string;
+  code: string;
+}
+
+export default function OrdersPage(): JSX.Element {
   const {
     cartItems,
     total,
@@ -19,17 +27,94 @@ export default function OrdersPage() {
     clearCart,
   } = useCart();
   const hasItems = cartItems.length > 0;
-  const route = useRouter();
+
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedOption, setSelectedOption] = useState<ShippingOption | null>(
+    null
+  );
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+
+  useEffect(() => {
+    const savedAddresses = localStorage.getItem("userAddresses");
+    if (savedAddresses) {
+      setAddresses(JSON.parse(savedAddresses));
+    }
+
+    const savedSelectedAddress = localStorage.getItem("selectedAddress");
+    if (savedSelectedAddress) {
+      const parsedAddress = JSON.parse(savedSelectedAddress);
+      setSelectedAddress(parsedAddress);
+      const options = simulateShipping(parsedAddress.zipCode);
+      setShippingOptions(options);
+      setSelectedOption(options[0]);
+    }
+  }, []);
+
+  const simulateShipping = (zipCode: string): ShippingOption[] => {
+    const prefix = zipCode.substring(0, 2);
+    let baseValue = 30;
+    let increment = 0;
+
+    if (prefix === "14") increment = 10;
+    else if (prefix === "15") increment = 20;
+
+    const finalValue = (baseValue + increment).toFixed(2).replace(".", ",");
+
+    return [
+      {
+        type: "Standard Shipping",
+        value: finalValue,
+        deliveryTime: "5",
+        code: "04014",
+      },
+      {
+        type: "Express Shipping",
+        value: (parseFloat(finalValue.replace(",", ".")) + 15)
+          .toFixed(2)
+          .replace(".", ","),
+        deliveryTime: "2",
+        code: "04065",
+      },
+    ];
+  };
+
+  const handleAddressChange = (address: Address) => {
+    setSelectedAddress(address);
+    const options = simulateShipping(address.zipCode);
+    setShippingOptions(options);
+    setSelectedOption(options[0]);
+    localStorage.setItem("selectedAddress", JSON.stringify(address));
+    toast.success("Address updated successfully!");
+  };
+
+  const handleAddAddress = (newAddress: Address) => {
+    const updatedAddresses = [...addresses, newAddress];
+    setAddresses(updatedAddresses);
+    localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+    setIsAddingAddress(false);
+    toast.success("Address added successfully!");
+  };
 
   const handlePlaceOrder = async () => {
+    if (!selectedOption) {
+      toast.error("Please select a shipping option before proceeding.");
+      return;
+    }
+
     try {
-      await createOrder(cartItems, total);
-      toast.success("Pedido realizado com sucesso!");
-      route.push("/payment");
+      await createOrder(
+        cartItems,
+        total + parseFloat(selectedOption.value.replace(",", "."))
+      );
+      toast.success("Order placed successfully!");
       clearCart();
     } catch (error) {
-      console.error("Erro ao realizar o pedido:", error);
-      toast.error("Erro ao realizar o pedido. Tente novamente.");
+      console.error("Error placing the order:", error);
+      toast.error(
+        "An error occurred while placing the order. Please try again."
+      );
     }
   };
 
@@ -114,10 +199,105 @@ export default function OrdersPage() {
               ))}
             </div>
 
-            <div className="flex flex-col items-center w-full md:w-1/3 border p-4 rounded-lg space-y-2 mt-8 md:mt-0">
+            <div className="flex flex-col items-center w-full md:w-1/3 border p-4 rounded-lg space-y-4 mt-8 md:mt-0">
+              <h2 className="text-lg font-semibold">Selected Address</h2>
+              {selectedAddress ? (
+                <div className="w-full p-4 border rounded-md bg-zinc-100">
+                  <p>
+                    {selectedAddress.street}, {selectedAddress.neighborhood}
+                  </p>
+                  <p>
+                    {selectedAddress.city}, {selectedAddress.state}
+                  </p>
+                  <p>{selectedAddress.zipCode}</p>
+                  <button
+                    onClick={() => setSelectedAddress(null)}
+                    className="mt-2 text-zinc-600"
+                  >
+                    Change Address
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full">
+                  {addresses.map((address) => (
+                    <div
+                      key={address.id}
+                      className="p-4 border rounded-md mb-2 cursor-pointer"
+                      onClick={() => handleAddressChange(address)}
+                    >
+                      <p>
+                        {address.street}, {address.neighborhood}
+                      </p>
+                      <p>
+                        {address.city}, {address.state}
+                      </p>
+                      <p>{address.zipCode}</p>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => setIsAddingAddress(true)}
+                    className="mt-4 text-zinc-600"
+                  >
+                    Add New Address
+                  </button>
+                </div>
+              )}
+
+              {isAddingAddress && (
+                <AddressForm
+                  addresses={addresses}
+                  setAddresses={async (updatedAddress) => {
+                    const updatedAddresses = [...addresses, updatedAddress];
+                    setAddresses(updatedAddresses);
+                    localStorage.setItem(
+                      "userAddresses",
+                      JSON.stringify(updatedAddresses)
+                    );
+                  }}
+                  onSubmit={handleAddAddress}
+                />
+              )}
+
+              {shippingOptions.length > 0 && (
+                <div className="w-full">
+                  <h3 className="text-lg font-semibold mb-2">
+                    Select a Shipping Option
+                  </h3>
+                  {shippingOptions.map((option) => (
+                    <div
+                      key={option.code}
+                      className={`flex justify-between items-center border p-2 rounded-md mb-2 cursor-pointer ${
+                        selectedOption?.code === option.code
+                          ? "bg-zinc-100"
+                          : "bg-white"
+                      }`}
+                      onClick={() => setSelectedOption(option)}
+                    >
+                      <div>
+                        <p className="font-medium">{option.type}</p>
+                        <p className="text-sm text-gray-600">
+                          {option.deliveryTime} business days
+                        </p>
+                      </div>
+                      <p className="font-bold">R$ {option.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex justify-between items-center font-semibold text-xl w-full">
                 <p>Subtotal:</p>
-                <p>R$ {total.toFixed(2).replace(".", ",")}</p>
+                <p>
+                  R${" "}
+                  {(
+                    total +
+                    (selectedOption
+                      ? parseFloat(selectedOption.value.replace(",", "."))
+                      : 0)
+                  )
+                    .toFixed(2)
+                    .replace(".", ",")}
+                </p>
               </div>
 
               <Button
