@@ -7,6 +7,7 @@ interface AddressFormProps {
   addresses: Address[];
   setAddresses: (address: Address) => Promise<void>;
   editAddress?: Address | null;
+  onSubmit?: (address: Address) => void;
 }
 
 const AddressForm = ({

@@ -1,5 +1,6 @@
 "use client";
 
+import { CartItem, Size } from "@/lib/types";
 import React, {
   createContext,
   useContext,
@@ -8,18 +9,12 @@ import React, {
   ReactNode,
 } from "react";
 
-interface CartItem {
-  id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  imageUrl: string;
-  size: string;
-}
-
 interface CartContextType {
   cartItems: CartItem[];
   addItemToCart: (item: CartItem) => void;
+  removeItemFromCart: (id: string, size: Size) => void;
+  updateItemQuantity: (id: string, size: Size, quantity: number) => void;
+  clearCart: () => void;
   total: number;
 }
 
@@ -29,16 +24,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isClient, setIsClient] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  
-  useEffect(() => {
-    if (isClient) {
+    if (typeof window !== "undefined") {
       const storedCart = localStorage.getItem("cartItems");
       if (storedCart) {
         try {
@@ -47,28 +36,30 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
           console.error("Erro ao carregar o carrinho:", error);
         }
       }
+      setIsInitialized(true);
     }
-  }, [isClient]); 
+  }, []);
 
-  
   useEffect(() => {
-    if (isClient && cartItems.length > 0) {
+    if (isInitialized) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
-  }, [cartItems, isClient]); 
+  }, [cartItems, isInitialized]);
 
-  
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
-        (item) => item.id === newItem.id && item.size === newItem.size
+        (item) => item.id === newItem.id && item.size.id === newItem.size.id
       );
 
       if (existingItemIndex >= 0) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity,
+          quantity: Math.min(
+            updatedItems[existingItemIndex].quantity + newItem.quantity,
+            newItem.size.stock
+          ),
         };
         return updatedItems;
       }
@@ -77,14 +68,46 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  
+  const removeItemFromCart = (id: string, size: Size) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => !(item.id === id && item.size.id === size.id))
+    );
+  };
+
+  const updateItemQuantity = (id: string, size: Size, quantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id && item.size.id === size.id
+          ? {
+              ...item,
+              quantity: Math.min(Math.max(1, quantity), item.size.stock),
+            }
+          : item
+      )
+    );
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("cartItems");
+  };
+
   const total = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
   return (
-    <CartContext.Provider value={{ cartItems, addItemToCart, total }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addItemToCart,
+        removeItemFromCart,
+        updateItemQuantity,
+        clearCart,
+        total,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

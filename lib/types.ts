@@ -1,6 +1,7 @@
 export interface Address {
   id?: string;
   userId?: string;
+  fullName?: string;
   neighborhood: string;
   street: string;
   city: string;
@@ -34,9 +35,26 @@ export interface Product {
   id: string;
   title: string;
   price: number;
-  images: Image[];
+  images: { url: string }[];
   productSizes: { size: { id: string; name: string }; stock: number }[];
-  isFeatured: boolean;
+  category: { id: string; name: string; createdAt: string; updatedAt: string };
+  sales: number;
+  createdAt: string;
+}
+
+export interface Size {
+  id: string;
+  name: string;
+  stock: number;
+}
+
+export interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+  size: Size;
 }
 
 export type SizeOption = "small" | "medium" | "large" | "xlarge";
