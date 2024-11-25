@@ -1,8 +1,8 @@
 import { Wrapper } from "@/components/Custom/wrapper";
 import getProducts from "../api/get-products";
-import { Loader } from "lucide-react";
-import { Product } from "@/components/Product/product";
 import Filter from "@/components/Filter/filter";
+import ProductGrid from "@/components/product-grid";
+import BackToTopButton from "@/components/back";
 
 interface HomeProps {
   searchParams: {
@@ -84,13 +84,9 @@ export default async function Home({ searchParams }: HomeProps) {
           minPrice={minPrice}
           maxPrice={maxPrice}
         />
-        <div className="grid grid-cols-1 md:mt-20 sm:grid-cols-2 justify-items-center items-center lg:grid-cols-3 gap-0 md:gap-40">
-          {sortedProducts.length === 0 ? (
-            <Loader key="loading" />
-          ) : (
-            sortedProducts.map((item) => <Product key={item.id} data={item} />)
-          )}
-        </div>
+
+        <ProductGrid products={sortedProducts} />
+        <BackToTopButton />
       </Wrapper>
     </div>
   );
