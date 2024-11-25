@@ -10,6 +10,9 @@ import { createOrder } from "@/app/api/order";
 import toast from "react-hot-toast";
 import AddressForm from "../address/components/address-form";
 import { Address } from "@/lib/types";
+import { createUser } from "@/app/api/user";
+import { useUser } from "@clerk/nextjs";
+import axios from "axios";
 
 interface ShippingOption {
   type: string;
@@ -35,6 +38,7 @@ export default function OrdersPage(): JSX.Element {
     null
   );
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const savedAddresses = localStorage.getItem("userAddresses");
@@ -51,6 +55,55 @@ export default function OrdersPage(): JSX.Element {
       setSelectedOption(options[0]);
     }
   }, []);
+
+  const createAddressForOrder = async (newAddress: Address) => {
+    try {
+      if (!user) {
+        toast.error("User not authenticated.");
+        return;
+      }
+
+      const userData = {
+        name: user.firstName || "N/A",
+        email: user.emailAddresses[0]?.emailAddress || "N/A",
+        role: "CLIENT",
+        addresses: [...addresses, newAddress],
+      };
+
+      const createdUser = await createUser(userData);
+
+      const userId = createdUser.addresses[0]?.userId;
+      const addressId =
+        createdUser.addresses[createdUser.addresses.length - 1]?.id;
+
+      if (!userId || !addressId) {
+        throw new Error("Failed to retrieve userId or addressId from backend.");
+      }
+
+      const addressWithId: Address = {
+        ...newAddress,
+        id: addressId,
+        userId: userId,
+      };
+
+      const updatedAddresses = [...addresses, addressWithId];
+      setAddresses(updatedAddresses);
+
+      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+      setSelectedAddress(addressWithId);
+
+      toast.success("Address added successfully!");
+    } catch (error) {
+      console.error("Error adding address:", error);
+      toast.error(
+        `Error adding address: ${
+          axios.isAxiosError(error)
+            ? error.response?.data?.message || error.message
+            : "Unexpected error occurred."
+        }`
+      );
+    }
+  };
 
   const simulateShipping = (zipCode: string): ShippingOption[] => {
     const prefix = zipCode.substring(0, 2);
@@ -89,9 +142,10 @@ export default function OrdersPage(): JSX.Element {
     toast.success("Address updated successfully!");
   };
 
-  const handleAddAddress = (newAddress: Address) => {
+  const handleAddAddress = async (newAddress: Address) => {
     const updatedAddresses = [...addresses, newAddress];
     setAddresses(updatedAddresses);
+    await createAddressForOrder(newAddress);
     localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
     setIsAddingAddress(false);
     toast.success("Address added successfully!");
@@ -199,7 +253,7 @@ export default function OrdersPage(): JSX.Element {
               ))}
             </div>
 
-            <div className="flex flex-col items-center w-full md:w-1/3 border p-4 rounded-lg space-y-4 mt-8 md:mt-0">
+            <div className="flex flex-col w-full md:w-1/3 border p-4 rounded-lg space-y-4 mt-8 md:mt-0">
               <h2 className="text-lg font-semibold">Selected Address</h2>
               {selectedAddress ? (
                 <div className="w-full p-4 border rounded-md bg-zinc-100">
@@ -247,12 +301,7 @@ export default function OrdersPage(): JSX.Element {
                 <AddressForm
                   addresses={addresses}
                   setAddresses={async (updatedAddress) => {
-                    const updatedAddresses = [...addresses, updatedAddress];
-                    setAddresses(updatedAddresses);
-                    localStorage.setItem(
-                      "userAddresses",
-                      JSON.stringify(updatedAddresses)
-                    );
+                    await createAddressForOrder(updatedAddress);
                   }}
                   onSubmit={handleAddAddress}
                 />
