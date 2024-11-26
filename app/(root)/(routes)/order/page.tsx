@@ -290,7 +290,7 @@ export default function OrdersPage(): JSX.Element {
                   ))}
                   <button
                     onClick={() => setIsAddingAddress(true)}
-                    className="mt-4 text-zinc-600"
+                    className="text-zinc-600"
                   >
                     Add New Address
                   </button>

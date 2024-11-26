@@ -140,6 +140,13 @@ const AddressPage = () => {
 
         localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
 
+        const selectedAddress = JSON.parse(
+          localStorage.getItem("selectedAddress") || "null"
+        );
+        if (selectedAddress?.id === id) {
+          localStorage.removeItem("selectedAddress");
+        }
+
         toast.success("Address deleted successfully!");
       } catch (error) {
         if (axios.isAxiosError(error)) {

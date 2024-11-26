@@ -70,10 +70,6 @@ const UserProfile = () => {
               </div>
               {selectedAddress ? (
                 <div className="bg-white">
-                  <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="text-zinc-500" />
-                    <p className="font-semibold text-lg">Main</p>
-                  </div>
                   <h2 className="text-xl font-bold mb-2">
                     {selectedAddress.fullName}
                   </h2>
