@@ -8,7 +8,7 @@ export default function PaymentPage() {
   const router = useRouter();
 
   const handleConfirmPayment = () => {
-    alert("Pagamento confirmado!");
+    alert("Payment confirmed!");
     router.push("/");
   };
 
@@ -19,23 +19,23 @@ export default function PaymentPage() {
 
         <div className="flex flex-col items-center space-y-6">
           <p className="text-lg text-gray-600 text-center">
-            Insira os dados de pagamento para concluir seu pedido.
+            Enter your payment details to complete your order.
           </p>
 
           <div className="w-full max-w-md space-y-4">
             <input
               type="text"
-              placeholder="Nome no cartão"
+              placeholder="Cardholder Name"
               className="w-full p-2 border rounded-md"
             />
             <input
               type="text"
-              placeholder="Número do cartão"
+              placeholder="Card Number"
               className="w-full p-2 border rounded-md"
             />
             <input
               type="text"
-              placeholder="Data de Expiração (MM/AA)"
+              placeholder="Expiration Date (MM/YY)"
               className="w-full p-2 border rounded-md"
             />
             <input
