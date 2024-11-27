@@ -11,6 +11,8 @@ import { pages } from "@/lib/pages";
 import { motion } from "framer-motion";
 import { mobileLinkVars } from "@/lib/mobile-vars";
 import SearchBar from "../search-bar";
+import Image from "next/image";
+import logo from "../../public/favicon.ico";
 
 export const MainNav = () => {
   const { user } = useUser();
@@ -44,7 +46,7 @@ export const MainNav = () => {
               aria-label="Página principal"
               className="font-extrabold text-2xl md:text-3xl font-sans"
             >
-              UrbanAvenue
+              <Image src={logo} width={40} height={40} alt="logo" />
             </Link>
             <div className="flex gap-4">
               <SearchBar classname="hidden md:block" />
