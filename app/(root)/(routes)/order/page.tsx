@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "@/providers/cart-context";
 import Image from "next/image";
 import { Trash, Plus, Minus } from "lucide-react";
@@ -39,22 +39,6 @@ export default function OrdersPage(): JSX.Element {
   );
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const { user } = useUser();
-
-  useEffect(() => {
-    const savedAddresses = localStorage.getItem("userAddresses");
-    if (savedAddresses) {
-      setAddresses(JSON.parse(savedAddresses));
-    }
-
-    const savedSelectedAddress = localStorage.getItem("selectedAddress");
-    if (savedSelectedAddress) {
-      const parsedAddress = JSON.parse(savedSelectedAddress);
-      setSelectedAddress(parsedAddress);
-      const options = simulateShipping(parsedAddress.zipCode);
-      setShippingOptions(options);
-      setSelectedOption(options[0]);
-    }
-  }, []);
 
   const createAddressForOrder = async (newAddress: Address) => {
     try {
@@ -105,33 +89,64 @@ export default function OrdersPage(): JSX.Element {
     }
   };
 
-  const simulateShipping = (zipCode: string): ShippingOption[] => {
+  const formatCurrency = (value: number): string => {
+    return value.toFixed(2).replace(".", ",");
+  };
+
+  const randomVariation = (baseValue: number, percentage: number): number => {
+    const variation = Math.random() * (percentage * 2) - percentage;
+    return baseValue + baseValue * variation;
+  };
+
+  const simulateShipping = useCallback((zipCode: string): ShippingOption[] => {
     const prefix = zipCode.substring(0, 2);
-    let baseValue = 30;
-    let increment = 0;
 
-    if (prefix === "14") increment = 10;
-    else if (prefix === "15") increment = 20;
+    const increments: { [key: string]: number } = {
+      "14": 10,
+      "15": 20,
+      "16": 15,
+      "17": 25,
+    };
 
-    const finalValue = (baseValue + increment).toFixed(2).replace(".", ",");
+    const baseValue = 30;
+    const increment = increments[prefix] || 0;
+
+    const baseFinalValue = baseValue + increment;
+
+    const standardValue = formatCurrency(baseFinalValue);
+    const expressValue = formatCurrency(baseFinalValue + 15);
 
     return [
       {
         type: "Standard Shipping",
-        value: finalValue,
+        value: standardValue,
         deliveryTime: "5",
         code: "04014",
       },
       {
         type: "Express Shipping",
-        value: (parseFloat(finalValue.replace(",", ".")) + 15)
-          .toFixed(2)
-          .replace(".", ","),
+        value: expressValue,
         deliveryTime: "2",
         code: "04065",
       },
     ];
-  };
+  }, []);
+
+  useEffect(() => {
+    const savedAddresses = localStorage.getItem("userAddresses");
+    if (savedAddresses) {
+      setAddresses(JSON.parse(savedAddresses));
+    }
+
+    const savedSelectedAddress = localStorage.getItem("selectedAddress");
+    if (savedSelectedAddress) {
+      const parsedAddress = JSON.parse(savedSelectedAddress);
+      setSelectedAddress(parsedAddress);
+      const options = simulateShipping(parsedAddress.zipCode);
+      setShippingOptions(options);
+      setSelectedOption(options[0]);
+    }
+  }, [simulateShipping]);
 
   const handleAddressChange = (address: Address) => {
     setSelectedAddress(address);
@@ -273,9 +288,9 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               ) : (
                 <div className="w-full">
-                  {addresses.map((address) => (
+                  {addresses.map((address, index) => (
                     <div
-                      key={address.id}
+                      key={address.id || index}
                       className="p-4 border rounded-md mb-2 cursor-pointer"
                       onClick={() => handleAddressChange(address)}
                     >
