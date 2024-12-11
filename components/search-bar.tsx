@@ -110,7 +110,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
         >
-          <Search size={24} className="text-zinc-700" />
+          <Search size={22} className="text-zinc-700" />
         </motion.div>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -141,7 +141,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
                     onClick={() => setSearchTerm("")}
                     className="absolute right-2 text-zinc-500 hover:text-zinc-700"
                   >
-                    <Eraser size={24} className="cursor-pointer" />
+                    <Eraser size={2} className="cursor-pointer" />
                   </button>
                 )}
               </div>
@@ -192,7 +192,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
               )}
             </form>
             <Dialog.Close className="absolute right-4 top-4 text-zinc-400 hover:text-zinc-600">
-              <X size={28} />
+              <X size={24} />
             </Dialog.Close>
           </Dialog.Content>
         </motion.div>

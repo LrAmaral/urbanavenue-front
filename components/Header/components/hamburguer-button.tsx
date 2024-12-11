@@ -37,7 +37,7 @@ const HamburguerButton = () => {
         animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}
         aria-label="Botão Hamburguer"
-        className="flex flex-col space-y-1 justify-center scale-150 z-10"
+        className="flex flex-col space-y-1 justify-center scale-150 z-50"
       >
         <motion.span
           variants={{
@@ -69,7 +69,7 @@ const HamburguerButton = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="fixed md:hidden left-0 origin-top top-0 bg-white w-full h-screen flex items-center justify-center"
+            className="fixed md:hidden left-0 origin-top top-0 bg-white w-full h-screen flex justify-start px-4"
           >
             <motion.div
               onClick={toggleMenu}
@@ -77,7 +77,7 @@ const HamburguerButton = () => {
               initial="initial"
               animate="open"
               exit="initial"
-              className="gap-20 flex flex-col justify-center items-center text-lg"
+              className="gap-20 flex flex-col justify-center text-lg"
             >
               {pages.map(({ id, label, href }) => (
                 <motion.div key={id} variants={mobileLinkVars}>
