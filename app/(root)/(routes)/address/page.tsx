@@ -20,20 +20,27 @@ const AddressPage = () => {
   const { user } = useUser();
 
   const loadAddresses = useCallback(() => {
-    const savedAddresses = localStorage.getItem("userAddresses");
-    if (savedAddresses) {
-      setAddresses(JSON.parse(savedAddresses));
+    if (user?.id) {
+      const savedAddresses = localStorage.getItem(`${user.id}_userAddresses`);
+      if (savedAddresses) {
+        setAddresses(JSON.parse(savedAddresses));
+      }
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     loadAddresses();
   }, [loadAddresses]);
 
   const saveSelectedAddress = (address: Address) => {
-    localStorage.setItem("selectedAddress", JSON.stringify(address));
-    toast.success("Address selected successfully!");
-    router.push("/user");
+    if (user?.id) {
+      localStorage.setItem(
+        `${user.id}_selectedAddress`,
+        JSON.stringify(address)
+      );
+      toast.success("Address selected successfully!");
+      router.push("/user");
+    }
   };
 
   const createAddress = async (newAddress: Address) => {
@@ -49,8 +56,6 @@ const AddressPage = () => {
 
       const createdUser = await createUser(userData);
       const userId = createdUser.addresses[0].userId;
-      const addressId =
-        createdUser.addresses[createdUser.addresses.length - 1].id;
 
       const addressWithId: Address = {
         ...newAddress,
@@ -61,7 +66,10 @@ const AddressPage = () => {
       const updatedAddresses = [...addresses, addressWithId];
 
       setAddresses(updatedAddresses);
-      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+      localStorage.setItem(
+        `${user.id}_userAddresses`,
+        JSON.stringify(updatedAddresses)
+      );
       toast.success("Address created successfully!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -90,7 +98,10 @@ const AddressPage = () => {
       const updatedAddresses = [...addresses];
       updatedAddresses[index] = { ...newAddress, id: addressId };
       setAddresses(updatedAddresses);
-      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+      localStorage.setItem(
+        `${user.id}_userAddresses`,
+        JSON.stringify(updatedAddresses)
+      );
       toast.success("Address updated successfully!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -138,7 +149,17 @@ const AddressPage = () => {
         const updatedAddresses = addresses.filter((addr) => addr.id !== id);
         setAddresses(updatedAddresses);
 
-        localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+        localStorage.setItem(
+          `${user?.id}_userAddresses`,
+          JSON.stringify(updatedAddresses)
+        );
+
+        const selectedAddress = JSON.parse(
+          localStorage.getItem(`${user?.id}_selectedAddress`) || "null"
+        );
+        if (selectedAddress?.id === id) {
+          localStorage.removeItem(`${user?.id}_selectedAddress`);
+        }
 
         toast.success("Address deleted successfully!");
       } catch (error) {

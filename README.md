@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# UrbanAvenue - E-commerce Application
 
-## Getting Started
+Bem-vindo ao **UrbanAvenue**, uma aplicação de e-commerce desenvolvida com **Next.js**, **TypeScript** e **MongoDB**. A aplicação foi criada para proporcionar uma experiência de compra online eficiente, rápida e segura, utilizando as tecnologias mais modernas.
 
-First, run the development server:
+---
+
+## Começando
+
+Para iniciar o projeto localmente, siga estas etapas:
+
+### 1. Clonar o repositório
 
 ```bash
+git clone https://github.com/lramaral/urbanavenue.git
+cd urbanavenue
+```
+
+### 2. Instalar as dependências
+
+Instale as dependências do projeto utilizando o **npm**, **yarn**, **pnpm** ou **bun**:
+
+```bash
+# Usando npm
+npm install
+
+# ou usando yarn
+yarn install
+
+# ou usando pnpm
+pnpm install
+
+# ou usando bun
+bun install
+```
+
+### 3. Rodar o servidor de desenvolvimento
+
+Para iniciar o servidor, execute:
+
+```bash
+# Usando npm
 npm run dev
-# or
+
+# ou usando yarn
 yarn dev
-# or
+
+# ou usando pnpm
 pnpm dev
-# or
+
+# ou usando bun
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Agora, você pode acessar a aplicação em [http://localhost:3000](http://localhost:3000) no seu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Sobre o Next.js
 
-## Learn More
+**Next.js** é um framework baseado em React que facilita a criação de aplicações web escaláveis, rápidas e otimizadas. Ele oferece recursos poderosos, como:
 
-To learn more about Next.js, take a look at the following resources:
+- **Renderização do lado do servidor (SSR)** e **Geração Estática de Páginas (SSG)** para otimização de performance.
+- **Rotas de API**: Criação de APIs diretamente dentro do Next.js, sem a necessidade de um backend separado.
+- **Otimização Automática**: O Next.js cuida automaticamente da otimização de imagens, fontes e outros recursos.
+- **Suporte nativo ao TypeScript**, aumentando a segurança e confiabilidade do código.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Tecnologias Usadas
 
-## Deploy on Vercel
+- **Next.js**: Framework React para construção de aplicações web de alto desempenho e escaláveis.
+- **TypeScript**: Superset do JavaScript que adiciona tipagem estática, melhorando a qualidade e manutenção do código.
+- **MongoDB**: Banco de dados NoSQL utilizado para armazenar dados dos produtos, usuários e pedidos.
+- **TailwindCSS**: Framework de CSS utilitário para estilização rápida e responsiva.
+- **Clerk.js**: Plataforma de autenticação de usuários para gerenciar login, registro e sessões de forma simples e segura.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Funcionalidades
+
+- **Cadastro e Login de Usuário**: A autenticação é gerenciada pelo **Clerk.js**, permitindo um processo rápido e seguro de login e registro de usuários.
+- **Exibição de Produtos**: A aplicação exibe uma lista de produtos, com informações como nome, descrição, preço e imagens.
+- **Carrinho de Compras**: Função para adicionar, remover e visualizar itens no carrinho de compras.
+- **Processo de Checkout**: Coleta de dados de envio e finalização de pedidos.
+
+---
+
+**UrbanAvenue** foi feito para ser uma solução simples e eficiente para quem deseja criar uma plataforma de e-commerce com **Next.js** e tecnologias modernas, como o **Clerk.js** para autenticação de usuários.
+
+## Cartões para Testes
+
+![alt text](image.png)

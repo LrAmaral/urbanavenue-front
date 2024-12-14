@@ -20,18 +20,24 @@ export function Product({ data }: ProductView) {
     <div
       onClick={handleClick}
       key={data.id}
-      className="flex flex-col items-center justify-center text-center cursor-pointer space-y-4 h-[500px] w-96 md:w-64 md:h-48"
+      className="flex flex-col items-center justify-center text-center cursor-pointer space-y-4 w-full"
     >
-      <Image
-        src={data?.images?.[0]?.url}
-        alt={data.title}
-        width={340}
-        height={340}
-        loading="lazy"
-        className="object-cover hover:scale-105 transition-transform duration-300 ease-in-out"
-      />
-      <p className="font-semibold text-md">{data.title}</p>
-      <p className="text-lg">R$ {data.price.toFixed(2).replace(".", ",")}</p>
+      <div className="w-full relative">
+        <Image
+          src={data?.images?.[0]?.url}
+          alt={data.title}
+          width={400}
+          height={400}
+          layout="responsive"
+          objectFit="cover"
+          className="rounded-lg"
+          loading="lazy"
+        />
+      </div>
+      <p className="font-semibold text-sm sm:text-md">{data.title}</p>
+      <p className="text-sm sm:text-md lg:text-lg">
+        R$ {data.price.toFixed(2).replace(".", ",")}
+      </p>
     </div>
   );
 }

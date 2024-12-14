@@ -38,13 +38,13 @@ const createUser = async (userData: User): Promise<User> => {
     return data;
   } catch (error: any) {
     console.error(
-      "Error deleting address:",
+      "Error saving address:",
       error.response ? error.response.data : error.message
     );
     throw new Error(`Error saving user: ${error}`);
   }
 };
-
+ 
 const updateAddress = async (
   userId?: string,
   addresses?: Address

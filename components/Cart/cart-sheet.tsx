@@ -38,10 +38,10 @@ const CartSheet = () => {
     <motion.div>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" className="p-2 relative">
-            <ShoppingCart />
+          <Button variant="ghost" className="p-1.5 relative">
+            <ShoppingCart size={22}/>
             {totalQuantity > 0 && (
-              <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                 {totalQuantity}
               </span>
             )}
@@ -50,7 +50,7 @@ const CartSheet = () => {
         <SheetContent>
           <SheetHeader>
             <SheetTitle className="font-bold flex items-center gap-2">
-              <ShoppingCart /> Cart
+              <ShoppingCart size={24} /> Cart
             </SheetTitle>
             <SheetDescription className="text-start">
               {hasItems ? "Your products:" : "Your bag is empty."}

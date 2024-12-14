@@ -84,7 +84,6 @@ export default async function Home({ searchParams }: HomeProps) {
           minPrice={minPrice}
           maxPrice={maxPrice}
         />
-
         <ProductGrid products={sortedProducts} />
         <BackToTopButton />
       </Wrapper>

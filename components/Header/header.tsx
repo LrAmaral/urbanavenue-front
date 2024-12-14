@@ -11,6 +11,8 @@ import { pages } from "@/lib/pages";
 import { motion } from "framer-motion";
 import { mobileLinkVars } from "@/lib/mobile-vars";
 import SearchBar from "../search-bar";
+import Image from "next/image";
+import logo from "../../public/favicon.ico";
 
 export const MainNav = () => {
   const { user } = useUser();
@@ -34,7 +36,7 @@ export const MainNav = () => {
 
   return (
     <nav
-      className={`fixed w-full z-10 px-3 md:px-0 transition-all duration-300 ease-in-out ${isScrolled ? "bg-white h-20 py-2 shadow-lg" : "bg-white h-24 py-4"}`}
+      className={`fixed w-full z-10 px-3 md:px-0 transition-all duration-300 ease-in-out ${isScrolled ? "bg-white h-16 py-2 shadow-lg" : "bg-white h-20 py-2"}`}
     >
       <Wrapper className="h-full flex justify-between items-center">
         <div className="flex gap-8 items-center justify-between w-full">
@@ -44,7 +46,7 @@ export const MainNav = () => {
               aria-label="Página principal"
               className="font-extrabold text-2xl md:text-3xl font-sans"
             >
-              UrbanAvenue
+              <Image src={logo} width={32} height={32} alt="logo" />
             </Link>
             <div className="flex gap-4">
               <SearchBar classname="hidden md:block" />
