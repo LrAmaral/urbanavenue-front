@@ -12,6 +12,7 @@ export default function PaymentPage() {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { user } = useUser();
 
   useEffect(() => {
@@ -35,36 +36,43 @@ export default function PaymentPage() {
   }, [router, user]);
 
   const handleConfirmPayment = async () => {
-    if (!orderDetails) {
-      toast.error("Order details are missing.");
-      return;
-    }
+    if (isProcessing) return;
 
-    if (!selectedAddress) {
-      toast.error("No address selected. Redirecting...");
-      setTimeout(() => router.push("/address"), 500);
-      return;
-    }
-
-    if (!selectedAddress.userId) {
-      toast.error("User ID is missing in the selected address.");
-      return;
-    }
-
+    setIsProcessing(true);
     try {
+      if (!orderDetails) {
+        toast.error("Order details are missing.");
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!selectedAddress) {
+        toast.error("No address selected. Redirecting...");
+        setTimeout(() => router.push("/address"), 500);
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!selectedAddress.userId) {
+        toast.error("User ID is missing in the selected address.");
+        setIsProcessing(false);
+        return;
+      }
+
       const { cartItems, total } = orderDetails;
 
       await createOrder(cartItems, total, selectedAddress.userId);
 
       localStorage.removeItem(`${user?.id}_orderDetails`);
-      localStorage.removeItem(`${user?.id}_selectedAddress`);
-      localStorage.removeItem("cartItems");
+      localStorage.removeItem(`${user?.id}_cartItems`);
 
       toast.success("Payment confirmed! Order created successfully.");
       router.push("/");
     } catch (error) {
       console.error("Error confirming payment:", error);
       toast.error("An error occurred while processing your payment.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -150,10 +158,13 @@ export default function PaymentPage() {
           </div>
 
           <button
-            className="mt-6 w-full bg-zinc-900 text-white py-3 font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
+            className={`mt-6 w-full bg-zinc-900 text-white py-3 font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out ${
+              isProcessing ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={handleConfirmPayment}
+            disabled={isProcessing}
           >
-            Confirm Payment
+            {isProcessing ? "Processing..." : "Confirm Payment"}
           </button>
         </div>
       </Wrapper>

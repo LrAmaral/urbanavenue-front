@@ -8,6 +8,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useUser } from "@clerk/nextjs";
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -23,12 +24,13 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { user } = useUser();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedCart = localStorage.getItem("cartItems");
+    if (typeof window !== "undefined" && user?.id) {
+      const storedCart = localStorage.getItem(`${user.id}_cartItems`);
       if (storedCart) {
         try {
           setCartItems(JSON.parse(storedCart));
@@ -38,13 +40,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
       }
       setIsInitialized(true);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    if (isInitialized && user?.id) {
+      localStorage.setItem(`${user.id}_cartItems`, JSON.stringify(cartItems));
     }
-  }, [cartItems, isInitialized]);
+  }, [cartItems, isInitialized, user?.id]);
 
   const addItemToCart = (newItem: CartItem) => {
     setCartItems((prevItems) => {
@@ -89,7 +91,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem("cartItems");
+    if (user?.id) {
+      localStorage.removeItem(`${user.id}_cartItems`);
+    }
   };
 
   const total = cartItems.reduce(
