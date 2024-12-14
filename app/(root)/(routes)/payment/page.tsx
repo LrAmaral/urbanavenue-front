@@ -1,58 +1,163 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { Wrapper } from "@/components/Custom/wrapper";
+import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
+import { createOrder } from "@/app/api/order";
+import { Address } from "@/lib/types";
 
 export default function PaymentPage() {
   const router = useRouter();
+  const [orderDetails, setOrderDetails] = useState<any | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const { user } = useUser();
 
-  const handleConfirmPayment = () => {
-    alert("Payment confirmed!");
-    router.push("/");
+  useEffect(() => {
+    const storedOrderDetails = localStorage.getItem(`${user?.id}_orderDetails`);
+    if (storedOrderDetails) {
+      setOrderDetails(JSON.parse(storedOrderDetails));
+    } else {
+      toast.error("No order details found. Redirecting...");
+      setTimeout(() => router.push("/order"), 500);
+    }
+
+    if (user?.id) {
+      const storedAddress = localStorage.getItem(`${user.id}_selectedAddress`);
+      if (storedAddress) {
+        setSelectedAddress(JSON.parse(storedAddress));
+      } else {
+        toast.error("No address selected. Redirecting...");
+        setTimeout(() => router.push("/address"), 500);
+      }
+    }
+  }, [router, user]);
+
+  const handleConfirmPayment = async () => {
+    if (!orderDetails) {
+      toast.error("Order details are missing.");
+      return;
+    }
+
+    if (!selectedAddress) {
+      toast.error("No address selected. Redirecting...");
+      setTimeout(() => router.push("/address"), 500);
+      return;
+    }
+
+    if (!selectedAddress.userId) {
+      toast.error("User ID is missing in the selected address.");
+      return;
+    }
+
+    try {
+      const { cartItems, total } = orderDetails;
+
+      await createOrder(cartItems, total, selectedAddress.userId);
+
+      localStorage.removeItem(`${user?.id}_orderDetails`);
+      localStorage.removeItem(`${user?.id}_selectedAddress`);
+      localStorage.removeItem("cartItems");
+
+      toast.success("Payment confirmed! Order created successfully.");
+      router.push("/");
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      toast.error("An error occurred while processing your payment.");
+    }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Wrapper className="mt-24 md:mt-40">
-        <h1 className="text-2xl font-bold mb-4 text-center">Payment</h1>
-
-        <div className="flex flex-col items-center space-y-6">
-          <p className="text-lg text-gray-600 text-center">
-            Enter your payment details to complete your order.
+    <div className="w-full h-auto mt-24 flex flex-col items-center justify-start">
+      <Wrapper className="w-full flex flex-col space-y-6">
+        <div className="bg-white w-full rounded-lg shadow-md p-6">
+          <h1 className="text-2xl font-bold mb-6 text-center">Payment Page</h1>
+          <p className="text-lg text-gray-600 text-center mb-6">
+            Review your order and confirm payment.
           </p>
 
-          <div className="w-full max-w-md space-y-4">
+          {orderDetails ? (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold mb-4">Order Details</h2>
+              <div className="border rounded-md p-4 space-y-2">
+                {orderDetails.cartItems.map((item: any, index: number) => (
+                  <div
+                    key={`${item.id}-${index}`}
+                    className="flex justify-between items-center"
+                  >
+                    <span>
+                      {item.title} (x{item.quantity})
+                    </span>
+                    <span>
+                      R${" "}
+                      {(item.price * item.quantity)
+                        .toFixed(2)
+                        .replace(".", ",")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex justify-between font-bold text-lg">
+                <span>Total:</span>
+                <span>
+                  R$ {orderDetails.total.toFixed(2).replace(".", ",")}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500">No order details available.</p>
+          )}
+
+          {selectedAddress ? (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold mb-4">Delivery Address</h2>
+              <div className="border rounded-md p-4 space-y-2">
+                <p>
+                  {selectedAddress.street}, {selectedAddress.neighborhood}
+                </p>
+                <p>
+                  {selectedAddress.city}, {selectedAddress.state}
+                </p>
+                <p>{selectedAddress.zipCode}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500">No address selected.</p>
+          )}
+
+          <div className="space-y-4">
             <input
               type="text"
               placeholder="Cardholder Name"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-md"
             />
             <input
               type="text"
               placeholder="Card Number"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-md"
             />
             <input
               type="text"
               placeholder="Expiration Date (MM/YY)"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-md"
             />
             <input
               type="text"
               placeholder="CVV"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-md"
             />
           </div>
 
           <button
-            className="w-full max-w-md bg-zinc-900 text-white py-3 font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
+            className="mt-6 w-full bg-zinc-900 text-white py-3 font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
             onClick={handleConfirmPayment}
           >
             Confirm Payment
           </button>
         </div>
       </Wrapper>
+      <Toaster />
     </div>
   );
 }

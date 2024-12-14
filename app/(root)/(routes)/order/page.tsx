@@ -13,6 +13,7 @@ import { Address } from "@/lib/types";
 import { createUser } from "@/app/api/user";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface ShippingOption {
   type: string;
@@ -30,6 +31,7 @@ export default function OrdersPage(): JSX.Element {
     clearCart,
   } = useCart();
   const hasItems = cartItems.length > 0;
+  const router = useRouter();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -91,11 +93,6 @@ export default function OrdersPage(): JSX.Element {
 
   const formatCurrency = (value: number): string => {
     return value.toFixed(2).replace(".", ",");
-  };
-
-  const randomVariation = (baseValue: number, percentage: number): number => {
-    const variation = Math.random() * (percentage * 2) - percentage;
-    return baseValue + baseValue * variation;
   };
 
   const simulateShipping = useCallback((zipCode: string): ShippingOption[] => {
@@ -173,17 +170,20 @@ export default function OrdersPage(): JSX.Element {
     }
 
     try {
-      await createOrder(
+      const orderDetails = {
         cartItems,
-        total + parseFloat(selectedOption.value.replace(",", "."))
-      );
-      toast.success("Order placed successfully!");
-      clearCart();
+        total: total + parseFloat(selectedOption.value.replace(",", ".")),
+        shippingOption: selectedOption,
+        selectedAddress,
+      };
+
+      localStorage.setItem(`${user?.id}_orderDetails`, JSON.stringify(orderDetails));
+
+      toast.success("Proceeding to payment...");
+      router.push("/payment");
     } catch (error) {
-      console.error("Error placing the order:", error);
-      toast.error(
-        "An error occurred while placing the order. Please try again."
-      );
+      console.error("Error preparing order for payment:", error);
+      toast.error("An error occurred while preparing for payment.");
     }
   };
 
@@ -197,7 +197,7 @@ export default function OrdersPage(): JSX.Element {
             <div className="space-y-4 w-full md:w-2/3">
               {cartItems.map((item) => (
                 <div
-                  key={`${item.size}`}
+                  key={`${item.id}-${item.size.name}`}
                   className="flex flex-col md:flex-row justify-between items-center p-4 border rounded-md space-y-4 md:space-y-0"
                 >
                   <div className="flex items-center gap-2 w-full">
