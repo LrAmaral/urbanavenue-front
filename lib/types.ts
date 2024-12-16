@@ -57,4 +57,45 @@ export interface CartItem {
   size: Size;
 }
 
+export interface Order {
+  id: string;
+  createdAt: string;
+  status: string;
+  total: string;
+  userId?: string;
+  orderItems: {
+    id: string;
+    productId: string;
+    quantity: number;
+    price: number;
+    createdAt: string;
+    updatedAt: string;
+    product: {
+      id: string;
+      categoryId: string;
+      title: string;
+      price: number;
+      category: {
+        id: string;
+        name: string;
+      };
+      images: {
+        id: string;
+        productId: string;
+        url: string;
+      }[];
+      productSizes: {
+        id: string;
+        sizeId: string;
+        size: {
+          id: string;
+          name: string;
+          value: string;
+        };
+        stock: number;
+      }[];
+    };
+  }[];
+}
+
 export type SizeOption = "small" | "medium" | "large" | "xlarge";

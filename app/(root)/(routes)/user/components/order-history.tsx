@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -6,52 +7,89 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"; 
-
-const orders = [
-  {
-    id: "1234",
-    date: "2024-08-24",
-    status: "Delivered",
-    total: "$120.00",
-  },
-  {
-    id: "1235",
-    date: "2024-08-22",
-    status: "Processing",
-    total: "$80.00",
-  },
-  {
-    id: "1236",
-    date: "2024-08-20",
-    status: "Cancelled",
-    total: "$50.00",
-  },
-];
+} from "@/components/ui/table";
+import { Order } from "@/lib/types";
+import { getOrders } from "@/app/api/order";
+import Image from "next/image";
 
 const OrdersHistory = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const ordersData = await getOrders();
+        setOrders(ordersData);
+      } catch (err) {
+        console.error("Erro ao carregar pedidos:", err);
+        setError("Erro ao carregar pedidos.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <p>Carregando pedidos...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div className="w-full px-6">
-      <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+      <h2 className="text-xl font-semibold mb-4">Meus Pedidos</h2>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
+              <TableHead>Product</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead>Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.status}</TableCell>
-                <TableCell>{order.total}</TableCell>
-              </TableRow>
-            ))}
+            {orders.slice(0, 4).map((order) => {
+              const orderTotal = order.orderItems?.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              );
+
+              return (
+                <TableRow key={order.id} className="hover:bg-gray-100">
+                  <TableCell>
+                    {order.orderItems && order.orderItems.length > 0 && (
+                      <div className="flex items-center">
+                        {order.orderItems[0].product?.images?.[0]?.url && (
+                          <Image
+                            src={order.orderItems[0].product.images[0].url}
+                            alt={order.orderItems[0].product.title}
+                            width={50}
+                            height={50}
+                            className="rounded-lg object-cover"
+                          />
+                        )}
+                        <Link
+                          href={`/user/${order.id}`}
+                          className="ml-2 text-sm font-semibold text-ellipsis w-32 overflow-hidden whitespace-nowrap"
+                        >
+                          {order.orderItems[0].product?.title || "No Product"}
+                        </Link>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>$ {orderTotal?.toFixed(2) || "0.00"}</TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
