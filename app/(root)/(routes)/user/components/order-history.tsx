@@ -23,8 +23,8 @@ const OrdersHistory = () => {
         const ordersData = await getOrders();
         setOrders(ordersData);
       } catch (err) {
-        console.error("Erro ao carregar pedidos:", err);
-        setError("Erro ao carregar pedidos.");
+        console.error("Error while loading orders:", err);
+        setError("Error while loading orders.");
       } finally {
         setLoading(false);
       }
@@ -34,7 +34,7 @@ const OrdersHistory = () => {
   }, []);
 
   if (loading) {
-    return <p>Carregando pedidos...</p>;
+    return <p>Loading orders...</p>;
   }
 
   if (error) {
@@ -43,7 +43,7 @@ const OrdersHistory = () => {
 
   return (
     <div className="w-full px-6">
-      <h2 className="text-xl font-semibold mb-4">Meus Pedidos</h2>
+      <h2 className="text-xl font-semibold mb-4">My orders</h2>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -64,7 +64,10 @@ const OrdersHistory = () => {
                 <TableRow key={order.id} className="hover:bg-gray-100">
                   <TableCell>
                     {order.orderItems && order.orderItems.length > 0 && (
-                      <div className="flex items-center">
+                      <Link
+                        href={`/user/${order.id}`}
+                        className="flex items-center"
+                      >
                         {order.orderItems[0].product?.images?.[0]?.url && (
                           <Image
                             src={order.orderItems[0].product.images[0].url}
@@ -74,13 +77,8 @@ const OrdersHistory = () => {
                             className="rounded-lg object-cover"
                           />
                         )}
-                        <Link
-                          href={`/user/${order.id}`}
-                          className="ml-2 text-sm font-semibold text-ellipsis w-32 overflow-hidden whitespace-nowrap"
-                        >
-                          {order.orderItems[0].product?.title || "No Product"}
-                        </Link>
-                      </div>
+                        {order.orderItems[0].product?.title || "No Product"}
+                      </Link>
                     )}
                   </TableCell>
                   <TableCell>
