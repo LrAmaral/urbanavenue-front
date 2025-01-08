@@ -56,7 +56,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           options={{ align: "center", loop: true }}
           onSlideChange={setCurrentImageIndex}
         >
-          {product.images.map((image, index) => (
+          {product.images?.map((image, index) => (
             <div
               className="embla__slide w-full h-full flex justify-center items-center"
               key={index}

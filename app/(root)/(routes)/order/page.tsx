@@ -155,12 +155,20 @@ export default function OrdersPage(): JSX.Element {
   };
 
   const handleAddAddress = async (newAddress: Address) => {
-    const updatedAddresses = [...addresses, newAddress];
-    setAddresses(updatedAddresses);
-    await createAddressForOrder(newAddress);
-    localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
-    setIsAddingAddress(false);
-    toast.success("Address added successfully!");
+    try {
+      const updatedAddresses = [...addresses, newAddress];
+      setAddresses(updatedAddresses);
+      await createAddressForOrder(newAddress);
+      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+
+      setIsAddingAddress(false);
+      toast.success("Address added successfully!");
+    } catch (error) {
+      console.error("Error adding address:", error);
+      toast.error("Failed to add address.");
+    } finally {
+      setIsAddingAddress(false);
+    }
   };
 
   const handlePlaceOrder = async () => {
@@ -177,7 +185,10 @@ export default function OrdersPage(): JSX.Element {
         selectedAddress,
       };
 
-      localStorage.setItem(`${user?.id}_orderDetails`, JSON.stringify(orderDetails));
+      localStorage.setItem(
+        `${user?.id}_orderDetails`,
+        JSON.stringify(orderDetails)
+      );
 
       toast.success("Proceeding to payment...");
       router.push("/payment");
@@ -312,7 +323,7 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               )}
 
-              {isAddingAddress && (
+              {isAddingAddress && !selectedAddress && (
                 <AddressForm
                   addresses={addresses}
                   setAddresses={async (updatedAddress) => {

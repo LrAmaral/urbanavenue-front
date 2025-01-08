@@ -15,6 +15,18 @@ export default function PaymentPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const { user } = useUser();
 
+  const [cardholderName, setCardholderName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expirationDate, setExpirationDate] = useState("");
+  const [cvv, setCvv] = useState("");
+
+  const [errors, setErrors] = useState({
+    cardholderName: "",
+    cardNumber: "",
+    expirationDate: "",
+    cvv: "",
+  });
+
   useEffect(() => {
     const storedOrderDetails = localStorage.getItem(`${user?.id}_orderDetails`);
     if (storedOrderDetails) {
@@ -39,6 +51,14 @@ export default function PaymentPage() {
     if (isProcessing) return;
 
     setIsProcessing(true);
+
+    const newErrors = validateForm();
+    if (Object.values(newErrors).some((error) => error !== "")) {
+      setErrors(newErrors);
+      setIsProcessing(false);
+      return;
+    }
+
     try {
       if (!orderDetails) {
         toast.error("Order details are missing.");
@@ -74,6 +94,37 @@ export default function PaymentPage() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const validateForm = () => {
+    const newErrors: any = {};
+
+    if (!cardholderName) {
+      newErrors.cardholderName = "Cardholder name is required.";
+    }
+
+    const cardNumberRegex = /^\d{16}$/;
+    if (!cardNumber) {
+      newErrors.cardNumber = "Card number is required.";
+    } else if (!cardNumberRegex.test(cardNumber)) {
+      newErrors.cardNumber = "Invalid card number. Must be 16 digits.";
+    }
+
+    const expirationDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!expirationDate) {
+      newErrors.expirationDate = "Expiration date is required.";
+    } else if (!expirationDateRegex.test(expirationDate)) {
+      newErrors.expirationDate = "Invalid expiration date. Format MM/YY.";
+    }
+
+    const cvvRegex = /^\d{3}$/;
+    if (!cvv) {
+      newErrors.cvv = "CVV is required.";
+    } else if (!cvvRegex.test(cvv)) {
+      newErrors.cvv = "Invalid CVV. Must be 3 digits.";
+    }
+
+    return newErrors;
   };
 
   return (
@@ -139,22 +190,43 @@ export default function PaymentPage() {
               type="text"
               placeholder="Cardholder Name"
               className="w-full p-3 border rounded-md"
+              value={cardholderName}
+              onChange={(e) => setCardholderName(e.target.value)}
             />
+            {errors.cardholderName && (
+              <p className="text-red-500 text-sm">{errors.cardholderName}</p>
+            )}
+
             <input
               type="text"
               placeholder="Card Number"
               className="w-full p-3 border rounded-md"
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
             />
+            {errors.cardNumber && (
+              <p className="text-red-500 text-sm">{errors.cardNumber}</p>
+            )}
+
             <input
               type="text"
               placeholder="Expiration Date (MM/YY)"
               className="w-full p-3 border rounded-md"
+              value={expirationDate}
+              onChange={(e) => setExpirationDate(e.target.value)}
             />
+            {errors.expirationDate && (
+              <p className="text-red-500 text-sm">{errors.expirationDate}</p>
+            )}
+
             <input
               type="text"
               placeholder="CVV"
               className="w-full p-3 border rounded-md"
+              value={cvv}
+              onChange={(e) => setCvv(e.target.value)}
             />
+            {errors.cvv && <p className="text-red-500 text-sm">{errors.cvv}</p>}
           </div>
 
           <button
