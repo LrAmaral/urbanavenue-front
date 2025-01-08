@@ -34,6 +34,14 @@ const OrderDetails = () => {
     fetchOrderDetails();
   }, [orderId]);
 
+  const calculateTotal = () => {
+    if (!order?.orderItems) return 0;
+    return order.orderItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen w-full">
@@ -126,6 +134,12 @@ const OrderDetails = () => {
               </li>
             ))}
           </ul>
+          <div className="mt-6 text-xl font-bold text-gray-800">
+            <p className="flex justify-between">
+              <strong>Total:</strong> R$
+              {calculateTotal().toFixed(2).replace(".", ",")}
+            </p>
+          </div>
         </div>
       </Wrapper>
     </div>
