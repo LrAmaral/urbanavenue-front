@@ -1,4 +1,4 @@
-import { CartItem, Order } from "@/lib/types";
+import { Address, CartItem, Order } from "@/lib/types";
 import axios from "axios";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/order`;
@@ -6,7 +6,8 @@ const URL = `${process.env.NEXT_PUBLIC_API_URL}/order`;
 export const createOrder = async (
   cartItems: CartItem[],
   total: number,
-  userId: string
+  userId: string,
+  selectedAddress: Address
 ) => {
   try {
     const response = await axios.post(URL, {
@@ -19,6 +20,7 @@ export const createOrder = async (
         price: item.price,
       })),
       total,
+      address: selectedAddress, 
     });
     return response.data;
   } catch (error: any) {
@@ -38,6 +40,7 @@ export const createOrder = async (
     }
   }
 };
+
 
 export const getOrder = async (id: string): Promise<Order> => {
   try {
@@ -66,9 +69,9 @@ export const getOrder = async (id: string): Promise<Order> => {
   }
 };
 
-export const getOrders = async (): Promise<Order[]> => {
+export const getOrders = async (userId: string): Promise<Order[]> => {
   try {
-    const response = await axios.get(URL, {
+    const response = await axios.get(`${URL}?userId=${userId}`, {
       headers: {
         "Content-Type": "application/json",
       },

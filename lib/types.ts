@@ -7,6 +7,7 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
+  number: string;
 }
 
 export interface ProductProps {

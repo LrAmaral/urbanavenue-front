@@ -47,6 +47,17 @@ const AddressPage = () => {
     try {
       if (!user) return;
 
+      const isDuplicate = addresses.some(
+        (addr) =>
+          addr.zipCode === newAddress.zipCode &&
+          addr.number === newAddress.number
+      );
+      if (isDuplicate) {
+        toast.dismiss();
+        toast.error("Address with this ZIP code and number already exists.");
+        return;
+      }
+
       const userData = {
         name: user.firstName || "N/A",
         email: user.emailAddresses[0]?.emailAddress || "N/A",
@@ -215,6 +226,7 @@ const AddressPage = () => {
                     <p>{addr.city}</p>
                     <p>{addr.state}</p>
                     <p>{addr.zipCode}</p>
+                    <p>{addr.number}</p>
                   </div>
                   <div className="flex flex-col md:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
                     <button

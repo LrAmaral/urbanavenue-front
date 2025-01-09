@@ -6,13 +6,11 @@ import Image from "next/image";
 import { Trash, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wrapper } from "@/components/Custom/wrapper";
-import { createOrder } from "@/app/api/order";
-import toast from "react-hot-toast";
 import AddressForm from "../address/components/address-form";
 import { Address } from "@/lib/types";
 import { createUser } from "@/app/api/user";
 import { useUser } from "@clerk/nextjs";
-import axios from "axios";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 interface ShippingOption {
@@ -23,13 +21,8 @@ interface ShippingOption {
 }
 
 export default function OrdersPage(): JSX.Element {
-  const {
-    cartItems,
-    total,
-    removeItemFromCart,
-    updateItemQuantity,
-    clearCart,
-  } = useCart();
+  const { cartItems, total, removeItemFromCart, updateItemQuantity } =
+    useCart();
   const hasItems = cartItems.length > 0;
   const router = useRouter();
 
@@ -40,6 +33,7 @@ export default function OrdersPage(): JSX.Element {
     null
   );
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [showAddressList, setShowAddressList] = useState(false);
   const { user } = useUser();
 
   const createAddressForOrder = async (newAddress: Address) => {
@@ -75,19 +69,15 @@ export default function OrdersPage(): JSX.Element {
       const updatedAddresses = [...addresses, addressWithId];
       setAddresses(updatedAddresses);
 
-      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
-      setSelectedAddress(addressWithId);
+      localStorage.setItem(
+        `${user?.id}_userAddresses`,
+        JSON.stringify(updatedAddresses)
+      );
 
-      toast.success("Address added successfully!");
+      toast.success("Address added successfully! Please select it.");
     } catch (error) {
       console.error("Error adding address:", error);
-      toast.error(
-        `Error adding address: ${
-          axios.isAxiosError(error)
-            ? error.response?.data?.message || error.message
-            : "Unexpected error occurred."
-        }`
-      );
+      toast.error("Failed to add address.");
     }
   };
 
@@ -130,12 +120,14 @@ export default function OrdersPage(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    const savedAddresses = localStorage.getItem("userAddresses");
+    const savedAddresses = localStorage.getItem(`${user?.id}_userAddresses`);
     if (savedAddresses) {
       setAddresses(JSON.parse(savedAddresses));
     }
 
-    const savedSelectedAddress = localStorage.getItem("selectedAddress");
+    const savedSelectedAddress = localStorage.getItem(
+      `${user?.id}_selectedAddress`
+    );
     if (savedSelectedAddress) {
       const parsedAddress = JSON.parse(savedSelectedAddress);
       setSelectedAddress(parsedAddress);
@@ -143,37 +135,34 @@ export default function OrdersPage(): JSX.Element {
       setShippingOptions(options);
       setSelectedOption(options[0]);
     }
-  }, [simulateShipping]);
+  }, [simulateShipping, user?.id]);
 
   const handleAddressChange = (address: Address) => {
     setSelectedAddress(address);
     const options = simulateShipping(address.zipCode);
     setShippingOptions(options);
     setSelectedOption(options[0]);
-    localStorage.setItem("selectedAddress", JSON.stringify(address));
+    localStorage.setItem(
+      `${user?.id}_selectedAddress`,
+      JSON.stringify(address)
+    );
+    setShowAddressList(false);
     toast.success("Address updated successfully!");
   };
 
   const handleAddAddress = async (newAddress: Address) => {
     try {
-      const updatedAddresses = [...addresses, newAddress];
-      setAddresses(updatedAddresses);
       await createAddressForOrder(newAddress);
-      localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
-
       setIsAddingAddress(false);
-      toast.success("Address added successfully!");
     } catch (error) {
       console.error("Error adding address:", error);
       toast.error("Failed to add address.");
-    } finally {
-      setIsAddingAddress(false);
     }
   };
 
   const handlePlaceOrder = async () => {
-    if (!selectedOption) {
-      toast.error("Please select a shipping option before proceeding.");
+    if (!selectedOption || !selectedAddress) {
+      toast.error("Please select an address and shipping option.");
       return;
     }
 
@@ -202,7 +191,6 @@ export default function OrdersPage(): JSX.Element {
     <div className="container mx-auto p-4">
       <Wrapper className="mt-24 md:mt-32 lg:mt-40">
         <h1 className="text-2xl font-bold mb-6">Your Orders</h1>
-
         {hasItems ? (
           <div className="flex flex-col md:flex-row justify-between items-start md:space-x-8 w-full">
             <div className="space-y-4 w-full md:w-2/3">
@@ -232,13 +220,13 @@ export default function OrdersPage(): JSX.Element {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() =>
+                          onClick={() => {
                             updateItemQuantity(
                               item.id,
                               item.size,
                               item.quantity - 1
-                            )
-                          }
+                            );
+                          }}
                         >
                           <Minus size={16} />
                         </Button>
@@ -257,13 +245,13 @@ export default function OrdersPage(): JSX.Element {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() =>
+                        onClick={() => {
                           updateItemQuantity(
                             item.id,
                             item.size,
                             item.quantity + 1
-                          )
-                        }
+                          );
+                        }}
                       >
                         <Plus size={16} />
                       </Button>
@@ -278,31 +266,18 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               ))}
             </div>
-
-            <div className="flex flex-col w-full md:w-1/3 border p-4 rounded-lg space-y-4 mt-8 md:mt-0">
-              <h2 className="text-lg font-semibold">Selected Address</h2>
-              {selectedAddress ? (
-                <div className="w-full p-4 border rounded-md bg-zinc-100">
-                  <p>
-                    {selectedAddress.street}, {selectedAddress.neighborhood}
-                  </p>
-                  <p>
-                    {selectedAddress.city}, {selectedAddress.state}
-                  </p>
-                  <p>{selectedAddress.zipCode}</p>
-                  <button
-                    onClick={() => setSelectedAddress(null)}
-                    className="mt-2 text-zinc-600"
-                  >
-                    Change Address
-                  </button>
-                </div>
-              ) : (
-                <div className="w-full">
-                  {addresses.map((address, index) => (
+            <div className="space-y-4 w-full md:w-1/3">
+              {showAddressList || !selectedAddress ? (
+                <div className="w-full max-w-lg my-4 md:my-0">
+                  <h2 className="text-lg font-semibold mb-2">Select Address</h2>
+                  {addresses.map((address) => (
                     <div
-                      key={address.id || index}
-                      className="p-4 border rounded-md mb-2 cursor-pointer"
+                      key={address.id}
+                      className={`p-4 border rounded-md mb-2 cursor-pointer ${
+                        selectedAddress?.id === address.id
+                          ? "bg-zinc-100"
+                          : "bg-white"
+                      }`}
                       onClick={() => handleAddressChange(address)}
                     >
                       <p>
@@ -314,16 +289,39 @@ export default function OrdersPage(): JSX.Element {
                       <p>{address.zipCode}</p>
                     </div>
                   ))}
-                  <button
+                  <Button
                     onClick={() => setIsAddingAddress(true)}
-                    className="text-zinc-600"
+                    className="w-full mt-4"
                   >
-                    Add New Address
-                  </button>
+                    Add Address
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  className="w-full h-auto max-w-lg p-4 my-4 md:my-0 border rounded-md bg-zinc-100"
+                >
+                  <h2 className="text-lg font-semibold mb-2">
+                    Selected Address
+                  </h2>
+                  <div className="space-y-2">
+                    <p>
+                      {selectedAddress.street}, {selectedAddress.neighborhood}
+                    </p>
+                    <p>
+                      {selectedAddress.city}, {selectedAddress.state}
+                    </p>
+                    <p>{selectedAddress.zipCode}</p>
+                  </div>
+                  <Button
+                    onClick={() => setShowAddressList(true)}
+                    className="mt-4 w-full"
+                  >
+                    Change Address
+                  </Button>
                 </div>
               )}
 
-              {isAddingAddress && !selectedAddress && (
+              {isAddingAddress && (
                 <AddressForm
                   addresses={addresses}
                   setAddresses={async (updatedAddress) => {
@@ -384,7 +382,7 @@ export default function OrdersPage(): JSX.Element {
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-500">Your order list is empty.</p>
+          <p className="text-center text-gray-500">Your cart is empty.</p>
         )}
       </Wrapper>
     </div>

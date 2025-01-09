@@ -21,6 +21,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
+    number: "", 
   });
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
+    number: "", 
   });
 
   const validate = () => {
@@ -61,6 +63,10 @@ const AddressForm = ({
       newErrors.zipCode = "A valid ZIP code is required.";
       valid = false;
     }
+    if (!inputValues.number.trim()) {
+      newErrors.number = "House number is required.";
+      valid = false;
+    }
 
     setErrors(newErrors);
     return valid;
@@ -80,6 +86,7 @@ const AddressForm = ({
         city: "",
         state: "",
         zipCode: "",
+        number: "", 
       });
     }
   };
@@ -133,6 +140,7 @@ const AddressForm = ({
           { label: "Street", name: "street" },
           { label: "City", name: "city" },
           { label: "State", name: "state" },
+          { label: "House Number", name: "number" }, 
         ].map(({ label, name }) => (
           <div className="mb-4" key={name}>
             <label htmlFor={name} className="block text-gray-700">

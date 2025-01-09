@@ -68,23 +68,51 @@ const OrderDetails = () => {
 
   return (
     <div className="w-full px-4 py-8 min-h-screen">
-      <Wrapper className="flex flex-col my-24 gap-8">
-        <div className="md:flex justify-between items-start gap-6">
-          <div className="md:w-1/2">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-4">
-              Order Details
-            </h2>
-            <div className="space-y-4 text-gray-700">
-              <p>
-                <strong>Order ID:</strong> {order.id}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
-              </p>
-            </div>
+      <Wrapper className="flex flex-col gap-8">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-3xl font-semibold text-gray-800 mb-4">
+            Order Details
+          </h2>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              <strong>Order ID:</strong> {order.id}
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {new Date(order.createdAt).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Status:</strong> {order.isPaid ? "Paid" : "Pending"}
+            </p>
           </div>
         </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            Shipping Address
+          </h3>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              <strong>Street:</strong> {order.address?.street}
+            </p>
+            <p>
+              <strong>Neighborhood:</strong> {order.address?.neighborhood}
+            </p>
+            <p>
+              <strong>City:</strong> {order.address?.city}
+            </p>
+            <p>
+              <strong>State:</strong> {order.address?.state}
+            </p>
+            <p>
+              <strong>ZIP Code:</strong> {order.address?.zipCode}
+            </p>
+            <p>
+              <strong>Number:</strong> {order.address?.number}
+            </p>
+          </div>
+        </div>
+
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Order Items
@@ -134,6 +162,7 @@ const OrderDetails = () => {
               </li>
             ))}
           </ul>
+
           <div className="mt-6 text-xl font-bold text-gray-800">
             <p className="flex justify-between">
               <strong>Total:</strong> R$

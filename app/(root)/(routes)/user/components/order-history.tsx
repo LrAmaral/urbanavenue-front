@@ -11,8 +11,11 @@ import {
 import { Order } from "@/lib/types";
 import { getOrders } from "@/app/api/order";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
+import toast from "react-hot-toast";
 
 const OrdersHistory = () => {
+  const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,24 +24,31 @@ const OrdersHistory = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      const storedAddress = localStorage.getItem(`${user?.id}_selectedAddress`);
+      const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
+
+      if (!selectedAddress?.userId) {
+        toast.error("User ID is missing. Redirecting...");
+        return;
+      }
+
       try {
-        const ordersData = await getOrders();
-        setOrders(ordersData);
+        const data = await getOrders(selectedAddress?.userId);
+        setOrders(data);
       } catch (err) {
-        console.error("Error while loading orders:", err);
-        setError("Error while loading orders.");
+        console.error("Error fetching orders:", err);
+        setError("Failed to fetch orders.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [user]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
-
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
@@ -94,9 +104,7 @@ const OrdersHistory = () => {
                   <TableCell>
                     {new Date(order.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
-                    ${orderTotal?.toFixed(2) || "0.00"}
-                  </TableCell>
+                  <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
                 </TableRow>
               );
             })}
