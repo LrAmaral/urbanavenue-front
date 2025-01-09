@@ -1,3 +1,10 @@
+export interface EmailPayload {
+  recipient: string;
+  subject: string;
+  text: string;
+  html?: string;
+}
+
 export interface Address {
   id?: string;
   userId?: string;

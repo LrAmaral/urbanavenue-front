@@ -146,11 +146,11 @@ const OrderDetails = () => {
                       <strong>Category:</strong>{" "}
                       {item.product?.category?.name || "Category unavailable"}
                     </p>
-                    <p className="text-md text-gray-600">
+                    {/* <p className="text-md text-gray-600">
                       <strong>Size:</strong>{" "}
-                      {item.product?.productSizes?.[0]?.size?.name ||
+                      {item.product?.productSizes?.size?.name ||
                         "Size unavailable"}
-                    </p>
+                    </p> */}
                     <p className="text-md text-gray-600">
                       <strong>Quantity:</strong> {item.quantity}
                     </p>
