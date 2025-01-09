@@ -63,6 +63,8 @@ export interface Order {
   createdAt: string;
   status: string;
   total: string;
+  address: Address;
+  isPaid: boolean;
   userId?: string;
   orderItems: {
     id: string;
