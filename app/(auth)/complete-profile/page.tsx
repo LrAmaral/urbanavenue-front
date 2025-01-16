@@ -31,7 +31,7 @@ export default function CompleteProfilePage() {
     const selectedDate = new Date(value);
 
     if (selectedDate > today) {
-      setError("The date is invalid.");
+      setError("Invalid date.");
     }
 
     if (user) {
@@ -46,7 +46,7 @@ export default function CompleteProfilePage() {
     const birthDate = new Date(dateOfBirth);
 
     if (birthDate > today) {
-      setError("The date is invalid.");
+      setError("Invalid date.");
       return;
     }
 
