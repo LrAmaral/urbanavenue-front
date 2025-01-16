@@ -47,6 +47,9 @@ const AddressPage = () => {
     try {
       if (!user) return;
 
+      // Recuperar a data de nascimento do localStorage
+      const dateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
+
       const isDuplicate = addresses.some(
         (addr) =>
           addr.zipCode === newAddress.zipCode &&
@@ -58,9 +61,11 @@ const AddressPage = () => {
         return;
       }
 
+      // Preparar os dados do usuário para o createUser
       const userData = {
         name: user.firstName || "N/A",
         email: user.emailAddresses[0]?.emailAddress || "N/A",
+        dateOfBirth: dateOfBirth || "N/A", // Adicionando a data de nascimento
         role: "CLIENT",
         addresses: [...addresses, newAddress],
       };

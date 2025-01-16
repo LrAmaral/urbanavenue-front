@@ -116,9 +116,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
 
         <button
           onClick={() => {
-            handleAddToCart;
-            toast.dismiss();
-            toast.error("Out of stock! Cannot add more.");
+            if (stock > 0) {
+              handleAddToCart();
+            } else {
+              toast.dismiss();
+              toast.error("Out of stock! Cannot add more.");
+            }
           }}
           className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
           disabled={stock === 0}

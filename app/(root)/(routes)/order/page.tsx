@@ -187,6 +187,8 @@ export default function OrdersPage(): JSX.Element {
     }
   };
 
+  console.log(isAddingAddress);
+
   return (
     <div className="container mx-auto p-4">
       <Wrapper className="mt-24 md:mt-32 lg:mt-40">
@@ -295,11 +297,21 @@ export default function OrdersPage(): JSX.Element {
                   >
                     Add Address
                   </Button>
+                  {isAddingAddress && (
+                    <div className="mt-4">
+                      <AddressForm
+                        addresses={addresses}
+                        setAddresses={async (updatedAddress) => {
+                          await createAddressForOrder(updatedAddress);
+                          setIsAddingAddress(false);
+                        }}
+                        onSubmit={handleAddAddress}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div
-                  className="w-full h-auto max-w-lg p-4 my-4 md:my-0 border rounded-md bg-zinc-100"
-                >
+                <div className="w-full h-auto max-w-lg p-4 my-4 md:my-0 border rounded-md bg-zinc-100">
                   <h2 className="text-lg font-semibold mb-2">
                     Selected Address
                   </h2>
@@ -313,7 +325,10 @@ export default function OrdersPage(): JSX.Element {
                     <p>{selectedAddress.zipCode}</p>
                   </div>
                   <Button
-                    onClick={() => setShowAddressList(true)}
+                    onClick={() => {
+                      setShowAddressList(true);
+                      setIsAddingAddress(false);
+                    }}
                     className="mt-4 w-full"
                   >
                     Change Address

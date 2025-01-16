@@ -55,7 +55,7 @@ const UserProfile = () => {
   return (
     <div className="w-full h-auto md:h-1/2 mt-24 flex flex-col items-center justify-start">
       <Wrapper className="flex flex-col w-full md:flex-row space-y-6">
-        <div className="w-full md:w-1/3 p-6">
+        <div className="w-full md:w-1/3 py-6 md:px-0 px-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">My account</h2>
             <button
