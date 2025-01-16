@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useUser } from "@clerk/nextjs";
 import { createOrder } from "@/app/api/order";
 import { Address } from "@/lib/types";
+import { useCart } from "@/providers/cart-context";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function PaymentPage() {
   const [cardNumber, setCardNumber] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
   const [cvv, setCvv] = useState("");
+  const { clearCart } = useCart();
 
   const [errors, setErrors] = useState({
     cardholderName: "",
@@ -49,43 +51,50 @@ export default function PaymentPage() {
 
   const handleConfirmPayment = async () => {
     if (isProcessing) return;
-  
+
     setIsProcessing(true);
-  
+
     const newErrors = validateForm();
     if (Object.values(newErrors).some((error) => error !== "")) {
       setErrors(newErrors);
       setIsProcessing(false);
       return;
     }
-  
+
     try {
       if (!orderDetails) {
         toast.error("Order details are missing.");
         setIsProcessing(false);
         return;
       }
-  
+
       if (!selectedAddress) {
         toast.error("No address selected. Redirecting...");
         setTimeout(() => router.push("/address"), 500);
         setIsProcessing(false);
         return;
       }
-  
+
       if (!selectedAddress.userId) {
         toast.error("User ID is missing in the selected address.");
         setIsProcessing(false);
         return;
       }
-  
+
       const { cartItems, total } = orderDetails;
-  
-      await createOrder(cartItems, total, selectedAddress.userId, selectedAddress);
-  
+
+      await createOrder(
+        cartItems,
+        total,
+        selectedAddress.userId,
+        selectedAddress
+      );
+
+      clearCart();
+
       localStorage.removeItem(`${user?.id}_orderDetails`);
       localStorage.removeItem(`${user?.id}_cartItems`);
-  
+
       toast.success("Payment confirmed! Order created successfully.");
       router.push("/");
     } catch (error) {
@@ -95,7 +104,6 @@ export default function PaymentPage() {
       setIsProcessing(false);
     }
   };
-  
 
   const validateForm = () => {
     const newErrors: any = {};
