@@ -77,7 +77,7 @@ const HamburguerButton = () => {
               initial="initial"
               animate="open"
               exit="initial"
-              className="gap-20 flex flex-col justify-center text-lg"
+              className="gap-6 flex flex-col mt-24 text-lg"
             >
               {pages.map(({ id, label, href }) => (
                 <motion.div key={id} variants={mobileLinkVars}>

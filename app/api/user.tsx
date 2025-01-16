@@ -44,7 +44,7 @@ const createUser = async (userData: User): Promise<User> => {
     throw new Error(`Error saving user: ${error}`);
   }
 };
- 
+
 const updateAddress = async (
   userId?: string,
   addresses?: Address

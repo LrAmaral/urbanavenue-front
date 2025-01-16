@@ -5,6 +5,7 @@ import { useCart } from "@/providers/cart-context";
 import EmblaCarousel from "@/components/ui/embla-carousel";
 import Image from "next/image";
 import { ClientModal } from "./client-modal";
+import toast from "react-hot-toast";
 
 interface ProductDetailsProduct {
   id: string;
@@ -20,10 +21,15 @@ interface ProductDetailsProps {
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   const { addItemToCart } = useCart();
+
+  const firstAvailableSize =
+    product.productSizes.find((size) => size.stock > 0) ||
+    product.productSizes[0];
+
   const [selectedSize, setSelectedSize] = useState(
-    product.productSizes[0]?.size || { id: "", name: "" }
+    firstAvailableSize?.size || { id: "", name: "" }
   );
-  const [stock, setStock] = useState(product.productSizes[0]?.stock || 0);
+  const [stock, setStock] = useState(firstAvailableSize?.stock || 0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleSizeChange = (sizeId: string) => {
@@ -46,6 +52,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         imageUrl: product.images[currentImageIndex]?.url || "",
         size: { ...selectedSize, stock },
       });
+
+      toast.success("Item added to cart!");
     }
   };
 
@@ -92,8 +100,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             onChange={(e) => handleSizeChange(e.target.value)}
           >
             {product.productSizes.map((size) => (
-              <option key={size.size.id} value={size.size.id}>
-                {size.size.name}
+              <option
+                key={size.size.id}
+                value={size.size.id}
+                disabled={size.stock === 0}
+              >
+                {size.size.name} {size.stock === 0 ? "(Out of Stock)" : ""}
               </option>
             ))}
           </select>
@@ -103,7 +115,14 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         </div>
 
         <button
-          onClick={handleAddToCart}
+          onClick={() => {
+            if (stock > 0) {
+              handleAddToCart();
+            } else {
+              toast.dismiss();
+              toast.error("Out of stock! Cannot add more.");
+            }
+          }}
           className="px-6 py-3 w-full bg-zinc-900 text-white font-bold rounded-lg hover:bg-zinc-800 transition-colors ease-in-out"
           disabled={stock === 0}
         >

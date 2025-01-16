@@ -11,8 +11,11 @@ import {
 import { Order } from "@/lib/types";
 import { getOrders } from "@/app/api/order";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
+import toast from "react-hot-toast";
 
 const OrdersHistory = () => {
+  const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,24 +24,31 @@ const OrdersHistory = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      const storedAddress = localStorage.getItem(`${user?.id}_selectedAddress`);
+      const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
+
+      if (!selectedAddress?.userId) {
+        toast.error("User ID is missing. Redirecting...");
+        return;
+      }
+
       try {
-        const ordersData = await getOrders();
-        setOrders(ordersData);
+        const data = await getOrders(selectedAddress?.userId);
+        setOrders(data);
       } catch (err) {
-        console.error("Error while loading orders:", err);
-        setError("Error while loading orders.");
+        console.error("Error fetching orders:", err);
+        setError("Failed to fetch orders.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [user]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
-
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
@@ -52,85 +62,94 @@ const OrdersHistory = () => {
   return (
     <div className="w-full px-6">
       <h2 className="text-xl font-semibold mb-4">My Orders</h2>
-      <div className="overflow-x-auto">
-        <Table className="border rounded-lg">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentOrders.map((order) => {
-              const orderTotal = order.orderItems?.reduce(
-                (sum, item) => sum + item.price * item.quantity,
-                0
-              );
 
-              return (
-                <TableRow key={order.id} className="hover:bg-gray-100">
-                  <TableCell>
-                    {order.orderItems && order.orderItems.length > 0 && (
-                      <Link
-                        href={`/user/${order.id}`}
-                        className="flex items-center gap-2"
-                      >
-                        {order.orderItems[0].product?.images?.[0]?.url && (
-                          <Image
-                            src={order.orderItems[0].product.images[0].url}
-                            alt={order.orderItems[0].product.title}
-                            width={50}
-                            height={50}
-                            className="rounded-lg object-cover"
-                          />
-                        )}
-                        <span className="text-ellipsis w-full overflow-hidden whitespace-nowrap">
-                          {order.orderItems[0].product?.title || "No Product"}
-                        </span>
-                      </Link>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    ${orderTotal?.toFixed(2) || "0.00"}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 text-white rounded-lg ${
-            currentPage === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-zinc-800"
-          }`}
-        >
-          Previous
-        </button>
-        <p className="text-gray-600">
-          Page {currentPage} of {totalPages}
+      {orders.length === 0 ? (
+        <p className="text-center text-gray-600">
+          You {`haven't`} placed any orders yet.
         </p>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 text-white rounded-lg ${
-            currentPage === totalPages
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-zinc-800"
-          }`}
-        >
-          Next
-        </button>
-      </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <Table className="border rounded-lg">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentOrders.map((order) => {
+                const orderTotal = order.orderItems?.reduce(
+                  (sum, item) => sum + item.price * item.quantity,
+                  0
+                );
+
+                return (
+                  <TableRow key={order.id} className="hover:bg-gray-100">
+                    <TableCell>
+                      {order.orderItems && order.orderItems.length > 0 && (
+                        <Link
+                          href={`/user/${order.id}`}
+                          className="flex items-center gap-2"
+                        >
+                          {order.orderItems[0].product?.images?.[0]?.url && (
+                            <Image
+                              src={order.orderItems[0].product.images[0].url}
+                              alt={order.orderItems[0].product.title}
+                              width={50}
+                              height={50}
+                              className="rounded-lg object-cover"
+                            />
+                          )}
+                          <span className="text-ellipsis w-full overflow-hidden whitespace-nowrap">
+                            {order.orderItems[0].product?.title || "No Product"}
+                          </span>
+                        </Link>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {orders.length > 0 && (
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 text-white rounded-lg ${
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-zinc-800"
+            }`}
+          >
+            Previous
+          </button>
+          <p className="text-gray-600">
+            Page {currentPage} of {totalPages}
+          </p>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 text-white rounded-lg ${
+              currentPage === totalPages
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-zinc-800"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

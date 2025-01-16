@@ -47,9 +47,25 @@ const AddressPage = () => {
     try {
       if (!user) return;
 
+      // Recuperar a data de nascimento do localStorage
+      const dateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
+
+      const isDuplicate = addresses.some(
+        (addr) =>
+          addr.zipCode === newAddress.zipCode &&
+          addr.number === newAddress.number
+      );
+      if (isDuplicate) {
+        toast.dismiss();
+        toast.error("Address with this ZIP code and number already exists.");
+        return;
+      }
+
+      // Preparar os dados do usuário para o createUser
       const userData = {
         name: user.firstName || "N/A",
         email: user.emailAddresses[0]?.emailAddress || "N/A",
+        dateOfBirth: dateOfBirth || "N/A", // Adicionando a data de nascimento
         role: "CLIENT",
         addresses: [...addresses, newAddress],
       };
@@ -215,6 +231,7 @@ const AddressPage = () => {
                     <p>{addr.city}</p>
                     <p>{addr.state}</p>
                     <p>{addr.zipCode}</p>
+                    <p>{addr.number}</p>
                   </div>
                   <div className="flex flex-col md:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
                     <button

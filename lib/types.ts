@@ -1,3 +1,10 @@
+export interface EmailPayload {
+  recipient: string;
+  subject: string;
+  text: string;
+  html?: string;
+}
+
 export interface Address {
   id?: string;
   userId?: string;
@@ -7,6 +14,7 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
+  number: string;
 }
 
 export interface ProductProps {
@@ -62,6 +70,8 @@ export interface Order {
   createdAt: string;
   status: string;
   total: string;
+  address: Address;
+  isPaid: boolean;
   userId?: string;
   orderItems: {
     id: string;
