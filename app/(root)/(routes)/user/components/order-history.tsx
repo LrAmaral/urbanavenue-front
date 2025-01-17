@@ -28,7 +28,6 @@ const OrdersHistory = () => {
       const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
 
       if (!selectedAddress?.userId) {
-        toast.error("User ID is missing. Redirecting...");
         return;
       }
 
@@ -52,11 +51,11 @@ const OrdersHistory = () => {
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
-    return <p>Loading orders...</p>;
+    return <p className="px-2">Loading orders...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="px-2">{error}</p>;
   }
 
   return (
