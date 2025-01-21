@@ -51,7 +51,7 @@ const OrdersHistory = () => {
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
-    return <p className="px-2">Loading orders...</p>;
+    return <p className="px-2 w-full">Loading orders...</p>;
   }
 
   if (error) {
@@ -124,9 +124,7 @@ const OrdersHistory = () => {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={`px-4 py-2 text-white rounded-lg ${
-              currentPage === 1
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-zinc-800"
+              currentPage === 1 ? "display:none" : "bg-zinc-800"
             }`}
           >
             Previous
