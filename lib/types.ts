@@ -23,6 +23,22 @@ export interface ProductProps {
   data: [];
 }
 
+export type Role = "ADMIN" | "CLIENT";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  cpf?: string;
+  phoneNumber?: string;
+  dateOfBirth: Date;
+  orders: Order[];
+  role: Role;
+  addresses: Address[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export interface SizeWithStock {
   size: {
     id: string;
@@ -43,6 +59,7 @@ export interface Product {
   id: string;
   title: string;
   price: number;
+  desc: string;
   images: { url: string }[];
   productSizes: { size: { id: string; name: string }; stock: number }[];
   category: { id: string; name: string; createdAt: string; updatedAt: string };

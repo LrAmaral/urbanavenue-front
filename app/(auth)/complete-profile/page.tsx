@@ -6,20 +6,32 @@ import { useUser } from "@clerk/nextjs";
 
 export default function CompleteProfilePage() {
   const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
+    if (user === undefined) {
+      return;
+    }
+
     if (!user) {
       router.push("/sign-in");
       return;
     }
 
     const storedDateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
-    if (storedDateOfBirth) {
-      setDateOfBirth(storedDateOfBirth);
-    }
+    const storedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
+    const storedCpf = localStorage.getItem(`${user.id}_cpf`);
+
+    if (storedDateOfBirth) setDateOfBirth(storedDateOfBirth);
+    if (storedPhoneNumber) setPhoneNumber(storedPhoneNumber);
+    if (storedCpf) setCpf(storedCpf);
+
+    setLoading(false);
   }, [user, router]);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +49,26 @@ export default function CompleteProfilePage() {
     if (user) {
       localStorage.setItem(`${user.id}_dateOfBirth`, value);
     }
+  };
+
+  const handlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let value = event.target.value.replace(/\D/g, "");
+    if (value.length > 11) value = value.slice(0, 11);
+    setPhoneNumber(value);
+    localStorage.setItem(`${user?.id}_phoneNumber`, value);
+  };
+
+  const handleCpfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value.replace(/\D/g, "");
+    if (value.length > 11) value = value.slice(0, 11);
+    setCpf(value);
+    localStorage.setItem(`${user?.id}_cpf`, value);
+  };
+
+  const validateCpf = (cpf: string): boolean => {
+    return cpf.length === 11;
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -65,20 +97,30 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    if (user) {
-      console.log("Usuário ID:", user.id);
-      console.log("Data de nascimento:", dateOfBirth);
+    if (!phoneNumber) {
+      setError("Phone number is required.");
+      return;
     }
 
+    if (!validateCpf(cpf)) {
+      setError("Invalid CPF.");
+      return;
+    }
+
+    setError("");
     router.push("/user");
   };
 
-  if (!user) {
-    return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-1/2 px-4">
+    <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="max-w-md w-full border border-black rounded-md p-6">
         <h1 className="text-xl md:text-2xl font-bold text-center mb-6">
           Complete Your Profile
@@ -96,8 +138,38 @@ export default function CompleteProfilePage() {
               required
               className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
             />
-            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium">
+              Phone Number
+            </label>
+            <input
+              id="phoneNumber"
+              type="text"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              required
+              maxLength={11}
+              className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
+              placeholder="Ex: +55 11 99999-9999"
+            />
+          </div>
+          <div>
+            <label htmlFor="cpf" className="block text-sm font-medium">
+              CPF
+            </label>
+            <input
+              id="cpf"
+              type="text"
+              value={cpf}
+              onChange={handleCpfChange}
+              required
+              maxLength={11}
+              className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
+              placeholder="Ex: 12345678901"
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           <button
             type="submit"
             className="w-full py-2 px-4 border border-black rounded-md font-medium bg-black hover:bg-zinc-800 text-white transition"

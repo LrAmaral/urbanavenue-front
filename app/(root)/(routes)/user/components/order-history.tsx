@@ -12,7 +12,23 @@ import { Order } from "@/lib/types";
 import { getOrders } from "@/app/api/order";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
-import toast from "react-hot-toast";
+
+const SkeletonLoader = () => {
+  return (
+    <div className="animate-pulse">
+      {[...Array(3)].map((_, index) => (
+        <div
+          key={index}
+          className="flex justify-between items-center p-4 border-b last:border-0"
+        >
+          <div className="w-24 h-6 bg-gray-300 rounded-md"></div>
+          <div className="w-32 h-6 bg-gray-300 rounded-md"></div>
+          <div className="w-20 h-6 bg-gray-300 rounded-md"></div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const OrdersHistory = () => {
   const { user } = useUser();
@@ -24,14 +40,20 @@ const OrdersHistory = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const storedAddress = localStorage.getItem(`${user?.id}_selectedAddress`);
-      const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
-
-      if (!selectedAddress?.userId) {
-        return;
-      }
-
+      setLoading(true);
       try {
+        const storedAddress = localStorage.getItem(
+          `${user?.id}_selectedAddress`
+        );
+        const selectedAddress = storedAddress
+          ? JSON.parse(storedAddress)
+          : null;
+
+        if (!selectedAddress?.userId) {
+          console.log("User ID not found in selected address.");
+          return;
+        }
+
         const data = await getOrders(selectedAddress?.userId);
         setOrders(data);
       } catch (err) {
@@ -51,80 +73,87 @@ const OrdersHistory = () => {
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
-    return <p className="px-2 w-full">Loading orders...</p>;
+    return (
+      <div className="w-full px-6">
+        <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+        <SkeletonLoader />
+      </div>
+    );
   }
 
-  if (error) {
-    return <p className="px-2">{error}</p>;
+  if (!orders || orders.length === 0 || error) {
+    return (
+      <div className="w-full px-6">
+        <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+        <div className="text-gray-500 text-center mt-4">
+          <p>You have no orders yet.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="w-full px-6">
       <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+      <div className="overflow-x-auto">
+        <Table className="border rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Product</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentOrders.map((order) => {
+              const orderTotal = order.orderItems?.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              );
 
-      {orders.length === 0 ? (
-        <p className="text-center text-gray-600">
-          You {`haven't`} placed any orders yet.
-        </p>
-      ) : (
-        <div className="overflow-x-auto">
-          <Table className="border rounded-lg">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentOrders.map((order) => {
-                const orderTotal = order.orderItems?.reduce(
-                  (sum, item) => sum + item.price * item.quantity,
-                  0
-                );
+              return (
+                <TableRow key={order.id} className="hover:bg-gray-100">
+                  <TableCell>
+                    {order.orderItems && order.orderItems.length > 0 && (
+                      <Link
+                        href={`/user/${order.id}`}
+                        className="flex items-center gap-2"
+                      >
+                        {order.orderItems[0].product?.images?.[0]?.url && (
+                          <Image
+                            src={order.orderItems[0].product.images[0].url}
+                            alt={order.orderItems[0].product.title}
+                            width={50}
+                            height={50}
+                            className="rounded-lg object-cover"
+                          />
+                        )}
+                        <span className="text-ellipsis w-full overflow-hidden whitespace-nowrap">
+                          {order.orderItems[0].product?.title || "No Product"}
+                        </span>
+                      </Link>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
 
-                return (
-                  <TableRow key={order.id} className="hover:bg-gray-100">
-                    <TableCell>
-                      {order.orderItems && order.orderItems.length > 0 && (
-                        <Link
-                          href={`/user/${order.id}`}
-                          className="flex items-center gap-2"
-                        >
-                          {order.orderItems[0].product?.images?.[0]?.url && (
-                            <Image
-                              src={order.orderItems[0].product.images[0].url}
-                              alt={order.orderItems[0].product.title}
-                              width={50}
-                              height={50}
-                              className="rounded-lg object-cover"
-                            />
-                          )}
-                          <span className="text-ellipsis w-full overflow-hidden whitespace-nowrap">
-                            {order.orderItems[0].product?.title || "No Product"}
-                          </span>
-                        </Link>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {orders.length > 0 && (
+      {orders.length > itemsPerPage && (
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={`px-4 py-2 text-white rounded-lg ${
-              currentPage === 1 ? "display:none" : "bg-zinc-800"
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-zinc-800"
             }`}
           >
             Previous

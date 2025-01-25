@@ -17,16 +17,13 @@ export const Footer = () => {
           </Link>
           <div className="text-sm">
             <div className="mb-4 flex flex-col md:flex-row justify-center md:justify-start space-y-2 md:space-y-0 md:space-x-6">
-              <Link
-                href="/contact#about"
-                className="hover:underline"
-              >
-                About
+              <Link href="/lookbook" className="hover:underline">
+                Lookbook
               </Link>
-              <Link
-                href="/contact"
-                className="hover:underline"
-              >
+              <Link href="/info" className="hover:underline">
+                Info
+              </Link>
+              <Link href="/contact" className="hover:underline">
                 Contact
               </Link>
             </div>

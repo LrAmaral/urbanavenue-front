@@ -1,7 +1,7 @@
 export const pages = [
   {
     id: "lookbook",
-    label: "lookbook",
+    label: "Lookbook",
     href: "/lookbook",
   },
   {
@@ -11,7 +11,7 @@ export const pages = [
   },
   {
     id: "contact",
-    label: "contact",
+    label: "Contact",
     href: "/contact",
   },
   {

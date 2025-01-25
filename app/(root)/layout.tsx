@@ -1,8 +1,7 @@
-import { Suspense } from "react";
 import { Footer } from "../../components/Footer/footer";
 import { MainNav } from "../../components/Header/header";
 
-export default function Rootlayout({
+export default function Routeslayout({
   children,
 }: {
   children: React.ReactNode;
@@ -10,8 +9,7 @@ export default function Rootlayout({
   return (
     <div className="flex flex-col items-center w-full h-auto overflow-hidden">
       <MainNav />
-      <div id="modal-root"></div>
-      <Suspense fallback={<div>Loading layout...</div>}>{children}</Suspense>
+      {children}
       <Footer />
     </div>
   );

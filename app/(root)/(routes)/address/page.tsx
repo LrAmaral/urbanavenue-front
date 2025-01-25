@@ -10,11 +10,14 @@ import { createUser, deleteAddress, updateAddress } from "@/app/api/user";
 import { Address } from "@/lib/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Check, Edit, Trash2 } from "lucide-react";
+import { Check, Edit } from "lucide-react";
 
 const AddressPage = () => {
   const router = useRouter();
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const { user } = useUser();
@@ -22,9 +25,14 @@ const AddressPage = () => {
   const loadAddresses = useCallback(() => {
     if (user?.id) {
       const savedAddresses = localStorage.getItem(`${user.id}_userAddresses`);
-      if (savedAddresses) {
-        setAddresses(JSON.parse(savedAddresses));
-      }
+      const storedDateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
+      const storedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
+      const storedCpf = localStorage.getItem(`${user.id}_cpf`);
+
+      if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+      if (storedDateOfBirth) setDateOfBirth(storedDateOfBirth);
+      if (storedPhoneNumber) setPhoneNumber(storedPhoneNumber);
+      if (storedCpf) setCpf(storedCpf);
     }
   }, [user]);
 
@@ -47,8 +55,10 @@ const AddressPage = () => {
     try {
       if (!user) return;
 
-      // Recuperar a data de nascimento do localStorage
-      const dateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
+      if (!dateOfBirth || !phoneNumber || !cpf) {
+        toast.error("Date of birth, phone number, and CPF are required.");
+        return;
+      }
 
       const isDuplicate = addresses.some(
         (addr) =>
@@ -61,11 +71,12 @@ const AddressPage = () => {
         return;
       }
 
-      // Preparar os dados do usuário para o createUser
       const userData = {
         name: user.firstName || "N/A",
         email: user.emailAddresses[0]?.emailAddress || "N/A",
-        dateOfBirth: dateOfBirth || "N/A", // Adicionando a data de nascimento
+        dateOfBirth,
+        phoneNumber,
+        cpf,
         role: "CLIENT",
         addresses: [...addresses, newAddress],
       };
@@ -150,53 +161,6 @@ const AddressPage = () => {
     setIsEditing(true);
   };
 
-  const handleDeleteAddress = async (id: string) => {
-    const addressToDelete = addresses.find((addr) => addr.id === id);
-    if (!addressToDelete) {
-      console.error("Address not found.");
-      return;
-    }
-
-    const userId = addressToDelete.userId;
-    if (userId && addressToDelete.id) {
-      try {
-        await deleteAddress(userId, addressToDelete.id);
-
-        const updatedAddresses = addresses.filter((addr) => addr.id !== id);
-        setAddresses(updatedAddresses);
-
-        localStorage.setItem(
-          `${user?.id}_userAddresses`,
-          JSON.stringify(updatedAddresses)
-        );
-
-        const selectedAddress = JSON.parse(
-          localStorage.getItem(`${user?.id}_selectedAddress`) || "null"
-        );
-        if (selectedAddress?.id === id) {
-          localStorage.removeItem(`${user?.id}_selectedAddress`);
-        }
-
-        toast.success("Address deleted successfully!");
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(
-            "Error deleting address:",
-            error.response?.data || error.message
-          );
-          toast.error(
-            `Error deleting address: ${error.response?.data?.message || error.message}`
-          );
-        } else {
-          console.error("Error deleting address:", error);
-          toast.error("Error deleting address.");
-        }
-      }
-    } else {
-      console.error("User ID or Address ID is undefined.");
-    }
-  };
-
   return (
     <div className="w-full h-auto md:h-1/2 mt-24 flex flex-col items-center justify-start">
       <Wrapper className="w-full flex flex-col space-y-6">
@@ -245,19 +209,7 @@ const AddressPage = () => {
                       className="flex items-center font-semibold rounded transition duration-150 ease-in-out"
                     >
                       <Edit size={24} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (addr.id) {
-                          handleDeleteAddress(addr.id);
-                        } else {
-                          console.error("Address ID is undefined");
-                        }
-                      }}
-                      className="flex items-center text-red-500 font-semibold rounded transition duration-150 ease-in-out"
-                    >
-                      <Trash2 size={24} />
-                    </button>
+                    </button>  
                   </div>
                 </div>
               ))

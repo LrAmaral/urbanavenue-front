@@ -1,8 +1,12 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Wrapper } from "@/components/Custom/wrapper";
 import getProducts from "../api/get-products";
 import Filter from "@/components/Filter/filter";
 import ProductGrid from "@/components/product-grid";
 import BackToTopButton from "@/components/back";
+import { Product as ProductType } from "@/lib/types";
 
 interface HomeProps {
   searchParams: {
@@ -14,14 +18,31 @@ interface HomeProps {
   };
 }
 
-export default async function Home({ searchParams }: HomeProps) {
+export default function Home({ searchParams }: HomeProps) {
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const selectedCategory = searchParams.category || "All";
   const selectedSort = searchParams.sort || "default";
   const selectedSize = searchParams.size || "All";
   const minPrice = parseFloat(searchParams.minPrice || "0");
   const maxPrice = parseFloat(searchParams.maxPrice || "Infinity");
 
-  const products = await getProducts({ isFeatured: true });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const products = await getProducts({ isFeatured: true });
+        setProducts(products);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const uniqueCategories = Array.from(
     new Set(products.map((item) => item.category.name))
@@ -84,7 +105,7 @@ export default async function Home({ searchParams }: HomeProps) {
           minPrice={minPrice}
           maxPrice={maxPrice}
         />
-        <ProductGrid products={sortedProducts} />
+        <ProductGrid isLoading={isLoading} products={sortedProducts} />
         <BackToTopButton />
       </Wrapper>
     </div>

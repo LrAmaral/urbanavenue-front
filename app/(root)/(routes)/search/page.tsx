@@ -1,11 +1,12 @@
 "use client";
 
 import { Wrapper } from "@/components/Custom/wrapper";
-import { Product as ProductComponent } from "@/components/Product/product";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
 import searchProducts from "@/app/api/search";
+import { Loader } from "@/components/ui/loader";
+import ProductGrid from "@/components/product-grid";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -35,23 +36,20 @@ export default function SearchPage() {
 
   return (
     <div className="text-gray-800 bg-white w-full min-h-screen">
-      <Wrapper className="mt-24 md:mt-40 flex flex-col items-start justify-start w-full">
+      <Wrapper className="mt-24 md:mt-32 flex flex-col items-start justify-start w-full">
         {results.length > 0 && (
           <p className="flex items-center justify-start mt-6 md:mt-0 mb-2 h-full w-full font-semibold text-lg md:text-xl">
-            {" "}
             {`Results for "${query}"`}
           </p>
         )}
         {loading ? (
-          <div className="flex justify-center items-center text-xl font-semibold">
-            Loading results...
+          <div className="flex h-screen w-full justify-center items-center text-xl font-semibold">
+            <Loader />
           </div>
         ) : results.length > 0 ? (
           <div className="flex flex-col items-start w-full">
-            <div className="flex flex-wrap gap-6 w-full mt-0 md:mt-20 justify-start">
-              {results.map((product) => (
-                <ProductComponent key={product.id} data={product} />
-              ))}
+            <div className="flex flex-wrap gap-6 w-full justify-start">
+              <ProductGrid products={results} />
             </div>
           </div>
         ) : (
