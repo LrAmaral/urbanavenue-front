@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Footer } from "../../components/Footer/footer";
 import { MainNav } from "../../components/Header/header";
 
@@ -11,7 +10,7 @@ export default function Rootlayout({
     <div className="flex flex-col items-center w-full h-auto overflow-hidden">
       <MainNav />
       <div id="modal-root"></div>
-      <Suspense fallback={<div>Loading layout...</div>}>{children}</Suspense>
+      {children}
       <Footer />
     </div>
   );

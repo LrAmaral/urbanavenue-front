@@ -187,8 +187,6 @@ export default function OrdersPage(): JSX.Element {
     }
   };
 
-  console.log(isAddingAddress);
-
   return (
     <div className="container mx-auto p-4">
       <Wrapper className="mt-24 md:mt-32 lg:mt-40">
@@ -291,12 +289,14 @@ export default function OrdersPage(): JSX.Element {
                       <p>{address.zipCode}</p>
                     </div>
                   ))}
-                  <Button
-                    onClick={() => setIsAddingAddress(true)}
-                    className="w-full mt-4"
-                  >
-                    Add Address
-                  </Button>
+                  {addresses.length < 3 && (
+                    <Button
+                      onClick={() => setIsAddingAddress(true)}
+                      className="w-full mt-4"
+                    >
+                      Add Address
+                    </Button>
+                  )}
                   {isAddingAddress && (
                     <div className="mt-4">
                       <AddressForm
@@ -334,16 +334,6 @@ export default function OrdersPage(): JSX.Element {
                     Change Address
                   </Button>
                 </div>
-              )}
-
-              {isAddingAddress && (
-                <AddressForm
-                  addresses={addresses}
-                  setAddresses={async (updatedAddress) => {
-                    await createAddressForOrder(updatedAddress);
-                  }}
-                  onSubmit={handleAddAddress}
-                />
               )}
 
               {shippingOptions.length > 0 && (

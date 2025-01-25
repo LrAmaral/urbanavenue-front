@@ -14,6 +14,23 @@ import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 
+const SkeletonLoader = () => {
+  return (
+    <div className="animate-pulse">
+      {[...Array(3)].map((_, index) => (
+        <div
+          key={index}
+          className="flex justify-between items-center p-4 border-b last:border-0"
+        >
+          <div className="w-24 h-6 bg-gray-300 rounded-md"></div>
+          <div className="w-32 h-6 bg-gray-300 rounded-md"></div>
+          <div className="w-20 h-6 bg-gray-300 rounded-md"></div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const OrdersHistory = () => {
   const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -51,7 +68,12 @@ const OrdersHistory = () => {
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   if (loading) {
-    return <p className="px-2 w-full">Loading orders...</p>;
+    return (
+      <div className="w-full px-6">
+        <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+        <SkeletonLoader />
+      </div>
+    );
   }
 
   if (error) {
@@ -124,7 +146,9 @@ const OrdersHistory = () => {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={`px-4 py-2 text-white rounded-lg ${
-              currentPage === 1 ? "display:none" : "bg-zinc-800"
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-zinc-800"
             }`}
           >
             Previous

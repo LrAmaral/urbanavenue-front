@@ -65,11 +65,6 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    if (user) {
-      console.log("Usuário ID:", user.id);
-      console.log("Data de nascimento:", dateOfBirth);
-    }
-
     router.push("/user");
   };
 
@@ -78,7 +73,7 @@ export default function CompleteProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-1/2 px-4">
+    <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="max-w-md w-full border border-black rounded-md p-6">
         <h1 className="text-xl md:text-2xl font-bold text-center mb-6">
           Complete Your Profile

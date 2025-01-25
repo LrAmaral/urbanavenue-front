@@ -3,19 +3,11 @@
 import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { Wrapper } from "@/components/Custom/wrapper";
-import { Mail, User as UserIcon, LogOut } from "lucide-react";
+import { Mail, User as UserIcon, LogOut, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
-
-interface Address {
-  userId: string;
-  fullName: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
+import { Address } from "@/lib/types";
 
 const UserProfile = () => {
   const { user } = useUser();
@@ -78,13 +70,13 @@ const UserProfile = () => {
             <div className="space-y-4">
               <div className="flex justify-between border-b pb-2">
                 <p className="text-xl font-semibold text-gray-800">
-                  My address
+                  My addresses
                 </p>
                 <button
                   onClick={handleAddAddress}
                   className="hover:text-zinc-900"
                 >
-                  {selectedAddress ? "Edit Address" : "Add New Address"}
+                  {selectedAddress ? "Edit" : "Add"}
                 </button>
               </div>
               {loading ? (
@@ -93,16 +85,24 @@ const UserProfile = () => {
                   <div className="h-2 bg-gray-200 rounded mb-2 w-full"></div>
                 </div>
               ) : selectedAddress ? (
-                <div className="bg-white">
-                  <h2 className="text-xl font-bold mb-2">
-                    {selectedAddress.fullName}
-                  </h2>
-                  <p className="mb-1 text-gray-700">{selectedAddress.street}</p>
-                  <p className="text-gray-600">
-                    {selectedAddress.city}, {selectedAddress.state}{" "}
-                    {selectedAddress.zipCode}
-                  </p>
-                </div>
+                <>
+                  <span className="flex gap-4 text-zinc-900">
+                    <MapPin /> Main Location
+                  </span>
+                  <div className="bg-white px-2">
+                    <h2 className="text-xl font-bold mb-2">
+                      {selectedAddress.fullName}
+                    </h2>
+                    <p className="mb-1 text-gray-700">
+                      {selectedAddress.street}, {selectedAddress.number}
+                    </p>
+                    <p className="mb-1 text-gray-700">
+                      {selectedAddress.neighborhood} {selectedAddress.city},{" "}
+                      {selectedAddress.zipCode}
+                    </p>
+                    <p className="text-gray-600">{selectedAddress.state}</p>
+                  </div>
+                </>
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <p className="text-gray-500">No address selected.</p>

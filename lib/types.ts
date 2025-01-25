@@ -43,6 +43,7 @@ export interface Product {
   id: string;
   title: string;
   price: number;
+  desc: string;
   images: { url: string }[];
   productSizes: { size: { id: string; name: string }; stock: number }[];
   category: { id: string; name: string; createdAt: string; updatedAt: string };

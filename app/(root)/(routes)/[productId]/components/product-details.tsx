@@ -6,17 +6,10 @@ import EmblaCarousel from "@/components/ui/embla-carousel";
 import Image from "next/image";
 import { ClientModal } from "./client-modal";
 import toast from "react-hot-toast";
-
-interface ProductDetailsProduct {
-  id: string;
-  title: string;
-  price: number;
-  images: { url: string }[];
-  productSizes: { size: { id: string; name: string }; stock: number }[];
-}
+import { Product } from "@/lib/types";
 
 interface ProductDetailsProps {
-  product: ProductDetailsProduct;
+  product: Product;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
@@ -128,6 +121,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         >
           Add to Cart
         </button>
+
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold text-gray-800">Description</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            {product.desc}
+          </p>
+        </div>
+
+        <div className="mt-6 p-4 border rounded-lg bg-gray-50 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Available Payment Methods
+          </h3>
+          <ul className="list-disc ml-6 text-gray-600 space-y-1">
+            <li>Credit Card (Visa, MasterCard)</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
