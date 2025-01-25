@@ -3,16 +3,21 @@
 import { useEffect, useState, useCallback } from "react";
 import { Wrapper } from "@/components/Custom/wrapper";
 import AddressForm from "./components/address-form";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
-import { createUser, updateAddress } from "@/app/api/user";
+import { createUser, deleteAddress, updateAddress } from "@/app/api/user";
 import { Address } from "@/lib/types";
-import { Check, Edit, Plus } from "lucide-react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Check, Edit } from "lucide-react";
 
 const AddressPage = () => {
+  const router = useRouter();
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const { user } = useUser();
@@ -20,15 +25,14 @@ const AddressPage = () => {
   const loadAddresses = useCallback(() => {
     if (user?.id) {
       const savedAddresses = localStorage.getItem(`${user.id}_userAddresses`);
-      if (savedAddresses) {
-        setAddresses(JSON.parse(savedAddresses));
-      }
-      const savedSelectedAddress = localStorage.getItem(
-        `${user.id}_selectedAddress`
-      );
-      if (savedSelectedAddress) {
-        setSelectedAddress(JSON.parse(savedSelectedAddress));
-      }
+      const storedDateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
+      const storedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
+      const storedCpf = localStorage.getItem(`${user.id}_cpf`);
+
+      if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+      if (storedDateOfBirth) setDateOfBirth(storedDateOfBirth);
+      if (storedPhoneNumber) setPhoneNumber(storedPhoneNumber);
+      if (storedCpf) setCpf(storedCpf);
     }
   }, [user]);
 
@@ -42,32 +46,111 @@ const AddressPage = () => {
         `${user.id}_selectedAddress`,
         JSON.stringify(address)
       );
-      setSelectedAddress(address);
-      toast.dismiss();
       toast.success("Address selected successfully!");
+      router.push("/user");
+    }
+  };
+
+  const createAddress = async (newAddress: Address) => {
+    try {
+      if (!user) return;
+
+      if (!dateOfBirth || !phoneNumber || !cpf) {
+        toast.error("Date of birth, phone number, and CPF are required.");
+        return;
+      }
+
+      const isDuplicate = addresses.some(
+        (addr) =>
+          addr.zipCode === newAddress.zipCode &&
+          addr.number === newAddress.number
+      );
+      if (isDuplicate) {
+        toast.dismiss();
+        toast.error("Address with this ZIP code and number already exists.");
+        return;
+      }
+
+      const userData = {
+        name: user.firstName || "N/A",
+        email: user.emailAddresses[0]?.emailAddress || "N/A",
+        dateOfBirth,
+        phoneNumber,
+        cpf,
+        role: "CLIENT",
+        addresses: [...addresses, newAddress],
+      };
+
+      const createdUser = await createUser(userData);
+      const userId = createdUser.addresses[0].userId;
+
+      const addressWithId: Address = {
+        ...newAddress,
+        id: createdUser.addresses[createdUser.addresses.length - 1]?.id,
+        userId: userId,
+      };
+
+      const updatedAddresses = [...addresses, addressWithId];
+
+      setAddresses(updatedAddresses);
+      localStorage.setItem(
+        `${user.id}_userAddresses`,
+        JSON.stringify(updatedAddresses)
+      );
+      toast.success("Address created successfully!");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error creating address:",
+          error.response?.data || error.message
+        );
+        toast.error(
+          `Error creating address: ${error.response?.data?.message || error.message}`
+        );
+      } else {
+        console.error("Error creating address:", error);
+        toast.error("Error creating address.");
+      }
+    }
+  };
+
+  const updateExistingAddress = async (index: number, newAddress: Address) => {
+    if (!user) return;
+
+    const userId = addresses[index]?.userId;
+    const addressId = addresses[index]?.id;
+
+    try {
+      await updateAddress(userId, { ...newAddress, id: addressId });
+      const updatedAddresses = [...addresses];
+      updatedAddresses[index] = { ...newAddress, id: addressId };
+      setAddresses(updatedAddresses);
+      localStorage.setItem(
+        `${user.id}_userAddresses`,
+        JSON.stringify(updatedAddresses)
+      );
+      toast.success("Address updated successfully!");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error updating address:",
+          error.response?.data || error.message
+        );
+        toast.error(
+          `Error updating address: ${error.response?.data?.message || error.message}`
+        );
+      } else {
+        console.error("Error updating address:", error);
+        toast.error("Error updating address.");
+      }
     }
   };
 
   const handleAddressChange = async (newAddress: Address) => {
     if (editIndex !== null) {
-      const updatedAddresses = [...addresses];
-      updatedAddresses[editIndex] = newAddress;
-      setAddresses(updatedAddresses);
-      localStorage.setItem(
-        `${user?.id}_userAddresses`,
-        JSON.stringify(updatedAddresses)
-      );
-      toast.dismiss();
-      toast.success("Address updated successfully!");
+      await updateExistingAddress(editIndex, newAddress);
     } else {
-      const updatedAddresses = [...addresses, newAddress];
-      setAddresses(updatedAddresses);
-      localStorage.setItem(
-        `${user?.id}_userAddresses`,
-        JSON.stringify(updatedAddresses)
-      );
-      toast.dismiss();
-      toast.success("Address added successfully!");
+      await createAddress(newAddress);
     }
     setEditIndex(null);
     setIsEditing(false);
@@ -79,87 +162,57 @@ const AddressPage = () => {
   };
 
   return (
-    <div className="w-full h-auto mt-24 flex flex-col items-center">
+    <div className="w-full h-auto md:h-1/2 mt-24 flex flex-col items-center justify-start">
       <Wrapper className="w-full flex flex-col space-y-6">
-        <div className="flex justify-between items-center">
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center text-zinc-600 hover:text-zinc-900 font-semibold"
-          >
-            <ArrowLeft className="mr-2" />
-            Back to Home
-          </button>
-          {addresses.length < 3 && (
+        <div className="bg-white w-full rounded-lg">
+          <div className="flex justify-between items-center mb-6">
             <button
-              onClick={() => setIsEditing(true)}
-              className="text-zinc-500 hover:text-zinc-700 font-semibold"
+              onClick={() => window.history.back()}
+              className="flex items-center text-zinc-500 hover:text-zinc-700 font-semibold"
             >
-              {!isEditing ? "Add Address" : ""}
+              <ArrowLeft className="mr-2" />
+              Back to Home
             </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] w-full gap-4 items-start">
-          <div className="bg-white space-y-4 p-4 w-full h-fit border rounded-lg">
-            <h2 className="text-lg font-bold text-zinc-800 mb-4">
-              Selected Address
-            </h2>
-            <span className="flex gap-4 text-zinc-900 items-center">
-              <MapPin /> Main Location
-            </span>
-            {selectedAddress ? (
-              <div>
-                <p className="font-medium text-zinc-700">
-                  {selectedAddress.neighborhood}
-                </p>
-                <p className="text-zinc-700">{selectedAddress.street}</p>
-                <p className="text-zinc-700">{selectedAddress.city}</p>
-                <p className="text-zinc-700">{selectedAddress.state}</p>
-                <p className="text-zinc-700">{selectedAddress.zipCode}</p>
-                <p className="text-zinc-700">{selectedAddress.number}</p>
-              </div>
-            ) : (
-              <p className="text-zinc-500">No address selected.</p>
+            {addresses.length < 5 && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-zinc-500 hover:text-zinc-700 font-semibold"
+              >
+                {!isEditing ? "Add Address" : ""}
+              </button>
             )}
           </div>
-
-          <div className="bg-white p-4 border w-full rounded-lg">
-            <h2 className="text-lg font-bold text-zinc-800 mb-4">
-              Available Addresses
-            </h2>
+          <div className="text-gray-700">
             {!isEditing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {addresses.map((addr, index) => (
-                  <div
-                    key={addr.id}
-                    className="p-2 border border-gray-300 rounded-lg flex flex-col justify-between items-start"
-                  >
-                    <div className="mb-1">
-                      <p className="font-medium text-zinc-700">
-                        {addr.neighborhood}
-                      </p>
-                      <p className="text-zinc-700">{addr.street}</p>
-                      <p className="text-zinc-700">{addr.city}</p>
-                      <p className="text-zinc-700">{addr.state}</p>
-                      <p className="text-zinc-700">{addr.zipCode}</p>
-                      <p className="text-zinc-700">{addr.number}</p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => saveSelectedAddress(addr)}
-                        className="flex items-center font-semibold rounded text-zinc-800 transition duration-150 ease-in-out"
-                      >
-                        <Check size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleEditAddress(index)}
-                        className="flex items-center font-semibold rounded text-zinc-800 transition duration-150 ease-in-out"
-                      >
-                        <Edit size={20} />
-                      </button>
-                    </div>
+              addresses.map((addr, index) => (
+                <div
+                  key={addr.id}
+                  className="p-4 border border-gray-300 rounded-lg mb-4 flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium">{addr.neighborhood}</p>
+                    <p>{addr.street}</p>
+                    <p>{addr.city}</p>
+                    <p>{addr.state}</p>
+                    <p>{addr.zipCode}</p>
+                    <p>{addr.number}</p>
                   </div>
-                ))}
-              </div>
+                  <div className="flex flex-col md:flex-row justify-center space-x-0 space-y-2 md:space-y-0 md:space-x-4 items-center">
+                    <button
+                      onClick={() => saveSelectedAddress(addr)}
+                      className="flex items-center font-semibold rounded transition duration-150 ease-in-out"
+                    >
+                      <Check size={24} />
+                    </button>
+                    <button
+                      onClick={() => handleEditAddress(index)}
+                      className="flex items-center font-semibold rounded transition duration-150 ease-in-out"
+                    >
+                      <Edit size={24} />
+                    </button>  
+                  </div>
+                </div>
+              ))
             ) : (
               <AddressForm
                 addresses={addresses}

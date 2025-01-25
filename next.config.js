@@ -12,6 +12,7 @@ const nextConfig = {
       "res.cloudinary.com",
     ],
   },
+
   webpack(config, { isServer }) {
     config.cache = {
       type: "filesystem",
