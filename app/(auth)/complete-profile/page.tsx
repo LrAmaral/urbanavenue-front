@@ -3,6 +3,10 @@
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { getUser, createUser } from "@/app/api/user";
+import Image from "next/image";
+import logo from "../../../public/favicon.ico";
+import { Loader } from "@/components/ui/loader";
 
 export default function CompleteProfilePage() {
   const [dateOfBirth, setDateOfBirth] = useState<string>("");
@@ -14,41 +18,42 @@ export default function CompleteProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (user === undefined) {
-      return;
-    }
+    const fetchUserData = async () => {
+      if (user === undefined) {
+        return;
+      }
 
-    if (!user) {
-      router.push("/sign-in");
-      return;
-    }
+      if (!user) {
+        router.push("/sign-in");
+        return;
+      }
 
-    const storedDateOfBirth = localStorage.getItem(`${user.id}_dateOfBirth`);
-    const storedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
-    const storedCpf = localStorage.getItem(`${user.id}_cpf`);
+      try {
+        const userData = await getUser(user.id);
 
-    if (storedDateOfBirth) setDateOfBirth(storedDateOfBirth);
-    if (storedPhoneNumber) setPhoneNumber(storedPhoneNumber);
-    if (storedCpf) setCpf(storedCpf);
+        if (userData) {
+          setDateOfBirth(
+            userData.dateOfBirth?.toISOString().split("T")[0] || ""
+          );
+          setPhoneNumber(userData.phoneNumber || "");
+          setCpf(userData.cpf || "");
+        } else {
+          console.log(
+            "User not found in backend. Proceeding with empty fields."
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setLoading(false);
+    fetchUserData();
   }, [user, router]);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setDateOfBirth(value);
-    setError("");
-
-    const today = new Date();
-    const selectedDate = new Date(value);
-
-    if (selectedDate > today) {
-      setError("Invalid date.");
-    }
-
-    if (user) {
-      localStorage.setItem(`${user.id}_dateOfBirth`, value);
-    }
+    setDateOfBirth(event.target.value);
   };
 
   const handlePhoneNumberChange = (
@@ -57,21 +62,19 @@ export default function CompleteProfilePage() {
     let value = event.target.value.replace(/\D/g, "");
     if (value.length > 11) value = value.slice(0, 11);
     setPhoneNumber(value);
-    localStorage.setItem(`${user?.id}_phoneNumber`, value);
   };
 
   const handleCpfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value.replace(/\D/g, "");
     if (value.length > 11) value = value.slice(0, 11);
     setCpf(value);
-    localStorage.setItem(`${user?.id}_cpf`, value);
   };
 
   const validateCpf = (cpf: string): boolean => {
     return cpf.length === 11;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const today = new Date();
@@ -107,27 +110,51 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    setError("");
-    router.push("/user");
+    try {
+      const userData = {
+        name: user?.fullName || "Unknown User",
+        email: user?.emailAddresses[0]?.emailAddress || "",
+        dateOfBirth: new Date(dateOfBirth),
+        phoneNumber,
+        cpf,
+        role: "CLIENT" as "CLIENT",
+        addresses: [],
+      };
+
+      const createdUser = await createUser(userData);
+
+      localStorage.setItem("client_id", createdUser?.id || "");
+
+      router.push("/user");
+    } catch (err) {
+      console.error("Error saving user data:", err);
+      setError("Failed to save user data.");
+    }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
+      <div className="flex w-full h-screen items-center justify-center">
+        <Loader />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen px-4">
-      <div className="max-w-md w-full border border-black rounded-md p-6">
-        <h1 className="text-xl md:text-2xl font-bold text-center mb-6">
-          Complete Your Profile
-        </h1>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-50 w-full px-4 py-8">
+      <div className="max-w-lg w-full bg-white shadow-lg rounded-xl p-8">
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <Image src={logo} width={60} height={60} alt="logo" />
+          <h1 className="text-2xl font-semibold text-zinc-800">
+            Complete Your Profile
+          </h1>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="dateOfBirth" className="block text-sm font-medium">
+            <label
+              htmlFor="dateOfBirth"
+              className="block text-sm font-medium text-zinc-600"
+            >
               Date of Birth
             </label>
             <input
@@ -136,11 +163,14 @@ export default function CompleteProfilePage() {
               value={dateOfBirth}
               onChange={handleDateChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
+              className="mt-1 block w-full px-4 py-3 border border-zinc-300 rounded-md shadow-sm focus:ring-zinc-500 focus:border-zinc-500 transition duration-200"
             />
           </div>
           <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium">
+            <label
+              htmlFor="phoneNumber"
+              className="block text-sm font-medium text-zinc-600"
+            >
               Phone Number
             </label>
             <input
@@ -150,12 +180,15 @@ export default function CompleteProfilePage() {
               onChange={handlePhoneNumberChange}
               required
               maxLength={11}
-              className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
+              className="mt-1 block w-full px-4 py-3 border border-zinc-300 rounded-md shadow-sm focus:ring-zinc-500 focus:border-zinc-500 transition duration-200"
               placeholder="Ex: +55 11 99999-9999"
             />
           </div>
           <div>
-            <label htmlFor="cpf" className="block text-sm font-medium">
+            <label
+              htmlFor="cpf"
+              className="block text-sm font-medium text-zinc-600"
+            >
               CPF
             </label>
             <input
@@ -165,14 +198,14 @@ export default function CompleteProfilePage() {
               onChange={handleCpfChange}
               required
               maxLength={11}
-              className="mt-1 block w-full px-3 py-2 border border-black rounded-md"
+              className="mt-1 block w-full px-4 py-3 border border-zinc-300 rounded-md shadow-sm focus:ring-zinc-500 focus:border-zinc-500 transition duration-200"
               placeholder="Ex: 12345678901"
             />
           </div>
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           <button
             type="submit"
-            className="w-full py-2 px-4 border border-black rounded-md font-medium bg-black hover:bg-zinc-800 text-white transition"
+            className="w-full py-3 px-6 border border-zinc-600 rounded-md font-medium bg-zinc-600 hover:bg-zinc-700 text-white transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-opacity-50"
           >
             Save
           </button>

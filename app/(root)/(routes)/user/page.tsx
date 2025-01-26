@@ -9,6 +9,8 @@ import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
 import { Address } from "@/lib/types";
 import UserInfoSkeleton from "@/components/user-info";
+import { getUser } from "@/app/api/user";
+import toast from "react-hot-toast";
 
 const UserProfile = () => {
   const { user } = useUser();
@@ -16,32 +18,50 @@ const UserProfile = () => {
   const { signOut } = useClerk();
   const router = useRouter();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [cpf, setCpf] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
-      const savedAddress = localStorage.getItem(`${user.id}_selectedAddress`);
-      const savedCpf = localStorage.getItem(`${user.id}_cpf`);
-      const savedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
+    const fetchUserData = async () => {
+      const clientId = localStorage.getItem("client_id");
 
-      if (savedAddress) {
-        const address = JSON.parse(savedAddress);
-        setSelectedAddress(address);
+      if (!clientId) {
+        console.error("Client ID not found.");
+        toast.error("Client ID is missing.");
+        setLoading(false);
+        return;
       }
 
-      if (savedCpf) {
-        setCpf(savedCpf);
-      }
+      try {
+        const userData = await getUser(clientId);
+        if (userData) {
+          setCpf(userData.cpf || null);
+          setPhoneNumber(userData.phoneNumber || null);
+          setAddresses(userData.addresses || []);
 
-      if (savedPhoneNumber) {
-        setPhoneNumber(savedPhoneNumber);
-      }
+          const storedSelectedAddress = localStorage.getItem(
+            `${clientId}_selected_address`
+          );
 
-      setLoading(false);
-    }
-  }, [user?.id]);
+          if (storedSelectedAddress) {
+            setSelectedAddress(JSON.parse(storedSelectedAddress));
+          } else if (userData.addresses.length > 0) {
+            setSelectedAddress(userData.addresses[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.dismiss();
+        toast.error("Failed to load user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleAddAddress = () => {
     router.push("/address");
@@ -74,7 +94,7 @@ const UserProfile = () => {
           <div className="flex flex-col space-y-4 text-gray-700">
             <UserInfoSkeleton
               user={user}
-              loading={!user}
+              loading={!user || loading}
               cpf={cpf}
               phoneNumber={phoneNumber}
             />

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -11,7 +13,6 @@ import {
 import { Order } from "@/lib/types";
 import { getOrders } from "@/app/api/order";
 import Image from "next/image";
-import { useUser } from "@clerk/nextjs";
 
 const SkeletonLoader = () => {
   return (
@@ -31,7 +32,6 @@ const SkeletonLoader = () => {
 };
 
 const OrdersHistory = () => {
-  const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -41,20 +41,17 @@ const OrdersHistory = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
+      const clientId = localStorage.getItem("client_id");
+
+      if (!clientId) {
+        console.error("Client ID not found.");
+        setError("Client ID is missing.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const storedAddress = localStorage.getItem(
-          `${user?.id}_selectedAddress`
-        );
-        const selectedAddress = storedAddress
-          ? JSON.parse(storedAddress)
-          : null;
-
-        if (!selectedAddress?.userId) {
-          console.log("User ID not found in selected address.");
-          return;
-        }
-
-        const data = await getOrders(selectedAddress?.userId);
+        const data = await getOrders(clientId);
         setOrders(data);
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -65,7 +62,7 @@ const OrdersHistory = () => {
     };
 
     fetchOrders();
-  }, [user]);
+  }, []);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -86,7 +83,7 @@ const OrdersHistory = () => {
       <div className="w-full px-6">
         <h2 className="text-xl font-semibold mb-4">My Orders</h2>
         <div className="text-gray-500 text-center mt-4">
-          <p>You have no orders yet.</p>
+          <p>{error || "You have no orders yet."}</p>
         </div>
       </div>
     );

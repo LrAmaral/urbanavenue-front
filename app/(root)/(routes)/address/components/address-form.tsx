@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 interface AddressFormProps {
   addresses: Address[];
-  setAddresses: (address: Address) => Promise<void>;
+  setAddresses: (address: Address) => void;
   editAddress?: Address | null;
   onSubmit?: (address: Address) => void;
 }
@@ -21,7 +21,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
-    number: "", 
+    number: "",
   });
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
-    number: "", 
+    number: "",
   });
 
   const validate = () => {
@@ -86,7 +86,7 @@ const AddressForm = ({
         city: "",
         state: "",
         zipCode: "",
-        number: "", 
+        number: "",
       });
     }
   };
@@ -140,7 +140,7 @@ const AddressForm = ({
           { label: "Street", name: "street" },
           { label: "City", name: "city" },
           { label: "State", name: "state" },
-          { label: "House Number", name: "number" }, 
+          { label: "House Number", name: "number" },
         ].map(({ label, name }) => (
           <div className="mb-4" key={name}>
             <label htmlFor={name} className="block text-gray-700">

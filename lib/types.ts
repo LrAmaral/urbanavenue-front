@@ -17,6 +17,10 @@ export interface Address {
   number: string;
 }
 
+export interface AddressResponse {
+  addresses: Address[];
+}
+
 export interface ProductProps {
   id: number;
   name: string;
@@ -25,18 +29,18 @@ export interface ProductProps {
 
 export type Role = "ADMIN" | "CLIENT";
 
-export interface User {
-  id: string;
+export type User = {
+  id?: string;
   name: string;
   email: string;
   cpf?: string;
   phoneNumber?: string;
   dateOfBirth: Date;
-  orders: Order[];
-  role: Role;
+  orders?: Order[];
+  role?: "ADMIN" | "CLIENT";
   addresses: Address[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export interface SizeWithStock {
