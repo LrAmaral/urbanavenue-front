@@ -14,7 +14,6 @@ export default function PaymentPage() {
   const [orderDetails, setOrderDetails] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { user } = useUser();
 
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -30,7 +29,16 @@ export default function PaymentPage() {
   });
 
   useEffect(() => {
-    const storedOrderDetails = localStorage.getItem(`${user?.id}_orderDetails`);
+    const storedClientId = localStorage.getItem("client_id");
+    const clientId = storedClientId;
+
+    if (!clientId) {
+      toast.error("No user ID found. Redirecting...");
+      setTimeout(() => router.push("/login"), 500);
+      return;
+    }
+
+    const storedOrderDetails = localStorage.getItem(`${clientId}_orderDetails`);
     if (storedOrderDetails) {
       setOrderDetails(JSON.parse(storedOrderDetails));
     } else {
@@ -38,16 +46,14 @@ export default function PaymentPage() {
       setTimeout(() => router.push("/order"), 500);
     }
 
-    if (user?.id) {
-      const storedAddress = localStorage.getItem(`${user.id}_selectedAddress`);
-      if (storedAddress) {
-        setSelectedAddress(JSON.parse(storedAddress));
-      } else {
-        toast.error("No address selected. Redirecting...");
-        setTimeout(() => router.push("/address"), 500);
-      }
+    const storedAddress = localStorage.getItem(`${clientId}_selected_address`);
+    if (storedAddress) {
+      setSelectedAddress(JSON.parse(storedAddress));
+    } else {
+      toast.error("No address selected. Redirecting...");
+      setTimeout(() => router.push("/address"), 500);
     }
-  }, [router, user]);
+  }, [router]);
 
   const handleConfirmPayment = async () => {
     if (isProcessing) return;
@@ -92,8 +98,10 @@ export default function PaymentPage() {
 
       clearCart();
 
-      localStorage.removeItem(`${user?.id}_orderDetails`);
-      localStorage.removeItem(`${user?.id}_cartItems`);
+      const storedClientId = localStorage.getItem("client_id");
+
+      localStorage.removeItem(`${storedClientId}_orderDetails`);
+      localStorage.removeItem(`${storedClientId}_cartItems`);
 
       toast.success("Payment confirmed! Order created successfully.");
       router.push("/");
