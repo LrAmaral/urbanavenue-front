@@ -13,37 +13,40 @@ const AddressPage = () => {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const clientId = localStorage.getItem("client_id");
+  const [clientId, setClientId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedClientId = localStorage.getItem("client_id");
+      setClientId(storedClientId);
+    }
+  }, []);
 
   const loadAddresses = useCallback(async () => {
+    if (!clientId === undefined) {
+      return;
+    }
+
     if (!clientId) {
+      toast.dismiss();
       toast.error("Client ID not found.");
       return;
     }
 
     try {
-      const data = await getAddresses(clientId);
-      console.log(data);
-      if (data) {
-        setAddresses(data.addresses || []);
+      const response = await getAddresses(clientId);
+      setAddresses(response.addresses || []);
 
-        const savedSelectedAddress = localStorage.getItem(
-          `${clientId}_selected_address`
-        );
-
-        if (savedSelectedAddress) {
-          setSelectedAddress(JSON.parse(savedSelectedAddress));
-        } else if (data.addresses.length > 0) {
-          setSelectedAddress(data.addresses[0]);
-          localStorage.setItem(
-            `${clientId}_selected_address`,
-            JSON.stringify(data.addresses[0])
-          );
-        }
+      const savedSelectedAddress = localStorage.getItem(
+        `${clientId}_selected_address`
+      );
+      if (savedSelectedAddress) {
+        setSelectedAddress(JSON.parse(savedSelectedAddress));
       }
     } catch (error) {
-      console.error("Failed to fetch addresses:", error);
-      toast.error("Failed to load addresses from the server.");
+      console.error("Error loading addresses:", error);
+      toast.dismiss();
+      toast.error("Failed to load addresses.");
     }
   }, [clientId]);
 
@@ -53,6 +56,7 @@ const AddressPage = () => {
 
   const saveSelectedAddress = (address: Address) => {
     if (!clientId) {
+      toast.dismiss();
       toast.error("Client ID not found.");
       return;
     }
@@ -68,6 +72,7 @@ const AddressPage = () => {
 
   const handleAddressChange = async (newAddress: Address) => {
     if (!clientId) {
+      toast.dismiss();
       toast.error("Client ID not found.");
       return;
     }
@@ -87,7 +92,6 @@ const AddressPage = () => {
         `${clientId}_user_addresses`,
         JSON.stringify(updatedAddresses)
       );
-      toast.dismiss();
       toast.success(
         editIndex !== null
           ? "Address updated successfully!"

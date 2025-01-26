@@ -7,9 +7,8 @@ import { Trash, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wrapper } from "@/components/Custom/wrapper";
 import AddressForm from "../address/components/address-form";
-import { Address } from "@/lib/types";
-import { createUser } from "@/app/api/user";
-import { useUser } from "@clerk/nextjs";
+import { Address, Size } from "@/lib/types";
+import { createAddress, getAddresses } from "@/app/api/address";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -34,52 +33,12 @@ export default function OrdersPage(): JSX.Element {
   );
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [showAddressList, setShowAddressList] = useState(false);
-  const { user } = useUser();
+  const [clientId, setClientId] = useState<string | null>(null);
 
-  const createAddressForOrder = async (newAddress: Address) => {
-    try {
-      if (!user) {
-        toast.error("User not authenticated.");
-        return;
-      }
-
-      const userData = {
-        name: user.firstName || "N/A",
-        email: user.emailAddresses[0]?.emailAddress || "N/A",
-        role: "CLIENT",
-        addresses: [...addresses, newAddress],
-      };
-
-      const createdUser = await createUser(userData);
-
-      const userId = createdUser.addresses[0]?.userId;
-      const addressId =
-        createdUser.addresses[createdUser.addresses.length - 1]?.id;
-
-      if (!userId || !addressId) {
-        throw new Error("Failed to retrieve userId or addressId from backend.");
-      }
-
-      const addressWithId: Address = {
-        ...newAddress,
-        id: addressId,
-        userId: userId,
-      };
-
-      const updatedAddresses = [...addresses, addressWithId];
-      setAddresses(updatedAddresses);
-
-      localStorage.setItem(
-        `${user?.id}_userAddresses`,
-        JSON.stringify(updatedAddresses)
-      );
-
-      toast.success("Address added successfully! Please select it.");
-    } catch (error) {
-      console.error("Error adding address:", error);
-      toast.error("Failed to add address.");
-    }
-  };
+  useEffect(() => {
+    const storedClientId = localStorage.getItem("client_id");
+    if (storedClientId) setClientId(storedClientId);
+  }, []);
 
   const formatCurrency = (value: number): string => {
     return value.toFixed(2).replace(".", ",");
@@ -119,23 +78,39 @@ export default function OrdersPage(): JSX.Element {
     ];
   }, []);
 
-  useEffect(() => {
-    const savedAddresses = localStorage.getItem(`${user?.id}_userAddresses`);
-    if (savedAddresses) {
-      setAddresses(JSON.parse(savedAddresses));
+  const loadAddresses = useCallback(async () => {
+    if (!clientId) {
+      toast.dismiss();
+      toast.error("Client ID not found.");
+      return;
     }
 
-    const savedSelectedAddress = localStorage.getItem(
-      `${user?.id}_selectedAddress`
-    );
-    if (savedSelectedAddress) {
-      const parsedAddress = JSON.parse(savedSelectedAddress);
-      setSelectedAddress(parsedAddress);
-      const options = simulateShipping(parsedAddress.zipCode);
-      setShippingOptions(options);
-      setSelectedOption(options[0]);
+    try {
+      const response = await getAddresses(clientId);
+      setAddresses(response.addresses || []);
+
+      const savedSelectedAddress = localStorage.getItem(
+        `${clientId}_selected_address`
+      );
+      if (savedSelectedAddress) {
+        const parsedAddress = JSON.parse(savedSelectedAddress);
+        setSelectedAddress(parsedAddress);
+        const options = simulateShipping(parsedAddress.zipCode);
+        setShippingOptions(options);
+        setSelectedOption(options[0]);
+      }
+    } catch (error) {
+      console.error("Error loading addresses:", error);
+      toast.dismiss();
+      toast.error("Failed to load addresses.");
     }
-  }, [simulateShipping, user?.id]);
+  }, [simulateShipping, clientId]);
+
+  useEffect(() => {
+    if (clientId) {
+      loadAddresses();
+    }
+  }, [loadAddresses, clientId]);
 
   const handleAddressChange = (address: Address) => {
     setSelectedAddress(address);
@@ -143,17 +118,48 @@ export default function OrdersPage(): JSX.Element {
     setShippingOptions(options);
     setSelectedOption(options[0]);
     localStorage.setItem(
-      `${user?.id}_selectedAddress`,
+      `${clientId}_selected_address`,
       JSON.stringify(address)
     );
     setShowAddressList(false);
     toast.success("Address updated successfully!");
   };
 
-  const handleAddAddress = async (newAddress: Address) => {
+  const createAddressForOrder = async (newAddress: Address) => {
     try {
-      await createAddressForOrder(newAddress);
+      if (!clientId) {
+        toast.error("Client ID not found.");
+        return;
+      }
+
+      const createdAddress = await createAddress(clientId, newAddress);
+
+      const updatedAddresses = [...addresses, createdAddress];
+      setAddresses(updatedAddresses);
+
       setIsAddingAddress(false);
+      toast.success("Address added successfully! Please select it.");
+    } catch (error) {
+      console.error("Error adding address:", error);
+      toast.error("Failed to add address.");
+    }
+  };
+
+  const handleAddAddress = async (newAddress: Address) => {
+    if (!clientId) {
+      toast.error("User not authenticated.");
+      return;
+    }
+
+    try {
+      console.log(newAddress);
+      const createdAddress = await createAddress(clientId, newAddress);
+
+      const updatedAddresses = [...addresses, createdAddress];
+      setAddresses(updatedAddresses);
+
+      setIsAddingAddress(false);
+      toast.success("Address added successfully!");
     } catch (error) {
       console.error("Error adding address:", error);
       toast.error("Failed to add address.");
@@ -175,7 +181,7 @@ export default function OrdersPage(): JSX.Element {
       };
 
       localStorage.setItem(
-        `${user?.id}_orderDetails`,
+        `${clientId}_orderDetails`,
         JSON.stringify(orderDetails)
       );
 
@@ -185,6 +191,22 @@ export default function OrdersPage(): JSX.Element {
       console.error("Error preparing order for payment:", error);
       toast.error("An error occurred while preparing for payment.");
     }
+  };
+
+  const handleQuantityChange = (
+    itemId: string,
+    size: Size,
+    quantity: number
+  ) => {
+    const maxQuantity = 5;
+
+    if (quantity > maxQuantity) {
+      toast.dismiss();
+      toast(`You can only purchase up to ${maxQuantity} of this item.`);
+      return;
+    }
+
+    updateItemQuantity(itemId, size, quantity);
   };
 
   return (
@@ -221,7 +243,7 @@ export default function OrdersPage(): JSX.Element {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            updateItemQuantity(
+                            handleQuantityChange(
                               item.id,
                               item.size,
                               item.quantity - 1
@@ -246,7 +268,7 @@ export default function OrdersPage(): JSX.Element {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          updateItemQuantity(
+                          handleQuantityChange(
                             item.id,
                             item.size,
                             item.quantity + 1

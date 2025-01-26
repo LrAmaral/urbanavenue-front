@@ -20,6 +20,28 @@ const getAddresses = async (userId: string): Promise<AddressResponse> => {
   }
 };
 
+const createAddress = async (userId: string, address: Address) => {
+  try {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/address`,
+      { userId, address },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Error creating address:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to create address");
+  }
+};
+
 const updateAddress = async (
   userId: string,
   addresses: Address[]
@@ -38,7 +60,6 @@ const updateAddress = async (
         },
       }
     );
-
   } catch (error: any) {
     console.error(
       "Error updating addresses:",
@@ -48,4 +69,4 @@ const updateAddress = async (
   }
 };
 
-export { getAddresses, updateAddress };
+export { getAddresses, createAddress, updateAddress };
