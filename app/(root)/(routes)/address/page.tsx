@@ -28,8 +28,6 @@ const AddressPage = () => {
     }
 
     if (!clientId) {
-      toast.dismiss();
-      toast.error("Client ID not found.");
       return;
     }
 

@@ -7,9 +7,9 @@ import { LogOut, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
-import { Address } from "@/lib/types";
+import { Address, User } from "@/lib/types";
 import UserInfoSkeleton from "@/components/user-info";
-import { getUser } from "@/app/api/user";
+import { getUserByEmail, getUser } from "@/app/api/user";
 import toast from "react-hot-toast";
 
 const UserProfile = () => {
@@ -23,33 +23,63 @@ const UserProfile = () => {
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const email = user?.emailAddresses[0]?.emailAddress;
+
   useEffect(() => {
     const fetchUserData = async () => {
-      const clientId = localStorage.getItem("client_id");
+      if (!email === undefined) {
+        return;
+      }
 
-      if (!clientId) {
-        console.error("Client ID not found.");
-        toast.error("Client ID is missing.");
-        setLoading(false);
+      if (!email) {
         return;
       }
 
       try {
-        const userData = await getUser(clientId);
+        let userData = await getUserByEmail(email);
+
         if (userData) {
-          setCpf(userData.cpf || null);
-          setPhoneNumber(userData.phoneNumber || null);
-          setAddresses(userData.addresses || []);
+          const currentClientId = userData.id;
 
-          const storedSelectedAddress = localStorage.getItem(
-            `${clientId}_selected_address`
-          );
-
-          if (storedSelectedAddress) {
-            setSelectedAddress(JSON.parse(storedSelectedAddress));
-          } else if (userData.addresses.length > 0) {
-            setSelectedAddress(userData.addresses[0]);
+          if (!currentClientId) {
+            return;
           }
+
+          localStorage.setItem("client_id", currentClientId);
+
+          if (currentClientId) {
+            const fullUserData = await getUser(currentClientId);
+
+            if (fullUserData) {
+              setCpf(fullUserData.cpf || null);
+              setPhoneNumber(fullUserData.phoneNumber || null);
+
+              if (Array.isArray(fullUserData.addresses)) {
+                setAddresses(fullUserData.addresses || []);
+              } else {
+                setAddresses([]);
+              }
+
+              const storedSelectedAddress = localStorage.getItem(
+                `${currentClientId}_selected_address`
+              );
+
+              if (storedSelectedAddress) {
+                setSelectedAddress(JSON.parse(storedSelectedAddress));
+              } else if (
+                fullUserData.addresses &&
+                fullUserData.addresses.length > 0
+              ) {
+                setSelectedAddress(fullUserData.addresses[0]);
+              }
+            } else {
+              toast.error("User data not found.");
+            }
+          } else {
+            toast.error("Client ID is missing or invalid.");
+          }
+        } else {
+          toast.error("User with the given email not found.");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -61,7 +91,7 @@ const UserProfile = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [email]);
 
   const handleAddAddress = () => {
     router.push("/address");

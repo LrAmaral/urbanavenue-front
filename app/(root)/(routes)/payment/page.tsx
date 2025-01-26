@@ -208,6 +208,7 @@ export default function PaymentPage() {
               placeholder="Cardholder Name"
               className="w-full p-3 border rounded-md"
               value={cardholderName}
+              maxLength={30}
               onChange={(e) => setCardholderName(e.target.value)}
             />
             {errors.cardholderName && (
@@ -218,8 +219,9 @@ export default function PaymentPage() {
               type="text"
               placeholder="Card Number"
               className="w-full p-3 border rounded-md"
+              maxLength={16}
               value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
+              onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ""))}
             />
             {errors.cardNumber && (
               <p className="text-red-500 text-sm">{errors.cardNumber}</p>
@@ -229,8 +231,14 @@ export default function PaymentPage() {
               type="text"
               placeholder="Expiration Date (MM/YY)"
               className="w-full p-3 border rounded-md"
+              maxLength={5}
               value={expirationDate}
-              onChange={(e) => setExpirationDate(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9/]/g, "");
+                if (value.length <= 5) {
+                  setExpirationDate(value);
+                }
+              }}
             />
             {errors.expirationDate && (
               <p className="text-red-500 text-sm">{errors.expirationDate}</p>
@@ -240,8 +248,9 @@ export default function PaymentPage() {
               type="text"
               placeholder="CVV"
               className="w-full p-3 border rounded-md"
+              maxLength={3}
               value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
+              onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
             />
             {errors.cvv && <p className="text-red-500 text-sm">{errors.cvv}</p>}
           </div>
