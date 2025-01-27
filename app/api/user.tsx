@@ -1,15 +1,7 @@
 import axios from "axios";
-import { Address } from "@/lib/types";
+import { User } from "@/lib/types";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
-
-export interface User {
-  userId?: string;
-  name: string;
-  email: string;
-  role: string;
-  addresses: Address[];
-}
 
 const getUser = async (userId: string): Promise<User | null> => {
   try {
@@ -21,10 +13,29 @@ const getUser = async (userId: string): Promise<User | null> => {
     return data;
   } catch (error: any) {
     console.error(
-      "Error deleting address:",
+      "Error getting user:",
       error.response ? error.response.data : error.message
     );
     throw new Error("Error fetching user");
+  }
+};
+
+const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const { data } = await axios.get<User>(`${process.env.NEXT_PUBLIC_API_URL}/email`, {
+      params: { email }, 
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return data;
+  } catch (error: any) {
+    console.error(
+      "Error getting user by email:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Error fetching user by email");
   }
 };
 
@@ -38,54 +49,11 @@ const createUser = async (userData: User): Promise<User> => {
     return data;
   } catch (error: any) {
     console.error(
-      "Error saving address:",
+      "Error saving user:",
       error.response ? error.response.data : error.message
     );
     throw new Error(`Error saving user: ${error}`);
   }
 };
 
-const updateAddress = async (
-  userId?: string,
-  addresses?: Address
-): Promise<void> => {
-  try {
-    await axios.patch(
-      `${URL}/${userId}`,
-      { addresses },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (error: any) {
-    console.error(
-      "Error deleting address:",
-      error.response ? error.response.data : error.message
-    );
-    throw new Error("Error updating addresses");
-  }
-};
-
-const deleteAddress = async (
-  userId: string,
-  addressId: string
-): Promise<void> => {
-  try {
-    await axios.delete(`${URL}/${userId}/addresses/${addressId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error: any) {
-    console.error(
-      "Error deleting address:",
-      error.response ? error.response.data : error.message
-    );
-    throw new Error(`Error deleting address: ${error}`);
-  }
-};
-
-export { getUser, createUser, updateAddress, deleteAddress };
+export { getUser, getUserByEmail, createUser };

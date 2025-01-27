@@ -14,7 +14,6 @@ export default function PaymentPage() {
   const [orderDetails, setOrderDetails] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { user } = useUser();
 
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -30,7 +29,16 @@ export default function PaymentPage() {
   });
 
   useEffect(() => {
-    const storedOrderDetails = localStorage.getItem(`${user?.id}_orderDetails`);
+    const storedClientId = localStorage.getItem("client_id");
+    const clientId = storedClientId;
+
+    if (!clientId) {
+      toast.error("No user ID found. Redirecting...");
+      setTimeout(() => router.push("/login"), 500);
+      return;
+    }
+
+    const storedOrderDetails = localStorage.getItem(`${clientId}_orderDetails`);
     if (storedOrderDetails) {
       setOrderDetails(JSON.parse(storedOrderDetails));
     } else {
@@ -38,16 +46,14 @@ export default function PaymentPage() {
       setTimeout(() => router.push("/order"), 500);
     }
 
-    if (user?.id) {
-      const storedAddress = localStorage.getItem(`${user.id}_selectedAddress`);
-      if (storedAddress) {
-        setSelectedAddress(JSON.parse(storedAddress));
-      } else {
-        toast.error("No address selected. Redirecting...");
-        setTimeout(() => router.push("/address"), 500);
-      }
+    const storedAddress = localStorage.getItem(`${clientId}_selected_address`);
+    if (storedAddress) {
+      setSelectedAddress(JSON.parse(storedAddress));
+    } else {
+      toast.error("No address selected. Redirecting...");
+      setTimeout(() => router.push("/address"), 500);
     }
-  }, [router, user]);
+  }, [router]);
 
   const handleConfirmPayment = async () => {
     if (isProcessing) return;
@@ -92,8 +98,10 @@ export default function PaymentPage() {
 
       clearCart();
 
-      localStorage.removeItem(`${user?.id}_orderDetails`);
-      localStorage.removeItem(`${user?.id}_cartItems`);
+      const storedClientId = localStorage.getItem("client_id");
+
+      localStorage.removeItem(`${storedClientId}_orderDetails`);
+      localStorage.removeItem(`${storedClientId}_cartItems`);
 
       toast.success("Payment confirmed! Order created successfully.");
       router.push("/");
@@ -200,6 +208,7 @@ export default function PaymentPage() {
               placeholder="Cardholder Name"
               className="w-full p-3 border rounded-md"
               value={cardholderName}
+              maxLength={30}
               onChange={(e) => setCardholderName(e.target.value)}
             />
             {errors.cardholderName && (
@@ -210,8 +219,9 @@ export default function PaymentPage() {
               type="text"
               placeholder="Card Number"
               className="w-full p-3 border rounded-md"
+              maxLength={16}
               value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
+              onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ""))}
             />
             {errors.cardNumber && (
               <p className="text-red-500 text-sm">{errors.cardNumber}</p>
@@ -221,8 +231,14 @@ export default function PaymentPage() {
               type="text"
               placeholder="Expiration Date (MM/YY)"
               className="w-full p-3 border rounded-md"
+              maxLength={5}
               value={expirationDate}
-              onChange={(e) => setExpirationDate(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9/]/g, "");
+                if (value.length <= 5) {
+                  setExpirationDate(value);
+                }
+              }}
             />
             {errors.expirationDate && (
               <p className="text-red-500 text-sm">{errors.expirationDate}</p>
@@ -232,8 +248,9 @@ export default function PaymentPage() {
               type="text"
               placeholder="CVV"
               className="w-full p-3 border rounded-md"
+              maxLength={3}
               value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
+              onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
             />
             {errors.cvv && <p className="text-red-500 text-sm">{errors.cvv}</p>}
           </div>

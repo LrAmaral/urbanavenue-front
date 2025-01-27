@@ -7,8 +7,10 @@ import { LogOut, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
-import { Address } from "@/lib/types";
+import { Address, User } from "@/lib/types";
 import UserInfoSkeleton from "@/components/user-info";
+import { getUserByEmail, getUser } from "@/app/api/user";
+import toast from "react-hot-toast";
 
 const UserProfile = () => {
   const { user } = useUser();
@@ -16,32 +18,80 @@ const UserProfile = () => {
   const { signOut } = useClerk();
   const router = useRouter();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [cpf, setCpf] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const email = user?.emailAddresses[0]?.emailAddress;
 
   useEffect(() => {
-    if (user?.id) {
-      const savedAddress = localStorage.getItem(`${user.id}_selectedAddress`);
-      const savedCpf = localStorage.getItem(`${user.id}_cpf`);
-      const savedPhoneNumber = localStorage.getItem(`${user.id}_phoneNumber`);
-
-      if (savedAddress) {
-        const address = JSON.parse(savedAddress);
-        setSelectedAddress(address);
+    const fetchUserData = async () => {
+      if (!email === undefined) {
+        return;
       }
 
-      if (savedCpf) {
-        setCpf(savedCpf);
+      if (!email) {
+        return;
       }
 
-      if (savedPhoneNumber) {
-        setPhoneNumber(savedPhoneNumber);
-      }
+      try {
+        let userData = await getUserByEmail(email);
 
-      setLoading(false);
-    }
-  }, [user?.id]);
+        if (userData) {
+          const currentClientId = userData.id;
+
+          if (!currentClientId) {
+            return;
+          }
+
+          localStorage.setItem("client_id", currentClientId);
+
+          if (currentClientId) {
+            const fullUserData = await getUser(currentClientId);
+
+            if (fullUserData) {
+              setCpf(fullUserData.cpf || null);
+              setPhoneNumber(fullUserData.phoneNumber || null);
+
+              if (Array.isArray(fullUserData.addresses)) {
+                setAddresses(fullUserData.addresses || []);
+              } else {
+                setAddresses([]);
+              }
+
+              const storedSelectedAddress = localStorage.getItem(
+                `${currentClientId}_selected_address`
+              );
+
+              if (storedSelectedAddress) {
+                setSelectedAddress(JSON.parse(storedSelectedAddress));
+              } else if (
+                fullUserData.addresses &&
+                fullUserData.addresses.length > 0
+              ) {
+                setSelectedAddress(fullUserData.addresses[0]);
+              }
+            } else {
+              toast.error("User data not found.");
+            }
+          } else {
+            toast.error("Client ID is missing or invalid.");
+          }
+        } else {
+          toast.error("User with the given email not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.dismiss();
+        toast.error("Failed to load user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [email]);
 
   const handleAddAddress = () => {
     router.push("/address");
@@ -74,7 +124,7 @@ const UserProfile = () => {
           <div className="flex flex-col space-y-4 text-gray-700">
             <UserInfoSkeleton
               user={user}
-              loading={!user}
+              loading={!user || loading}
               cpf={cpf}
               phoneNumber={phoneNumber}
             />

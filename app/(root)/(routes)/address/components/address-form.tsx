@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 interface AddressFormProps {
   addresses: Address[];
-  setAddresses: (address: Address) => Promise<void>;
+  setAddresses: (address: Address) => void;
   editAddress?: Address | null;
   onSubmit?: (address: Address) => void;
 }
@@ -21,7 +21,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
-    number: "", 
+    number: "",
   });
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const AddressForm = ({
     city: "",
     state: "",
     zipCode: "",
-    number: "", 
+    number: "",
   });
 
   const validate = () => {
@@ -86,7 +86,7 @@ const AddressForm = ({
         city: "",
         state: "",
         zipCode: "",
-        number: "", 
+        number: "",
       });
     }
   };
@@ -117,16 +117,16 @@ const AddressForm = ({
         } else {
           setErrors((prevErrors) => ({
             ...prevErrors,
-            zipCode: "CEP não encontrado.",
+            zipCode: "ZIP Code not found.",
           }));
         }
       } catch (error) {
-        console.error("Erro ao buscar o endereço:", error);
+        console.error("Error searching the address:", error);
       }
     } else {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        zipCode: "CEP inválido.",
+        zipCode: "Invalid ZIP Code.",
       }));
     }
   };
@@ -140,7 +140,7 @@ const AddressForm = ({
           { label: "Street", name: "street" },
           { label: "City", name: "city" },
           { label: "State", name: "state" },
-          { label: "House Number", name: "number" }, 
+          { label: "House Number", name: "number" },
         ].map(({ label, name }) => (
           <div className="mb-4" key={name}>
             <label htmlFor={name} className="block text-gray-700">

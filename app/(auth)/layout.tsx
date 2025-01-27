@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "UrbanAvenue® - Login",
+  description: "Login",
+};
+
 export default function Authlayout({
   children,
 }: {

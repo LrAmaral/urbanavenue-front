@@ -12,6 +12,5 @@ export const config = {
     "/((?!.+\\.[\\w]+$|_next).*)",
     "/",
     "/(api|trpc)(.*)",
-    "/complete-profile",
   ],
 };

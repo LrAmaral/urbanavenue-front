@@ -1,5 +1,15 @@
 import { User as UserIcon, Mail, Phone, IdCard } from "lucide-react";
 
+// Função para formatar CPF
+const formatCPF = (cpf: string) => {
+  return cpf?.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+};
+
+// Função para formatar o telefone
+const formatPhoneNumber = (phoneNumber: string) => {
+  return phoneNumber?.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+};
+
 const UserInfoSkeleton = ({
   loading,
   user,
@@ -39,13 +49,13 @@ const UserInfoSkeleton = ({
       {cpf && (
         <div className="flex items-center space-x-3">
           <IdCard className="w-6 h-6 text-gray-500" />
-          <span>{cpf}</span>
+          <span>{formatCPF(cpf)}</span>
         </div>
       )}
       {phoneNumber && (
         <div className="flex items-center space-x-3">
           <Phone className="w-6 h-6 text-gray-500" />
-          <span>{phoneNumber}</span>
+          <span>{formatPhoneNumber(phoneNumber)}</span>
         </div>
       )}
     </div>

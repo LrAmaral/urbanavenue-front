@@ -8,6 +8,48 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+const SkeletonLoader = () => (
+  <div className="w-full px-4 py-8 min-h-screen mt-24">
+    <Wrapper className="flex flex-col gap-8">
+      <div className="space-y-6 p-6 border rounded-lg animate-pulse">
+        <div className="h-8 bg-gray-300 rounded-md w-1/3"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded-md w-1/2"></div>
+          <div className="h-4 bg-gray-300 rounded-md w-1/4"></div>
+        </div>
+        <Separator />
+        <div className="h-6 bg-gray-300 rounded-md w-1/4 mb-4"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded-md w-full"></div>
+          <div className="h-4 bg-gray-300 rounded-md w-2/3"></div>
+        </div>
+      </div>
+      <div className="p-6 border rounded-lg animate-pulse">
+        <div className="h-6 bg-gray-300 rounded-md w-1/3 mb-4"></div>
+        <ul className="space-y-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <li
+              key={index}
+              className="bg-gray-50 flex flex-col md:flex-row gap-4 p-4 border border-gray-300 rounded-lg shadow-md animate-pulse"
+            >
+              <div className="w-32 h-32 bg-gray-300 rounded-lg"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-300 rounded-md w-1/2"></div>
+                <div className="h-4 bg-gray-300 rounded-md w-1/3"></div>
+                <div className="h-4 bg-gray-300 rounded-md w-1/4"></div>
+                <div className="h-4 bg-gray-300 rounded-md w-1/5"></div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6">
+          <div className="h-6 bg-gray-300 rounded-md w-1/3"></div>
+        </div>
+      </div>
+    </Wrapper>
+  </div>
+);
+
 const OrderDetails = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState<Order | null>(null);
@@ -44,11 +86,7 @@ const OrderDetails = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen w-full">
-        <p className="text-lg text-gray-600">Loading order details...</p>
-      </div>
-    );
+    return <SkeletonLoader />;
   }
 
   if (error) {
