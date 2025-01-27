@@ -37,8 +37,15 @@ export default function OrdersPage(): JSX.Element {
 
   useEffect(() => {
     const storedClientId = localStorage.getItem("client_id");
-    if (storedClientId) setClientId(storedClientId);
-  }, []);
+
+    if (!storedClientId) {
+      console.error("Client ID not found.");
+      router.push("/sign-in");
+      return;
+    }
+
+    setClientId(storedClientId);
+  }, [router]);
 
   const formatCurrency = (value: number): string => {
     return value.toFixed(2).replace(".", ",");
@@ -80,8 +87,7 @@ export default function OrdersPage(): JSX.Element {
 
   const loadAddresses = useCallback(async () => {
     if (!clientId) {
-      toast.dismiss();
-      toast.error("Client ID not found.");
+      console.log("Client ID is required");
       return;
     }
 

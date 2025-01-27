@@ -117,16 +117,16 @@ const AddressForm = ({
         } else {
           setErrors((prevErrors) => ({
             ...prevErrors,
-            zipCode: "CEP não encontrado.",
+            zipCode: "ZIP Code not found.",
           }));
         }
       } catch (error) {
-        console.error("Erro ao buscar o endereço:", error);
+        console.error("Error searching the address:", error);
       }
     } else {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        zipCode: "CEP inválido.",
+        zipCode: "Invalid ZIP Code.",
       }));
     }
   };
