@@ -45,7 +45,6 @@ const OrdersHistory = () => {
 
       if (!clientId) {
         console.error("Client ID not found.");
-        setError("Client ID is missing.");
         setLoading(false);
         return;
       }
