@@ -41,10 +41,8 @@ export function Product({ data, isLoading }: ProductProps) {
           alt={data?.title || "Loading..."}
           width={400}
           height={400}
-          layout="responsive"
-          objectFit="cover"
-          className="rounded-lg"
-          loading="lazy"
+          className="rounded-lg object-cover"
+          priority
         />
       </div>
       <p className="font-semibold text-sm sm:text-md">{data?.title}</p>
