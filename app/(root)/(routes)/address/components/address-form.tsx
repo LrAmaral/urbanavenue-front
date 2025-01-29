@@ -1,6 +1,4 @@
-"use client";
-
-import { Address } from "@/lib/types";
+import { Address, AddressFormInput } from "@/lib/types";
 import { useState, useEffect } from "react";
 
 interface AddressFormProps {
@@ -15,7 +13,7 @@ const AddressForm = ({
   setAddresses,
   editAddress,
 }: AddressFormProps) => {
-  const [inputValues, setInputValues] = useState<Address>({
+  const [inputValues, setInputValues] = useState<AddressFormInput>({
     neighborhood: "",
     street: "",
     city: "",
@@ -26,7 +24,7 @@ const AddressForm = ({
 
   useEffect(() => {
     if (editAddress) {
-      setInputValues(editAddress);
+      setInputValues(editAddress); // Preenche com os dados do endereço a ser editado
     }
   }, [editAddress]);
 
@@ -75,11 +73,12 @@ const AddressForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      // Defina isPrimary como true sempre que um novo endereço for salvo
       const addressToSave = editAddress
-        ? { ...inputValues, id: editAddress.id }
-        : { ...inputValues };
+        ? { ...inputValues, id: editAddress.id, isPrimary: true } // Mantém isPrimary true ao editar
+        : { ...inputValues, isPrimary: true }; // Sempre define isPrimary como true ao adicionar um novo endereço
 
-      await setAddresses(addressToSave);
+      await setAddresses(addressToSave); // Envia o endereço para salvar
       setInputValues({
         neighborhood: "",
         street: "",
@@ -150,7 +149,7 @@ const AddressForm = ({
               type="text"
               name={name}
               id={name}
-              value={inputValues[name as keyof Address]}
+              value={inputValues[name as keyof AddressFormInput] || ""}
               onChange={handleChange}
               onBlur={
                 name === "zipCode"

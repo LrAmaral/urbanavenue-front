@@ -22,6 +22,7 @@ const AddressPage = () => {
     }
   }, []);
 
+  console.log(clientId);
   const loadAddresses = useCallback(async () => {
     if (!clientId) {
       return;

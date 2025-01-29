@@ -15,8 +15,10 @@ export interface Address {
   state: string;
   zipCode: string;
   number: string;
-  isPrimary: boolean;
+  isPrimary?: boolean;
 }
+
+export type AddressFormInput = Omit<Address, 'isPrimary'>;
 
 export interface AddressResponse {
   addresses: Address[];

@@ -32,43 +32,46 @@ const UserProfile = () => {
       }
 
       try {
-        let userData = await getUserByEmail(email);
+        const userData = await getUserByEmail(email);
 
-        if (userData) {
-          const currentClientId = userData.id;
+        if (!userData) {
+          toast.error("User with the given email not found.");
+          return;
+        }
 
-          if (!currentClientId) {
-            return;
+        const currentClientId = userData.id;
+
+        if (!currentClientId) {
+          toast.error("Client ID is missing or invalid.");
+          return;
+        }
+
+        localStorage.setItem("client_id", currentClientId);
+
+        const fullUserData = await getUser(currentClientId);
+
+        if (fullUserData) {
+          setCpf(fullUserData.cpf || null);
+          setPhoneNumber(fullUserData.phoneNumber || null);
+
+          if (Array.isArray(fullUserData.addresses)) {
+            setAddresses(fullUserData.addresses || []);
+          } else {
+            setAddresses([]);
           }
 
-          if (currentClientId) {
-            const fullUserData = await getUser(currentClientId);
+          // Aqui está a modificação importante: a busca pelo endereço principal
+          const primaryAddress = fullUserData.addresses.find(
+            (addr) => addr.isPrimary === true // Verificando corretamente se é o endereço principal
+          );
 
-            if (fullUserData) {
-              setCpf(fullUserData.cpf || null);
-              setPhoneNumber(fullUserData.phoneNumber || null);
-
-              const userAddresses = Array.isArray(fullUserData.addresses)
-                ? fullUserData.addresses
-                : [];
-
-              setAddresses(userAddresses);
-
-              const primaryAddress = userAddresses.find(
-                (addr) => addr.isPrimary
-              );
-
-              if (primaryAddress) {
-                setSelectedAddress(primaryAddress);
-              }
-            } else {
-              toast.error("User data not found.");
-            }
+          if (primaryAddress) {
+            setSelectedAddress(primaryAddress);
           } else {
-            toast.error("Client ID is missing or invalid.");
+            setSelectedAddress(null);
           }
         } else {
-          toast.error("User with the given email not found.");
+          toast.error("User data not found.");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
