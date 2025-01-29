@@ -23,23 +23,25 @@ const AddressPage = () => {
   }, []);
 
   const loadAddresses = useCallback(async () => {
-    if (!clientId === undefined) {
-      return;
-    }
-
     if (!clientId) {
       return;
     }
 
     try {
       const response = await getAddresses(clientId);
-      setAddresses(response.addresses || []);
+      const allAddresses = response.addresses || [];
+      setAddresses(allAddresses);
 
-      const savedSelectedAddress = localStorage.getItem(
-        `${clientId}_selected_address`
-      );
-      if (savedSelectedAddress) {
-        setSelectedAddress(JSON.parse(savedSelectedAddress));
+      const primaryAddress = allAddresses.find((addr) => addr.isPrimary);
+      if (primaryAddress) {
+        setSelectedAddress(primaryAddress);
+
+        localStorage.setItem(
+          `${clientId}_selected_address`,
+          JSON.stringify(primaryAddress)
+        );
+      } else {
+        setSelectedAddress(null);
       }
     } catch (error) {
       console.error("Error loading addresses:", error);
@@ -49,8 +51,10 @@ const AddressPage = () => {
   }, [clientId]);
 
   useEffect(() => {
-    loadAddresses();
-  }, [loadAddresses]);
+    if (clientId) {
+      loadAddresses();
+    }
+  }, [clientId, loadAddresses]);
 
   const saveSelectedAddress = (address: Address) => {
     if (!clientId) {
@@ -64,6 +68,15 @@ const AddressPage = () => {
       JSON.stringify(address)
     );
     setSelectedAddress(address);
+
+    const updatedAddresses = addresses.map((addr) =>
+      addr.id === address.id
+        ? { ...addr, isPrimary: true }
+        : { ...addr, isPrimary: false }
+    );
+
+    updateAddress(clientId, updatedAddresses);
+
     toast.dismiss();
     toast.success("Address selected successfully!");
   };
@@ -83,12 +96,18 @@ const AddressPage = () => {
       setEditIndex(null);
     }
 
+    const updatedAddressesWithPrimary = updatedAddresses.map((addr) =>
+      addr.id === newAddress.id
+        ? { ...addr, isPrimary: true }
+        : { ...addr, isPrimary: false }
+    );
+
     try {
-      await updateAddress(clientId, updatedAddresses);
-      setAddresses(updatedAddresses);
+      await updateAddress(clientId, updatedAddressesWithPrimary);
+      setAddresses(updatedAddressesWithPrimary);
       localStorage.setItem(
         `${clientId}_user_addresses`,
-        JSON.stringify(updatedAddresses)
+        JSON.stringify(updatedAddressesWithPrimary)
       );
       toast.success(
         editIndex !== null

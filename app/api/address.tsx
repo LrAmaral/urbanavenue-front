@@ -20,11 +20,18 @@ const getAddresses = async (userId: string): Promise<AddressResponse> => {
   }
 };
 
-const createAddress = async (userId: string, address: Address) => {
+const createAddress = async (
+  userId: string,
+  address: Address,
+  isPrimary: boolean = false
+) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/address`,
-      { userId, address },
+      {
+        userId,
+        address: { ...address, isPrimary },
+      },
       {
         headers: {
           "Content-Type": "application/json",

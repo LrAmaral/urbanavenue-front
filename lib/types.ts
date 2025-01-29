@@ -15,6 +15,7 @@ export interface Address {
   state: string;
   zipCode: string;
   number: string;
+  isPrimary: boolean;
 }
 
 export interface AddressResponse {

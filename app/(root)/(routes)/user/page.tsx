@@ -27,10 +27,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!email === undefined) {
-        return;
-      }
-
       if (!email) {
         return;
       }
@@ -45,8 +41,6 @@ const UserProfile = () => {
             return;
           }
 
-          localStorage.setItem("client_id", currentClientId);
-
           if (currentClientId) {
             const fullUserData = await getUser(currentClientId);
 
@@ -54,23 +48,18 @@ const UserProfile = () => {
               setCpf(fullUserData.cpf || null);
               setPhoneNumber(fullUserData.phoneNumber || null);
 
-              if (Array.isArray(fullUserData.addresses)) {
-                setAddresses(fullUserData.addresses || []);
-              } else {
-                setAddresses([]);
-              }
+              const userAddresses = Array.isArray(fullUserData.addresses)
+                ? fullUserData.addresses
+                : [];
 
-              const storedSelectedAddress = localStorage.getItem(
-                `${currentClientId}_selected_address`
+              setAddresses(userAddresses);
+
+              const primaryAddress = userAddresses.find(
+                (addr) => addr.isPrimary
               );
 
-              if (storedSelectedAddress) {
-                setSelectedAddress(JSON.parse(storedSelectedAddress));
-              } else if (
-                fullUserData.addresses &&
-                fullUserData.addresses.length > 0
-              ) {
-                setSelectedAddress(fullUserData.addresses[0]);
+              if (primaryAddress) {
+                setSelectedAddress(primaryAddress);
               }
             } else {
               toast.error("User data not found.");

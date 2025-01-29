@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Wrapper } from "@/components/Custom/wrapper";
 import AddressForm from "../address/components/address-form";
 import { Address, Size } from "@/lib/types";
-import { createAddress, getAddresses } from "@/app/api/address";
+import { createAddress, getAddresses, updateAddress } from "@/app/api/address";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -34,6 +34,8 @@ export default function OrdersPage(): JSX.Element {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [showAddressList, setShowAddressList] = useState(false);
   const [clientId, setClientId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   useEffect(() => {
     const storedClientId = localStorage.getItem("client_id");
@@ -91,13 +93,32 @@ export default function OrdersPage(): JSX.Element {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const response = await getAddresses(clientId);
-      setAddresses(response.addresses || []);
+      const addressesWithPrimary = response.addresses || [];
+
+      const primaryAddress = addressesWithPrimary.find(
+        (address) => address.isPrimary
+      );
+
+      if (primaryAddress) {
+        localStorage.setItem(
+          `${clientId}_selected_address`,
+          JSON.stringify(primaryAddress)
+        );
+        setSelectedAddress(primaryAddress);
+      } else {
+        setSelectedAddress(null);
+      }
+
+      setAddresses(addressesWithPrimary);
 
       const savedSelectedAddress = localStorage.getItem(
         `${clientId}_selected_address`
       );
+
       if (savedSelectedAddress) {
         const parsedAddress = JSON.parse(savedSelectedAddress);
         setSelectedAddress(parsedAddress);
@@ -109,6 +130,8 @@ export default function OrdersPage(): JSX.Element {
       console.error("Error loading addresses:", error);
       toast.dismiss();
       toast.error("Failed to load addresses.");
+    } finally {
+      setIsLoading(false);
     }
   }, [simulateShipping, clientId]);
 
@@ -118,37 +141,41 @@ export default function OrdersPage(): JSX.Element {
     }
   }, [loadAddresses, clientId]);
 
-  const handleAddressChange = (address: Address) => {
+  const handleAddressChange = async (address: Address) => {
+    console.log("Address selected: ", address);
+
+    setIsProcessing(true);
     setSelectedAddress(address);
+    setShowAddressList(false);
+
+    const updatedAddresses = addresses.map((addr) =>
+      addr.id === address.id
+        ? { ...addr, isPrimary: true }
+        : { ...addr, isPrimary: false }
+    );
+
+    setAddresses(updatedAddresses);
+
     const options = simulateShipping(address.zipCode);
     setShippingOptions(options);
     setSelectedOption(options[0]);
+
     localStorage.setItem(
       `${clientId}_selected_address`,
       JSON.stringify(address)
     );
-    setShowAddressList(false);
-    toast.success("Address updated successfully!");
-  };
 
-  const createAddressForOrder = async (newAddress: Address) => {
     try {
-      if (!clientId) {
-        toast.error("Client ID not found.");
-        return;
+      if (clientId) {
+        await updateAddress(clientId, updatedAddresses);
+      } else {
+        console.log("Client ID not found.");
       }
-
-      const createdAddress = await createAddress(clientId, newAddress);
-
-      const updatedAddresses = [...addresses, createdAddress];
-      setAddresses(updatedAddresses);
-
-      setIsAddingAddress(false);
-      toast.success("Address added successfully! Please select it.");
     } catch (error) {
-      console.error("Error adding address:", error);
-      toast.error("Failed to add address.");
+      console.error("Error updating address:", error);
     }
+
+    setIsProcessing(false);
   };
 
   const handleAddAddress = async (newAddress: Address) => {
@@ -163,6 +190,10 @@ export default function OrdersPage(): JSX.Element {
 
       const updatedAddresses = [...addresses, createdAddress];
       setAddresses(updatedAddresses);
+
+      if (updatedAddresses.length === 1) {
+        createdAddress.isPrimary = true;
+      }
 
       setIsAddingAddress(false);
       toast.success("Address added successfully!");
@@ -309,7 +340,8 @@ export default function OrdersPage(): JSX.Element {
                       onClick={() => handleAddressChange(address)}
                     >
                       <p>
-                        {address.street}, {address.neighborhood}
+                        {address.street}, {address.neighborhood},{" "}
+                        {address.number}
                       </p>
                       <p>
                         {address.city}, {address.state}
@@ -330,10 +362,9 @@ export default function OrdersPage(): JSX.Element {
                       <AddressForm
                         addresses={addresses}
                         setAddresses={async (updatedAddress) => {
-                          await createAddressForOrder(updatedAddress);
+                          await handleAddAddress(updatedAddress);
                           setIsAddingAddress(false);
                         }}
-                        onSubmit={handleAddAddress}
                       />
                     </div>
                   )}
@@ -343,9 +374,10 @@ export default function OrdersPage(): JSX.Element {
                   <h2 className="text-lg font-semibold mb-2">
                     Selected Address
                   </h2>
-                  <div className="space-y-2">
+                  <div className="">
                     <p>
-                      {selectedAddress.street}, {selectedAddress.neighborhood}
+                      {selectedAddress.street}, {selectedAddress.neighborhood},{" "}
+                      {selectedAddress.number}
                     </p>
                     <p>
                       {selectedAddress.city}, {selectedAddress.state}
@@ -364,33 +396,27 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               )}
 
-              {shippingOptions.length > 0 && (
-                <div className="w-full">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Select a Shipping Option
-                  </h3>
-                  {shippingOptions.map((option) => (
-                    <div
-                      key={option.code}
-                      className={`flex justify-between items-center border p-2 rounded-md mb-2 cursor-pointer ${
-                        selectedOption?.code === option.code
-                          ? "bg-zinc-100"
-                          : "bg-white"
-                      }`}
-                      onClick={() => setSelectedOption(option)}
-                    >
-                      <div>
-                        <p className="font-medium">{option.type}</p>
-                        <p className="text-sm text-gray-600">
-                          {option.deliveryTime} business days
-                        </p>
-                      </div>
-                      <p className="font-bold">R$ {option.value}</p>
-                    </div>
-                  ))}
+              {/* Shipping Options */}
+              {shippingOptions.map((option) => (
+                <div
+                  key={option.code}
+                  className={`flex justify-between items-center border p-2 rounded-md mb-2 cursor-pointer ${
+                    selectedOption?.code === option.code
+                      ? "bg-zinc-100"
+                      : "bg-white"
+                  }`}
+                  onClick={() => setSelectedOption(option)}
+                >
+                  <div>
+                    <p className="font-medium">{option.type}</p>
+                    <p className="text-sm text-gray-600">
+                      {option.deliveryTime} business days
+                    </p>
+                  </div>
+                  <p className="font-bold">R$ {option.value}</p>
                 </div>
-              )}
-
+              ))}
+              {/* Total Price */}
               <div className="flex justify-between items-center font-semibold text-xl w-full">
                 <p>Subtotal:</p>
                 <p>
