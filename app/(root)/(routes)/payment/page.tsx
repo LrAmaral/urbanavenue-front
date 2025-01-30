@@ -190,7 +190,8 @@ export default function PaymentPage() {
               <h2 className="text-lg font-semibold mb-4">Delivery Address</h2>
               <div className="border rounded-md p-4 space-y-2">
                 <p>
-                  {selectedAddress.street}, {selectedAddress.neighborhood}
+                  {selectedAddress.street}, {selectedAddress.neighborhood},{" "}
+                  {selectedAddress.number}
                 </p>
                 <p>
                   {selectedAddress.city}, {selectedAddress.state}

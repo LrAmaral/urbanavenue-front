@@ -18,16 +18,17 @@ export default function SearchBar({ classname }: SearchBarProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
+  const clientId = localStorage.getItem("clientId");
 
   const MAX_RECENT_SEARCHES = 5;
   const MAX_DISPLAYED_SUGGESTIONS = 5;
 
   useEffect(() => {
-    const storedSearches = localStorage.getItem("recentSearches");
+    const storedSearches = localStorage.getItem(`${clientId}_recent_searches`);
     if (storedSearches) {
       setRecentSearches(JSON.parse(storedSearches));
     }
-  }, []);
+  }, [clientId]);
 
   useEffect(() => {
     if (!searchTerm) {
@@ -76,7 +77,10 @@ export default function SearchBar({ classname }: SearchBarProps) {
     }
 
     setRecentSearches(updatedSearches);
-    localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
+    localStorage.setItem(
+      `${clientId}_recent_searches`,
+      JSON.stringify(updatedSearches)
+    );
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -90,7 +94,7 @@ export default function SearchBar({ classname }: SearchBarProps) {
   };
 
   const handleRemoveRecentSearches = () => {
-    localStorage.removeItem("recentSearches");
+    localStorage.removeItem(`${clientId}_recent_searches`);
     setRecentSearches([]);
   };
 
