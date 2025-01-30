@@ -66,7 +66,7 @@ Agora, você pode acessar a aplicação em [http://localhost:3000](http://localh
 
 ---
 
-## Tecnologias Usadas
+## Tecnologias Principais Usadas
 
 - **Next.js**: Framework React para construção de aplicações web de alto desempenho e escaláveis.
 - **TypeScript**: Superset do JavaScript que adiciona tipagem estática, melhorando a qualidade e manutenção do código.
@@ -87,6 +87,3 @@ Agora, você pode acessar a aplicação em [http://localhost:3000](http://localh
 
 **UrbanAvenue** foi feito para ser uma solução simples e eficiente para quem deseja criar uma plataforma de e-commerce com **Next.js** e tecnologias modernas, como o **Clerk.js** para autenticação de usuários.
 
-## Cartões para Testes
-
-![alt text](image.png)
