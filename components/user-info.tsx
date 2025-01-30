@@ -1,11 +1,9 @@
 import { User as UserIcon, Mail, Phone, IdCard } from "lucide-react";
 
-// Função para formatar CPF
 const formatCPF = (cpf: string) => {
   return cpf?.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 };
 
-// Função para formatar o telefone
 const formatPhoneNumber = (phoneNumber: string) => {
   return phoneNumber?.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
 };

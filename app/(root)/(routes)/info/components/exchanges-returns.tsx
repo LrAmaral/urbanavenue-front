@@ -1,80 +1,79 @@
 const ExchangesAndReturns = () => {
   return (
     <div className="flex flex-col text-justify mt-10 md:mt-0 px-2 md:px-0 justify-center items-center text-sm">
-      <p className="text-xl font-bold text-center">Trocas e Devoluções</p>
+      <p className="text-xl font-bold text-center">Exchanges and Returns</p>
       <div className="space-y-2">
         <div className="py-12">
           {`
-        Trocas e Devoluções Na UrbanAvenue, nos esforçamos para fornecer aos nossos clientes
-        produtos de alta qualidade e uma experiência de compra positiva. Entendemos
-        que pode haver ocasiões em que você não esteja completamente satisfeito com sua
-        compra. Esta seção descreve nossa política para trocas e devoluções para garantir
-        sua satisfação.
+        Exchanges and Returns At UrbanAvenue, we strive to provide our customers
+        with high-quality products and a positive shopping experience. We understand
+        that there may be occasions when you're not fully satisfied with your
+        purchase. This section outlines our policy for exchanges and returns to ensure
+        your satisfaction.
         `}
         </div>
-        <p> Elegibilidade para Devoluções e Trocas </p>
+        <p> Eligibility for Returns and Exchanges </p>
         <p className="text-muted-foreground ">
-          Você é elegível para uma devolução ou troca se tiver comprado um
-          produto diretamente da UrbanAvenue. - Devoluções e trocas estão
-          sujeitas aos termos e condições descritos nesta política.
+          You are eligible for a return or exchange if you purchased a product
+          directly from UrbanAvenue. - Returns and exchanges are subject to the
+          terms and conditions outlined in this policy.
         </p>
-        <p> Prazo para Devoluções e Trocas </p>
+        <p> Return and Exchange Period </p>
         <p className="text-muted-foreground">
-          Você tem 7 dias a partir da data de recebimento do seu pedido para
-          iniciar uma devolução ou troca. - Devoluções e trocas solicitadas após
-          este período podem não ser aceitas.
+          You have 7 days from the date of receipt of your order to initiate a
+          return or exchange. - Returns and exchanges requested after this
+          period may not be accepted.
         </p>
-        <p> Processo de Devolução e Troca </p>
+        <p> Return and Exchange Process </p>
         <p className="text-muted-foreground">
-          Para iniciar uma devolução ou troca, entre em contato com nossa equipe
-          de atendimento ao cliente pelo e-mail contact@urbanavenuebr.com. -
-          Você receberá instruções sobre como devolver o produto ou trocá-lo por
-          um item diferente. - Certifique-se de que o produto esteja em sua
-          condição original, com todas as etiquetas e embalagens intactas.
+          To initiate a return or exchange, contact our customer service team at
+          contact@urbanavenuebr.com. - You will receive instructions on how to
+          return the product or exchange it for a different item. - Make sure
+          the product is in its original condition, with all tags and packaging
+          intact.
         </p>
-        <p> Condições para Devolução e Troca </p>
+        <p> Conditions for Return and Exchange </p>
         <p className="text-muted-foreground">
-          Os produtos devem estar em sua condição original, não usados e não
-          desgastados. - Os produtos devem ser devolvidos com todas as
-          etiquetas, rótulos e embalagens originais. - Reservamo-nos o direito
-          de rejeitar devoluções ou trocas que não atendam às condições
-          especificadas.
+          Products must be in their original condition, unused, and unworn. -
+          Products must be returned with all tags, labels, and original
+          packaging. - We reserve the right to reject returns or exchanges that
+          do not meet the specified conditions.
         </p>
-        <p> Reembolsos </p>
+        <p> Refunds </p>
         <p className="text-muted-foreground">
-          Se você optar por devolver um produto, pode ser elegível para um
-          reembolso. - Os reembolsos serão processados dentro de 7 dias úteis
-          após o recebimento e inspeção do produto devolvido. - Os reembolsos
-          serão emitidos para o método de pagamento original usado na compra.
+          If you choose to return a product, you may be eligible for a refund. -
+          Refunds will be processed within 7 business days after the returned
+          product is received and inspected. - Refunds will be issued to the
+          original payment method used for the purchase.
         </p>
-        <p> Trocas </p>
+        <p> Exchanges </p>
         <p className="text-muted-foreground">
-          Se você optar por uma troca, pode escolher um produto alternativo de
-          valor igual ou menor. - Quaisquer diferenças de preço serão
-          reembolsadas ou cobradas conforme necessário. - Produtos trocados
-          serão enviados a você o mais rápido possível.
+          If you choose an exchange, you can select an alternative product of
+          equal or lesser value. - Any price differences will be refunded or
+          charged as needed. - Exchanged products will be shipped to you as
+          quickly as possible.
         </p>
-        <p> Custos de Envio </p>
+        <p> Shipping Costs </p>
         <p className="text-muted-foreground">
-          O custo de devolução de um produto é responsabilidade do cliente,
-          exceto em casos de itens defeituosos ou incorretos. - Cobriremos os
-          custos de envio para enviar os itens trocados para você.
+          The cost of returning a product is the responsibility of the customer,
+          except in cases of defective or incorrect items. - We will cover the
+          shipping costs to send exchanged items to you.
         </p>
-        <p> Itens Defeituosos ou Incorretos </p>
+        <p> Defective or Incorrect Items </p>
         <p className="text-muted-foreground">
-          Se você receber um produto defeituoso ou incorreto, entre em contato
-          com nossa equipe de atendimento ao cliente imediatamente para obter
-          assistência. - Forneceremos instruções para devolver o item, e
-          cobriremos os custos de envio para devolução e troca nesses casos.
+          If you receive a defective or incorrect product, contact our customer
+          service team immediately for assistance. - We will provide
+          instructions to return the item, and we will cover the return and
+          exchange shipping costs in these cases.
         </p>
-        <p> Entre em Contato Conosco Se </p>
+        <p> Contact Us If </p>
         <p className="text-muted-foreground">
-          você tiver alguma dúvida ou precisar de mais esclarecimentos sobre
-          nossa política de devoluções e trocas, não hesite em nos contatar pelo
-          e-mail contact@urbanavenuebr.com. UrbanAvenue está comprometida em
-          garantir uma experiência tranquila e satisfatória para nossos
-          clientes. Valorizamos seu negócio e estamos aqui para ajudá-lo com
-          quaisquer preocupações que você possa ter sobre devoluções e trocas.
+          you have any questions or need further clarification about our return
+          and exchange policy, feel free to contact us at
+          contact@urbanavenuebr.com. UrbanAvenue is committed to ensuring a
+          smooth and satisfying experience for our customers. We value your
+          business and are here to assist you with any concerns you may have
+          regarding returns and exchanges.
         </p>
       </div>
     </div>
