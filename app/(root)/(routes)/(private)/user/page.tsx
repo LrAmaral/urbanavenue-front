@@ -7,10 +7,10 @@ import { LogOut, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import OrdersHistory from "./components/order-history";
 import { useRouter } from "next/navigation";
-import { Address, User } from "@/lib/types";
-import UserInfoSkeleton from "@/components/user-info";
+import { Address } from "@/lib/types";
 import { getUserByEmail, getUser } from "@/app/api/user";
 import toast from "react-hot-toast";
+import UserInfoSkeleton from "./components/user-info";
 
 const UserProfile = () => {
   const { user } = useUser();
@@ -60,9 +60,8 @@ const UserProfile = () => {
             setAddresses([]);
           }
 
-          // Aqui está a modificação importante: a busca pelo endereço principal
           const primaryAddress = fullUserData.addresses.find(
-            (addr) => addr.isPrimary === true // Verificando corretamente se é o endereço principal
+            (addr) => addr.isPrimary === true
           );
 
           if (primaryAddress) {
@@ -90,7 +89,10 @@ const UserProfile = () => {
   };
 
   const handleSignOut = () => {
+    localStorage.removeItem("client_id");
+
     signOut();
+
     router.push("/sign-in");
   };
 

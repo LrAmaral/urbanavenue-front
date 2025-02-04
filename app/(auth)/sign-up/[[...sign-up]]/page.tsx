@@ -1,7 +1,19 @@
-import { SignUp } from "@clerk/nextjs";
+"use client";
+
+import { SignUp, useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
-  console.log(process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL);
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/user");
+    }
+  }, [user, router]);
+
   return (
     <div className="flex flex-col h-screen justify-center items-center space-y-6">
       <SignUp

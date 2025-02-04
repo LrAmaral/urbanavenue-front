@@ -29,6 +29,8 @@ export function Product({ data, isLoading }: ProductProps) {
     );
   }
 
+  const isOutOfStock = data?.productSizes.every((size) => size.stock === 0);
+
   return (
     <div
       onClick={handleClick}
@@ -47,7 +49,9 @@ export function Product({ data, isLoading }: ProductProps) {
       </div>
       <p className="font-semibold text-sm sm:text-md">{data?.title}</p>
       <p className="text-sm sm:text-md lg:text-lg">
-        R$ {data?.price?.toFixed(2).replace(".", ",")}
+        {isOutOfStock
+          ? "OUT OF STOCK"
+          : `R$ ${data?.price?.toFixed(2).replace(".", ",")}`}
       </p>
     </div>
   );

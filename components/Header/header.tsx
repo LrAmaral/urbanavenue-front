@@ -10,7 +10,7 @@ import { Wrapper } from "../Custom/wrapper";
 import { pages } from "@/lib/pages";
 import { motion } from "framer-motion";
 import { mobileLinkVars } from "@/lib/mobile-vars";
-import SearchBar from "../search-bar";
+import SearchBar from "../Search/search-bar";
 import Image from "next/image";
 import logo from "../../public/favicon.ico";
 

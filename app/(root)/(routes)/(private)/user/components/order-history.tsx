@@ -37,38 +37,42 @@ const OrdersHistory = () => {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
+  const [clientId, setClientId] = useState<string | null>(null); // Add state for clientId
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      const clientId = localStorage.getItem("client_id");
+    // Try to retrieve clientId from localStorage
+    const savedClientId = localStorage.getItem("client_id");
+    if (savedClientId) {
+      setClientId(savedClientId); // Set clientId when it's found
+    }
+  }, []); // Run only once on mount
 
-      if (!clientId) {
-        console.error("Client ID not found.");
-        setLoading(false);
-        return;
-      }
+  useEffect(() => {
+    // If clientId is available, fetch orders
+    if (clientId) {
+      const fetchOrders = async () => {
+        setLoading(true);
+        try {
+          const data = await getOrders(clientId);
+          setOrders(data);
+        } catch (err) {
+          console.error("Error fetching orders:", err);
+          setError("Failed to fetch orders.");
+        } finally {
+          setLoading(false);
+        }
+      };
 
-      try {
-        const data = await getOrders(clientId);
-        setOrders(data);
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-        setError("Failed to fetch orders.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+      fetchOrders();
+    }
+  }, [clientId]); // Run only when clientId changes
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
-  if (loading) {
+  if (loading || !clientId) {
     return (
       <div className="w-full px-6">
         <h2 className="text-xl font-semibold mb-4">My Orders</h2>

@@ -17,16 +17,28 @@ export default function SearchBar({ classname }: SearchBarProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [clientId, setClientId] = useState<string | null>(null); // Estado para armazenar o clientId
   const router = useRouter();
-  const clientId = localStorage.getItem("clientId");
 
   const MAX_RECENT_SEARCHES = 5;
   const MAX_DISPLAYED_SUGGESTIONS = 5;
 
+  // Carregar clientId e recentes pesquisas quando o componente for montado no cliente
   useEffect(() => {
-    const storedSearches = localStorage.getItem(`${clientId}_recent_searches`);
-    if (storedSearches) {
-      setRecentSearches(JSON.parse(storedSearches));
+    const storedClientId = localStorage.getItem("clientId");
+    if (storedClientId) {
+      setClientId(storedClientId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (clientId) {
+      const storedSearches = localStorage.getItem(
+        `${clientId}_recent_searches`
+      );
+      if (storedSearches) {
+        setRecentSearches(JSON.parse(storedSearches));
+      }
     }
   }, [clientId]);
 
@@ -67,8 +79,9 @@ export default function SearchBar({ classname }: SearchBarProps) {
   }, [searchTerm]);
 
   const saveRecentSearch = (query: string) => {
-    let updatedSearches = [...recentSearches];
+    if (!clientId) return; // Só salvar se clientId estiver disponível
 
+    let updatedSearches = [...recentSearches];
     updatedSearches = updatedSearches.filter((search) => search !== query);
     updatedSearches.unshift(query);
 
@@ -94,7 +107,9 @@ export default function SearchBar({ classname }: SearchBarProps) {
   };
 
   const handleRemoveRecentSearches = () => {
-    localStorage.removeItem(`${clientId}_recent_searches`);
+    if (clientId) {
+      localStorage.removeItem(`${clientId}_recent_searches`);
+    }
     setRecentSearches([]);
   };
 
