@@ -141,8 +141,8 @@ export default function CompleteProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50 w-full px-4 py-8">
-      <div className="max-w-lg w-full bg-white shadow-lg rounded-xl p-8">
+    <div className="flex flex-col items-center justify-center w-full px-4 py-8">
+      <div className="max-w-lg w-full shadow-lg rounded-xl p-8">
         <div className="flex items-center justify-center gap-4 mb-8">
           <Image src={logo} width={60} height={60} alt="logo" />
           <h1 className="text-2xl font-semibold text-zinc-800">

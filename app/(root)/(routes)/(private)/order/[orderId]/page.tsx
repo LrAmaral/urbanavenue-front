@@ -4,6 +4,7 @@ import { getOrder } from "@/app/api/order";
 import { Wrapper } from "@/components/Custom/wrapper";
 import { Separator } from "@/components/ui/separator";
 import { Order } from "@/lib/types";
+import { Package, ReceiptText, Truck } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -109,7 +110,8 @@ const OrderDetails = () => {
     <div className="w-full px-4 py-8 min-h-screen mt-24">
       <Wrapper className="flex flex-col gap-8 ">
         <div className="space-y-6 p-6 border rounded-lg">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-4">
+          <h2 className="text-3xl flex gap-4 items-center font-semibold text-gray-800 mb-4">
+            <ReceiptText />
             Order Details
           </h2>
           <div className="space-y-1 text-gray-700">
@@ -122,13 +124,15 @@ const OrderDetails = () => {
             </p>
           </div>
           <Separator />
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+          <h3 className="text-2xl gap-4 flex items-center font-semibold text-gray-800 mb-4">
+            <Truck />
             Shipping Address
           </h3>
           {order.address ? (
             <div className="space-y-1 text-gray-700">
               <p>
-                <strong>Street:</strong> {order.address.street}
+                <strong>Street:</strong> {order.address.street},{" "}
+                {order.address.number}
               </p>
               <p>
                 <strong>Neighborhood:</strong> {order.address.neighborhood}
@@ -142,9 +146,6 @@ const OrderDetails = () => {
               <p>
                 <strong>ZIP Code:</strong> {order.address.zipCode}
               </p>
-              <p>
-                <strong>Number:</strong> {order.address.number}
-              </p>
             </div>
           ) : (
             <p className="text-gray-600">
@@ -154,8 +155,9 @@ const OrderDetails = () => {
         </div>
 
         <div className="p-6 border rounded-lg">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-            Order Items
+          <h3 className="flex gap-4 items-center text-2xl font-semibold text-gray-800 mb-4">
+            <Package />
+            Products
           </h3>
           {order.orderItems && order.orderItems.length > 0 ? (
             <ul className="space-y-6">
@@ -184,11 +186,10 @@ const OrderDetails = () => {
                       <strong>Category:</strong>{" "}
                       {item.product?.category?.name || "Category unavailable"}
                     </p>
-                    {/* <p className="text-md text-gray-600">
+                    <p className="text-md text-gray-600">
                       <strong>Size:</strong>{" "}
-                      {item.product?.productSizes?.size?.name ||
-                        "Size unavailable"}
-                    </p> */}
+                      {item.product?.productSizes?.[0]?.size?.name || "N/A"}
+                    </p>
                     <p className="text-md text-gray-600">
                       <strong>Quantity:</strong> {item.quantity}
                     </p>

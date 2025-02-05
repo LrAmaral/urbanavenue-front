@@ -7,6 +7,7 @@ import { ArrowLeft, MapPin, Check, Edit } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { Address } from "@/lib/types";
 import { getAddresses, updateAddress } from "@/app/api/address";
+import SkeletonPage from "./components/skeleton-address";
 
 const AddressPage = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -14,6 +15,7 @@ const AddressPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,13 +24,13 @@ const AddressPage = () => {
     }
   }, []);
 
-  console.log(clientId);
   const loadAddresses = useCallback(async () => {
     if (!clientId) {
       return;
     }
 
     try {
+      setIsLoading(true);
       const response = await getAddresses(clientId);
       const allAddresses = response.addresses || [];
       setAddresses(allAddresses);
@@ -36,7 +38,6 @@ const AddressPage = () => {
       const primaryAddress = allAddresses.find((addr) => addr.isPrimary);
       if (primaryAddress) {
         setSelectedAddress(primaryAddress);
-
         localStorage.setItem(
           `${clientId}_selected_address`,
           JSON.stringify(primaryAddress)
@@ -48,6 +49,8 @@ const AddressPage = () => {
       console.error("Error loading addresses:", error);
       toast.dismiss();
       toast.error("Failed to load addresses.");
+    } finally {
+      setIsLoading(false);
     }
   }, [clientId]);
 
@@ -128,7 +131,9 @@ const AddressPage = () => {
     setIsEditing(true);
   };
 
-  return (
+  return isLoading ? (
+    <SkeletonPage />
+  ) : (
     <div className="w-full h-auto mt-24 flex flex-col items-center">
       <Wrapper className="w-full flex flex-col space-y-6">
         <div className="flex justify-between items-center">

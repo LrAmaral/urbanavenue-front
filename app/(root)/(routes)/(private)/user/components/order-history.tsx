@@ -37,18 +37,16 @@ const OrdersHistory = () => {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
-  const [clientId, setClientId] = useState<string | null>(null); // Add state for clientId
+  const [clientId, setClientId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to retrieve clientId from localStorage
     const savedClientId = localStorage.getItem("client_id");
     if (savedClientId) {
-      setClientId(savedClientId); // Set clientId when it's found
+      setClientId(savedClientId);
     }
-  }, []); // Run only once on mount
+  }, []);
 
   useEffect(() => {
-    // If clientId is available, fetch orders
     if (clientId) {
       const fetchOrders = async () => {
         setLoading(true);
@@ -65,7 +63,7 @@ const OrdersHistory = () => {
 
       fetchOrders();
     }
-  }, [clientId]); // Run only when clientId changes
+  }, [clientId]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -116,7 +114,7 @@ const OrdersHistory = () => {
                   <TableCell>
                     {order.orderItems && order.orderItems.length > 0 && (
                       <Link
-                        href={`/user/${order.id}`}
+                        href={`/order/${order.id}`}
                         className="flex items-center gap-2"
                       >
                         {order.orderItems[0].product?.images?.[0]?.url && (

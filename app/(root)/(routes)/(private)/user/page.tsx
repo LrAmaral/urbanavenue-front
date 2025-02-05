@@ -108,12 +108,14 @@ const UserProfile = () => {
         <div className="w-full md:w-1/3 py-6 md:px-0 px-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">My account</h2>
-            <button
-              onClick={handleSignOut}
-              className="text-black hover:text-gray-700"
-            >
-              <LogOut className="w-6 h-6" />
-            </button>
+            {!loading ? (
+              <button
+                onClick={handleSignOut}
+                className="text-black hover:text-gray-700"
+              >
+                <LogOut className="w-6 h-6" />
+              </button>
+            ) : null}
           </div>
           <div className="flex flex-col space-y-4 text-gray-700">
             <UserInfoSkeleton
@@ -128,12 +130,14 @@ const UserProfile = () => {
                 <p className="text-xl font-semibold text-gray-800">
                   My addresses
                 </p>
-                <button
-                  onClick={handleAddAddress}
-                  className="hover:text-zinc-900"
-                >
-                  {selectedAddress ? "Edit" : "Add"}
-                </button>
+                {!loading ? (
+                  <button
+                    onClick={handleAddAddress}
+                    className="hover:text-zinc-900"
+                  >
+                    {selectedAddress ? "Edit" : "Add"}
+                  </button>
+                ) : null}
               </div>
               {loading ? (
                 <div className="bg-white p-1 rounded-lg animate-pulse">

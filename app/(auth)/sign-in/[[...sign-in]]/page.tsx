@@ -10,9 +10,8 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (isSignedIn) {
-      const currentPath = window.location.pathname;
       const redirectUrl =
-        process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL || currentPath;
+        process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL || "/user";
 
       router.push(redirectUrl);
     }
