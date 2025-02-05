@@ -4,25 +4,29 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { pages } from "@/lib/pages";
 import Link from "next/link";
-import { User2 } from "lucide-react";
 import {
   mobileLinkVars,
   containerVars,
   menuVars,
 } from "../../../lib/mobile-vars";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const HamburguerButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("client_id");
+    signOut();
+    router.push("/sign-in");
   };
 
-  const toggleUserMenu = () => {
-    setUserMenuOpen(!userMenuOpen);
-  };
-
+  // Função de resize refatorada
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768 && menuOpen) {
@@ -32,14 +36,11 @@ const HamburguerButton = () => {
 
     window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [menuOpen]);
 
   return (
     <div className="flex justify-between w-full z-50 md:hidden">
-      {/* Botão hamburguer */}
       <motion.button
         animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}
@@ -86,7 +87,6 @@ const HamburguerButton = () => {
               exit="initial"
               className="gap-6 flex flex-col mt-24 text-lg"
             >
-              {/* Links de navegação */}
               {pages.map(({ id, label, href }) => (
                 <motion.div key={id} variants={mobileLinkVars}>
                   <Link
@@ -97,32 +97,16 @@ const HamburguerButton = () => {
                   </Link>
                 </motion.div>
               ))}
-            </motion.div>
-
-            <motion.div className="flex flex-col gap-6 mt-8 p-4 bg-gray-100 rounded-lg shadow-md">
-              <button
-                onClick={toggleUserMenu}
-                className="flex items-center gap-2 p-3 text-xl text-black hover:bg-gray-300 rounded-lg"
-              >
-                <User2 className="w-6 h-6" />
-                <span>Minha Conta</span>
-              </button>
-
-              {userMenuOpen && (
-                <div className="flex flex-col gap-4">
-                  <Link
-                    href="/user"
-                    className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+              {user && (
+                <motion.div variants={mobileLinkVars}>
+                  <motion.button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out text-black font-semibold"
                   >
-                    Perfil
-                  </Link>
-                  <Link
-                    href="/logout"
-                    className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
-                  >
-                    Sair
-                  </Link>
-                </div>
+                    Logout
+                  </motion.button>
+                </motion.div>
               )}
             </motion.div>
           </motion.div>
