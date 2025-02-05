@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { pages } from "@/lib/pages";
 import Link from "next/link";
+import { User2 } from "lucide-react";
 import {
   mobileLinkVars,
   containerVars,
@@ -12,9 +13,14 @@ import {
 
 const HamburguerButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen(!userMenuOpen);
   };
 
   useEffect(() => {
@@ -33,6 +39,7 @@ const HamburguerButton = () => {
 
   return (
     <div className="flex justify-between w-full z-50 md:hidden">
+      {/* Botão hamburguer */}
       <motion.button
         animate={menuOpen ? "open" : "closed"}
         onClick={toggleMenu}
@@ -79,6 +86,7 @@ const HamburguerButton = () => {
               exit="initial"
               className="gap-6 flex flex-col mt-24 text-lg"
             >
+              {/* Links de navegação */}
               {pages.map(({ id, label, href }) => (
                 <motion.div key={id} variants={mobileLinkVars}>
                   <Link
@@ -89,6 +97,33 @@ const HamburguerButton = () => {
                   </Link>
                 </motion.div>
               ))}
+            </motion.div>
+
+            <motion.div className="flex flex-col gap-6 mt-8 p-4 bg-gray-100 rounded-lg shadow-md">
+              <button
+                onClick={toggleUserMenu}
+                className="flex items-center gap-2 p-3 text-xl text-black hover:bg-gray-300 rounded-lg"
+              >
+                <User2 className="w-6 h-6" />
+                <span>Minha Conta</span>
+              </button>
+
+              {userMenuOpen && (
+                <div className="flex flex-col gap-4">
+                  <Link
+                    href="/user"
+                    className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+                  >
+                    Perfil
+                  </Link>
+                  <Link
+                    href="/logout"
+                    className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+                  >
+                    Sair
+                  </Link>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

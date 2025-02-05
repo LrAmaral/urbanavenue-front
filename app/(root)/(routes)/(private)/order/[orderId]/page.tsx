@@ -4,9 +4,10 @@ import { getOrder } from "@/app/api/order";
 import { Wrapper } from "@/components/Custom/wrapper";
 import { Separator } from "@/components/ui/separator";
 import { Order } from "@/lib/types";
+import { useAuth } from "@clerk/nextjs";
 import { Package, ReceiptText, Truck } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const SkeletonLoader = () => (
@@ -52,10 +53,18 @@ const SkeletonLoader = () => (
 );
 
 const OrderDetails = () => {
+  const { isSignedIn } = useAuth();
   const { orderId } = useParams();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isSignedIn, router]);
 
   useEffect(() => {
     if (!orderId || typeof orderId !== "string") {
@@ -93,7 +102,7 @@ const OrderDetails = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen w-full">
-        <p className="text-lg text-red-600">{error}</p>
+        <p className="text-lg text-zinc-800">{error}</p>
       </div>
     );
   }

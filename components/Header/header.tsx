@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { User2 } from "lucide-react";
 import Link from "next/link";
 import CartSheet from "../Cart/cart-sheet";
@@ -13,10 +13,15 @@ import { mobileLinkVars } from "@/lib/mobile-vars";
 import SearchBar from "../Search/search-bar";
 import Image from "next/image";
 import logo from "../../public/favicon.ico";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 export const MainNav = () => {
   const { user } = useUser();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,6 +38,20 @@ export const MainNav = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleMouseEnter = () => {
+    setIsDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDropdownOpen(false);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("client_id");
+    signOut();
+    router.push("/sign-in");
+  };
 
   return (
     <nav
@@ -70,16 +89,48 @@ export const MainNav = () => {
               </div>
             </div>
           </div>
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center gap-2 relative">
             <SearchBar classname="block md:hidden" />
             {user ? (
-              <Link
-                href={"/user"}
-                aria-label="Página do cliente"
-                className="hidden md:block"
+              <div
+                className="relative"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                <User2 />
-              </Link>
+                <button
+                  aria-label="Menu do cliente"
+                  className="hidden md:block"
+                >
+                  <User2 />
+                </button>
+
+                {isDropdownOpen && (
+                  <div className="absolute right-0 w-40 border bg-white shadow-lg rounded-lg z-10">
+                    <ul className="py-2 w-full">
+                      <p className="text-sm p-2 text-center">
+                        Olá {user?.firstName}!
+                      </p>
+                      <li>
+                        <Link
+                          href="/user"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+                        >
+                          My account
+                        </Link>
+                      </li>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleSignOut();
+                        }}
+                        className="flex px-4 w-full items-start py-2 text-gray-700 hover:bg-gray-200"
+                      >
+                        Logout
+                      </button>
+                    </ul>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link
                 href={"/sign-in"}

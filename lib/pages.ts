@@ -16,7 +16,7 @@ export const pages = [
   },
   {
     id: "/user",
-    label: "user profile",
+    label: "My account",
     href: "/user",
   }, 
 ];
