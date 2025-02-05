@@ -38,7 +38,7 @@ const UserInfoSkeleton = ({
     <div className="space-y-4">
       <div className="flex items-center space-x-3">
         <UserIcon className="w-6 h-6 text-gray-500" />
-        <span>{user?.firstName || "N/A"}</span>
+        <span>{user?.firstName + " " + user?.lastName || "N/A"}</span>
       </div>
       <div className="flex items-center space-x-3">
         <Mail className="w-6 h-6 text-gray-500" />

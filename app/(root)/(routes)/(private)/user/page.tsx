@@ -34,7 +34,6 @@ const UserProfile = () => {
   const [tempFirstname, setTempFirstname] = useState<string>("");
   const [tempLastname, setTempLastname] = useState<string>("");
   const [tempPhoneNumber, setTempPhoneNumber] = useState<string>("");
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const email = user?.emailAddresses[0]?.emailAddress;
 
@@ -124,18 +123,9 @@ const UserProfile = () => {
       try {
         localStorage.setItem("showToast", "true");
 
-        const primaryEmailId = user.emailAddresses.find(
-          (email) => email.emailAddress === tempEmail
-        )?.id;
-
-        if (!primaryEmailId) {
-          throw new Error("Invalid email ID.");
-        }
-
         await user.update({
           firstName: tempFirstname,
           lastName: tempLastname,
-          primaryEmailAddressId: primaryEmailId,
         });
 
         const userId = localStorage.getItem("client_id");
@@ -146,8 +136,7 @@ const UserProfile = () => {
 
         await updateUserApi({
           id: userId,
-          email: tempEmail,
-          name: tempFirstname,
+          name: tempFirstname + " " + tempLastname,
           phoneNumber: tempPhoneNumber,
         });
 
@@ -282,15 +271,6 @@ const UserProfile = () => {
               }}
             >
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block font-semibold">Email</label>
-                  <Input
-                    value={tempEmail}
-                    onChange={(e) => setTempEmail(e.target.value)}
-                    type="email"
-                    required
-                  />
-                </div>
                 <div className="space-y-2">
                   <label className="block font-semibold">First Name</label>
                   <Input
