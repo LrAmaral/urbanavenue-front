@@ -9,14 +9,24 @@ import {
   containerVars,
   menuVars,
 } from "../../../lib/mobile-vars";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const HamburguerButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("client_id");
+    signOut();
+    router.push("/sign-in");
   };
 
+  // Função de resize refatorada
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768 && menuOpen) {
@@ -26,9 +36,7 @@ const HamburguerButton = () => {
 
     window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [menuOpen]);
 
   return (
@@ -89,6 +97,17 @@ const HamburguerButton = () => {
                   </Link>
                 </motion.div>
               ))}
+              {user && (
+                <motion.div variants={mobileLinkVars}>
+                  <motion.button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="hover:text-neutral-400 md:text-lg text-2xl transition ease-in-out text-black font-semibold"
+                  >
+                    Logout
+                  </motion.button>
+                </motion.div>
+              )}
             </motion.div>
           </motion.div>
         )}

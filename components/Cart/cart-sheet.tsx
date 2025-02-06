@@ -38,7 +38,7 @@ const CartSheet = () => {
     <motion.div>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" className="p-1.5 relative">
+          <Button variant="ghost" aria-label="Cart Button" className="p-1.5 relative">
             <ShoppingCart size={22}/>
             {totalQuantity > 0 && (
               <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">

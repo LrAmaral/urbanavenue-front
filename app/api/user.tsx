@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User } from "@/lib/types";
+import { User, UserUpdate } from "@/lib/types";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 
@@ -22,12 +22,15 @@ const getUser = async (userId: string): Promise<User | null> => {
 
 const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
-    const { data } = await axios.get<User>(`${process.env.NEXT_PUBLIC_API_URL}/email`, {
-      params: { email }, 
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const { data } = await axios.get<User>(
+      `${process.env.NEXT_PUBLIC_API_URL}/email`,
+      {
+        params: { email },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return data;
   } catch (error: any) {
@@ -56,4 +59,21 @@ const createUser = async (userData: User): Promise<User> => {
   }
 };
 
-export { getUser, getUserByEmail, createUser };
+const updateUser = async (user: UserUpdate): Promise<UserUpdate> => {
+  try {
+    const { data } = await axios.patch<UserUpdate>(`${URL}/update-user/${user.id}`, user, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (error: any) {
+    console.error(
+      "Error updating user:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error(`Error updating user: ${error}`);
+  }
+};
+
+export { getUser, getUserByEmail, createUser, updateUser };

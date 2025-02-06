@@ -24,7 +24,7 @@ const AddressForm = ({
 
   useEffect(() => {
     if (editAddress) {
-      setInputValues(editAddress); // Preenche com os dados do endereço a ser editado
+      setInputValues(editAddress); 
     }
   }, [editAddress]);
 
@@ -73,12 +73,11 @@ const AddressForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      // Defina isPrimary como true sempre que um novo endereço for salvo
       const addressToSave = editAddress
-        ? { ...inputValues, id: editAddress.id, isPrimary: true } // Mantém isPrimary true ao editar
-        : { ...inputValues, isPrimary: true }; // Sempre define isPrimary como true ao adicionar um novo endereço
+        ? { ...inputValues, id: editAddress.id, isPrimary: true } 
+        : { ...inputValues, isPrimary: true }; 
 
-      await setAddresses(addressToSave); // Envia o endereço para salvar
+      await setAddresses(addressToSave); 
       setInputValues({
         neighborhood: "",
         street: "",

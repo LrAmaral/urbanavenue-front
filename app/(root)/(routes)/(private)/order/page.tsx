@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "@/providers/cart-context";
 import Image from "next/image";
-import { Trash, Plus, Minus } from "lucide-react";
+import { Trash, Plus, Minus, ReceiptText, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wrapper } from "@/components/Custom/wrapper";
 import AddressForm from "../address/components/address-form";
@@ -34,8 +34,6 @@ export default function OrdersPage(): JSX.Element {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [showAddressList, setShowAddressList] = useState(false);
   const [clientId, setClientId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   useEffect(() => {
     const storedClientId = localStorage.getItem("client_id");
@@ -93,8 +91,6 @@ export default function OrdersPage(): JSX.Element {
       return;
     }
 
-    setIsLoading(true);
-
     try {
       const response = await getAddresses(clientId);
       const addressesWithPrimary = response.addresses || [];
@@ -130,8 +126,6 @@ export default function OrdersPage(): JSX.Element {
       console.error("Error loading addresses:", error);
       toast.dismiss();
       toast.error("Failed to load addresses.");
-    } finally {
-      setIsLoading(false);
     }
   }, [simulateShipping, clientId]);
 
@@ -144,7 +138,6 @@ export default function OrdersPage(): JSX.Element {
   const handleAddressChange = async (address: Address) => {
     console.log("Address selected: ", address);
 
-    setIsProcessing(true);
     setSelectedAddress(address);
     setShowAddressList(false);
 
@@ -174,8 +167,6 @@ export default function OrdersPage(): JSX.Element {
     } catch (error) {
       console.error("Error updating address:", error);
     }
-
-    setIsProcessing(false);
   };
 
   const handleAddAddress = async (newAddress: Address) => {
@@ -249,7 +240,11 @@ export default function OrdersPage(): JSX.Element {
   return (
     <div className="container mx-auto p-4">
       <Wrapper className="mt-24 md:mt-32 lg:mt-40">
-        <h1 className="text-2xl font-bold mb-6">Your Orders</h1>
+        <h1 className="text-2xl flex gap-2 items-center font-bold mb-6">
+          {" "}
+          <ReceiptText />
+          Your Orders
+        </h1>
         {hasItems ? (
           <div className="flex flex-col md:flex-row justify-between items-start md:space-x-8 w-full">
             <div className="space-y-4 w-full md:w-2/3">
@@ -262,12 +257,12 @@ export default function OrdersPage(): JSX.Element {
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
-                      width={60}
-                      height={60}
+                      width={64}
+                      height={64}
                       className="rounded-md"
                     />
                     <div>
-                      <p className="text-lg font-semibold">{item.title}</p>
+                      <p className="text-md font-semibold">{item.title}</p>
                       <p className="text-sm text-gray-500">
                         Size: {item.size.name}
                       </p>
@@ -328,7 +323,11 @@ export default function OrdersPage(): JSX.Element {
             <div className="space-y-4 w-full md:w-1/3">
               {showAddressList || !selectedAddress ? (
                 <div className="w-full max-w-lg my-4 md:my-0">
-                  <h2 className="text-lg font-semibold mb-2">Select Address</h2>
+                  <h2 className="text-lg flex gap-2 items-center font-semibold mb-2">
+                    {" "}
+                    <Truck />
+                    Select Address
+                  </h2>
                   {addresses.map((address) => (
                     <div
                       key={address.id}
@@ -371,7 +370,9 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               ) : (
                 <div className="w-full h-auto max-w-lg p-4 my-4 md:my-0 border rounded-md bg-zinc-100">
-                  <h2 className="text-lg font-semibold mb-2">
+                  <h2 className="text-lg flex gap-2 items-center font-semibold mb-2">
+                    {" "}
+                    <Truck />
                     Selected Address
                   </h2>
                   <div className="">
@@ -396,7 +397,6 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               )}
 
-              {/* Shipping Options */}
               {shippingOptions.map((option) => (
                 <div
                   key={option.code}

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
 import searchProducts from "@/app/api/search";
 import { Loader } from "@/components/ui/loader";
-import ProductGrid from "@/components/product-grid";
+import ProductGrid from "@/components/Product/product-grid";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();

@@ -18,7 +18,7 @@ export interface Address {
   isPrimary?: boolean;
 }
 
-export type AddressFormInput = Omit<Address, 'isPrimary'>;
+export type AddressFormInput = Omit<Address, "isPrimary">;
 
 export interface AddressResponse {
   addresses: Address[];
@@ -32,7 +32,7 @@ export interface ProductProps {
 
 export type Role = "ADMIN" | "CLIENT";
 
-export type User = {
+export interface User {
   id?: string;
   name: string;
   email: string;
@@ -40,11 +40,18 @@ export type User = {
   phoneNumber?: string;
   dateOfBirth: Date;
   orders?: Order[];
-  role?: "ADMIN" | "CLIENT";
+  role?: Role;
   addresses: Address[];
   createdAt?: Date;
   updatedAt?: Date;
-};
+}
+
+export interface UserUpdate {
+  id?: string;
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+}
 
 export interface SizeWithStock {
   size: {

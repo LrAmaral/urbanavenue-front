@@ -1,12 +1,13 @@
-"use client";
-
 import { useState } from "react";
 import { useCart } from "@/providers/cart-context";
 import EmblaCarousel from "@/components/ui/embla-carousel";
 import Image from "next/image";
-import { ClientModal } from "./client-modal";
 import toast from "react-hot-toast";
 import { Product } from "@/lib/types";
+import tshirt from "../../../../../../public/assets/images/tshirt-size.jpg";
+import pants from "../../../../../../public/assets/images/pants-size.jpg";
+import hoodies from "../../../../../../public/assets/images/hoodie-size.jpg";
+import shorts from "../../../../../../public/assets/images/shorts-size.jpg";
 
 interface ProductDetailsProps {
   product: Product;
@@ -29,9 +30,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     const selectedSizeObj = product.productSizes.find(
       (size) => size.size.id === sizeId
     );
+
     if (selectedSizeObj) {
-      setSelectedSize(selectedSizeObj.size);
-      setStock(selectedSizeObj.stock);
+      if (
+        selectedSizeObj.size.id !== selectedSize.id ||
+        selectedSizeObj.stock !== stock
+      ) {
+        setSelectedSize(selectedSizeObj.size);
+        setStock(selectedSizeObj.stock);
+      }
     }
   };
 
@@ -50,30 +57,53 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     }
   };
 
+  const categoryImages: { [key: string]: string } = {
+    "T-shirt": tshirt.src,
+    Pants: pants.src,
+    Hoodies: hoodies.src,
+    Shorts: shorts.src,
+  };
+
+  const measureImage = categoryImages[product.category.name] || tshirt;
+
   return (
     <div className="flex flex-col md:flex-row items-start justify-center space-y-6 md:space-y-0 md:space-x-8">
       <div className="md:w-1/2 flex h-full items-center justify-center">
-        <EmblaCarousel
-          options={{ align: "center", loop: true }}
-          onSlideChange={setCurrentImageIndex}
-        >
-          {product.images?.map((image, index) => (
-            <div
-              className="embla__slide w-full h-full flex justify-center items-center"
-              key={index}
-            >
-              <ClientModal imageUrl={image.url}>
+        {product.images?.length === 1 ? (
+          <div className="w-full h-full flex justify-center items-center">
+            <Image
+              src={product.images[0].url}
+              alt={`Product Image ${product.images[0].url}`}
+              width={800}
+              height={800}
+              className="w-full h-auto pointer-events-none object-cover rounded-lg"
+            />
+          </div>
+        ) : (
+          <EmblaCarousel
+            options={{
+              align: "center",
+              loop: true,
+              draggable: true,
+            }}
+            onSlideChange={setCurrentImageIndex}
+          >
+            {product.images?.map((image, index) => (
+              <div
+                className="w-full h-full flex justify-center items-center"
+                key={index}
+              >
                 <Image
                   src={image.url}
-                  alt={`Product Image ${index + 1}`}
+                  alt={`Product Image ${image.url}`}
                   width={800}
                   height={800}
                   className="w-full h-auto object-cover rounded-lg cursor-pointer"
                 />
-              </ClientModal>
-            </div>
-          ))}
-        </EmblaCarousel>
+              </div>
+            ))}
+          </EmblaCarousel>
+        )}
       </div>
       <div className="flex flex-col w-full md:w-1/2 md:text-left space-y-4">
         <div className="space-y-1">
@@ -136,6 +166,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           <ul className="list-disc ml-6 text-gray-600 space-y-1">
             <li>Credit Card (Visa, MasterCard)</li>
           </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mt-6">Measures</h3>
+          <Image
+            src={measureImage}
+            alt="measures"
+            width={440}
+            height={440}
+            className="pointer-events-none"
+          />
         </div>
       </div>
     </div>

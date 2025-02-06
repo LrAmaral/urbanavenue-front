@@ -8,6 +8,8 @@ import { useUser } from "@clerk/nextjs";
 import { createOrder } from "@/app/api/order";
 import { Address } from "@/lib/types";
 import { useCart } from "@/providers/cart-context";
+import Image from "next/image";
+import { CreditCard, ReceiptText, Truck } from "lucide-react";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -148,22 +150,34 @@ export default function PaymentPage() {
     <div className="w-full h-auto mt-24 flex flex-col items-center justify-start">
       <Wrapper className="w-full flex flex-col space-y-6">
         <div className="bg-white w-full rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold mb-6 text-center">Payment Page</h1>
-          <p className="text-lg text-gray-600 text-center mb-6">
+          <h1 className="text-2xl font-bold mb-6">Payment Page</h1>
+          <p className="text-lg text-gray-600 mb-6">
             Review your order and confirm payment.
           </p>
 
           {orderDetails ? (
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-4">Order Details</h2>
+              <h2 className="text-lg flex gap-4 font-semibold mb-4">
+                {" "}
+                <ReceiptText />
+                Order Details
+              </h2>
               <div className="border rounded-md p-4 space-y-2">
                 {orderDetails.cartItems.map((item: any, index: number) => (
                   <div
                     key={`${item.id}-${index}`}
                     className="flex justify-between items-center"
                   >
-                    <span>
-                      {item.title} (x{item.quantity})
+                    <span className="flex gap-4 items-center">
+                      <Image
+                        src={item.imageUrl}
+                        alt="product image"
+                        width={64}
+                        height={64}
+                      />
+                      <span>
+                        {item.title} ({item.size.name}) x{item.quantity}
+                      </span>
                     </span>
                     <span>
                       R${" "}
@@ -187,7 +201,11 @@ export default function PaymentPage() {
 
           {selectedAddress ? (
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-4">Delivery Address</h2>
+              <h2 className="text-lg flex gap-4 font-semibold mb-4">
+                {" "}
+                <Truck />
+                Delivery Address
+              </h2>
               <div className="border rounded-md p-4 space-y-2">
                 <p>
                   {selectedAddress.street}, {selectedAddress.neighborhood},{" "}
@@ -199,11 +217,14 @@ export default function PaymentPage() {
                 <p>{selectedAddress.zipCode}</p>
               </div>
             </div>
-          ) : (
-            <p className="text-gray-500">No address selected.</p>
-          )}
+          ) : null}
 
           <div className="space-y-4">
+            <h3 className="flex gap-4">
+              {" "}
+              <CreditCard />
+              Card Info
+            </h3>
             <input
               type="text"
               placeholder="Cardholder Name"

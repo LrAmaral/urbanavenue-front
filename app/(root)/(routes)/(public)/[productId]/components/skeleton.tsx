@@ -18,6 +18,10 @@ const Skeleton = () => (
         <div className="w-3/4 h-6 bg-gray-300 rounded-md"></div>
         <div className="w-1/2 h-4 bg-gray-300 rounded-md mt-2"></div>
       </div>
+      <div className="mt-6 p-4 rounded-lg shadow-sm">
+        <div className="w-1/4 h-6 bg-gray-300 rounded-md"></div>
+        <div className="w-3/4 h-72 bg-gray-300 rounded-md mt-2"></div>
+      </div>
     </div>
   </div>
 );

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Wrapper } from "@/components/Custom/wrapper";
 import getProducts from "../api/get-products";
 import Filter from "@/components/Filter/filter";
-import ProductGrid from "@/components/product-grid";
+import ProductGrid from "@/components/Product/product-grid";
 import BackToTopButton from "@/components/back";
 import { Product as ProductType } from "@/lib/types";
 
