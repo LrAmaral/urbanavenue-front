@@ -104,11 +104,6 @@ const OrdersHistory = () => {
           </TableHeader>
           <TableBody>
             {currentOrders.map((order) => {
-              const orderTotal = order.orderItems?.reduce(
-                (sum, item) => sum + item.price * item.quantity,
-                0
-              );
-
               return (
                 <TableRow key={order.id} className="hover:bg-gray-100">
                   <TableCell>
@@ -135,7 +130,15 @@ const OrdersHistory = () => {
                   <TableCell>
                     {new Date(order.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {order.total
+                      ? parseFloat(order.total).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : "R$ 0,00"}
+                  </TableCell>
                 </TableRow>
               );
             })}
