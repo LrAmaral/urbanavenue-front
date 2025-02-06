@@ -9,7 +9,6 @@ interface AddressFormProps {
 }
 
 const AddressForm = ({
-  addresses,
   setAddresses,
   editAddress,
 }: AddressFormProps) => {
@@ -22,12 +21,6 @@ const AddressForm = ({
     number: "",
   });
 
-  useEffect(() => {
-    if (editAddress) {
-      setInputValues(editAddress); 
-    }
-  }, [editAddress]);
-
   const [errors, setErrors] = useState<Partial<Record<keyof Address, string>>>({
     neighborhood: "",
     street: "",
@@ -36,6 +29,14 @@ const AddressForm = ({
     zipCode: "",
     number: "",
   });
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (editAddress) {
+      setInputValues(editAddress);
+    }
+  }, [editAddress]);
 
   const validate = () => {
     let valid = true;
@@ -73,11 +74,12 @@ const AddressForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      setLoading(true);
       const addressToSave = editAddress
-        ? { ...inputValues, id: editAddress.id, isPrimary: true } 
-        : { ...inputValues, isPrimary: true }; 
+        ? { ...inputValues, id: editAddress.id, isPrimary: true }
+        : { ...inputValues, isPrimary: true };
 
-      await setAddresses(addressToSave); 
+      await setAddresses(addressToSave);
       setInputValues({
         neighborhood: "",
         street: "",
@@ -86,6 +88,8 @@ const AddressForm = ({
         zipCode: "",
         number: "",
       });
+
+      setLoading(false); 
     }
   };
 
@@ -167,8 +171,15 @@ const AddressForm = ({
         <button
           type="submit"
           className="w-full bg-zinc-800 text-white p-2 rounded-lg hover:bg-zinc-900 transition"
+          disabled={loading} 
         >
-          {editAddress ? "Update Address" : "Save Address"}
+          {loading
+            ? editAddress
+              ? "Updating..."
+              : "Saving..."
+            : editAddress
+              ? "Update Address"
+              : "Save Address"}
         </button>
       </form>
     </div>

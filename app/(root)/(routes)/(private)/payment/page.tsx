@@ -91,6 +91,7 @@ export default function PaymentPage() {
 
       const { cartItems, total } = orderDetails;
 
+      console.log(total);
       await createOrder(
         cartItems,
         total,

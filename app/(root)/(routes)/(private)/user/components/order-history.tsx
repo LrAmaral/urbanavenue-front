@@ -135,7 +135,15 @@ const OrdersHistory = () => {
                   <TableCell>
                     {new Date(order.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>${orderTotal?.toFixed(2) || "0.00"}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {order.total
+                      ? parseFloat(order.total).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : "R$ " + orderTotal?.toFixed(2)}
+                  </TableCell>
                 </TableRow>
               );
             })}
