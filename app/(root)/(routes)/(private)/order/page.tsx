@@ -397,7 +397,6 @@ export default function OrdersPage(): JSX.Element {
                 </div>
               )}
 
-              {/* Shipping Options */}
               {shippingOptions.map((option) => (
                 <div
                   key={option.code}
