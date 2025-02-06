@@ -104,6 +104,11 @@ const OrdersHistory = () => {
           </TableHeader>
           <TableBody>
             {currentOrders.map((order) => {
+              const orderTotal = order.orderItems?.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              );
+
               return (
                 <TableRow key={order.id} className="hover:bg-gray-100">
                   <TableCell>
@@ -137,7 +142,7 @@ const OrdersHistory = () => {
                           style: "currency",
                           currency: "BRL",
                         })
-                      : "R$ 0,00"}
+                      : "R$ " + orderTotal?.toFixed(2)}
                   </TableCell>
                 </TableRow>
               );

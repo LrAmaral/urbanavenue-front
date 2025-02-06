@@ -219,8 +219,13 @@ const OrderDetails = () => {
 
           <div className="mt-6 text-xl font-bold text-gray-800">
             <p className="flex justify-between">
-              <strong>Total:</strong> R$
-              {calculateTotal().toFixed(2).replace(".", ",")}
+              <strong>Total:</strong>
+              {order.total
+                ? parseFloat(order.total).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })
+                : calculateTotal().toFixed(2).replace(".", ",")}
             </p>
           </div>
         </div>
